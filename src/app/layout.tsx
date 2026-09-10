@@ -32,11 +32,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <CartProvider>
           {demo && (
             <div className="demo-strip">
-              نسخة تجريبية — المحلات والمنتجات والأسعار المعروضة أمثلة توضيحية وليست حقيقية
+              نسخة تجريبية — المحلات والمنتجات والأسعار والتقييمات المعروضة كلها أمثلة توضيحية وليست حقيقية
             </div>
           )}
           <div className="topstrip">
-            التوصيل داخل بريدة · الدفع عند الاستلام · {wings.length} أقسام في مكان واحد
+            التوصيل داخل بريدة · الدفع عند الاستلام بدون رسوم · استرجاع خلال ٧ أيام
           </div>
           <Header />
           <CategoryBar />
@@ -60,12 +60,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <div>
                   <h4>للتجار</h4>
                   <div><Link href="/join">انضم إلى المول</Link></div>
+                  <div><Link href="/merchant">بوابة التاجر</Link></div>
                   <div><Link href="/search">ابحث عن محل</Link></div>
+                </div>
+                <div>
+                  <h4>خدمة العملاء</h4>
+                  <div><Link href="/track">تتبّع طلبك</Link></div>
+                  <div><Link href="/returns">الاستبدال والاسترجاع</Link></div>
+                  <div><Link href="/terms">الشروط والأحكام</Link></div>
+                  <div><Link href="/privacy">سياسة الخصوصية</Link></div>
                 </div>
               </div>
               <p className="legal">
-                مول بريدة دليل ومنصّة طلبات مستقلة. كل الأسماء والشعارات ملك أصحابها،
-                والبيع والتسليم مسؤولية المحل صاحب المنتج. لإزالة محل أو تصحيح بياناته
+                مول بريدة منصّة وسيطة مستقلة تعرض منتجات محلات المدينة وتوزّع الطلب
+                على أصحابه؛ البيع والتسليم والفاتورة مسؤولية المحل صاحب المنتج.
+                الأسعار بالريال السعودي وشاملة ضريبة القيمة المضافة، ولا توجد رسوم
+                مخفية. كل الأسماء والشعارات ملك أصحابها. لإزالة محل أو تصحيح بياناته
                 راسلنا من صفحة الانضمام.
               </p>
             </div>

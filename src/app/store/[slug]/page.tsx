@@ -4,8 +4,10 @@ import type { Metadata } from "next";
 import OpenNow from "@/components/OpenNow";
 import HoursTable from "@/components/HoursTable";
 import ProductCard from "@/components/ProductCard";
+import ReviewsBlock from "@/components/ReviewsBlock";
+import Stars from "@/components/Stars";
 import { getStore, getProductsByStore } from "@/lib/queries";
-import { q1 } from "@/db";
+import { q, q1 } from "@/db";
 import { DEST_META, buildDestUrl } from "@/lib/destinations";
 import type { Wing } from "@/lib/types";
 
@@ -24,9 +26,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const store = await getStore((await params).slug);
   if (!store) notFound();
-  const [wing, products] = await Promise.all([
+  const [wing, products, reviews, rating] = await Promise.all([
     q1<Wing>(`SELECT * FROM wings WHERE id = $1`, [store.wing_id]),
     getProductsByStore(store.id),
+    q<any>(
+      `SELECT id, author_name, rating, body, reply, created_at FROM reviews
+       WHERE store_id = $1 AND status = 'published' ORDER BY created_at DESC LIMIT 20`,
+      [store.id]
+    ),
+    q1<any>(
+      `SELECT round(avg(rating),1) AS avg, count(*)::int AS n FROM reviews
+       WHERE store_id = $1 AND status = 'published'`,
+      [store.id]
+    ),
   ]);
   const meta = DEST_META[store.dest_type];
   const mapUrl = store.map_url || (store.address_line
@@ -61,10 +73,14 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           {store.logo_path ? <img src={store.logo_path} alt={store.name_ar} /> : <span>{store.name_ar}</span>}
         </div>
         <div style={{ flex: 1, minWidth: 240 }}>
-          <h1>{store.name_ar}</h1>
+          <h1>
+            {store.name_ar}
+            {store.is_verified && <span className="badge verified" style={{ marginInlineStart: 10 }}>موثّق ✓</span>}
+          </h1>
           {store.summary_ar && <p style={{ color: "var(--text-2)", margin: "8px 0 0", maxWidth: "58ch" }}>{store.summary_ar}</p>}
           <div className="store-facts">
             <OpenNow hours={store.hours} />
+            {rating?.avg && <Stars value={rating.avg} count={rating.n} />}
             {store.district && <span>حي {store.district}</span>}
             {store.phone && <span className="tabular" dir="ltr">{store.phone}</span>}
             <span className="tabular">{products.length} منتجاً</span>
@@ -98,6 +114,8 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         </section>
       )}
 
+      <ReviewsBlock reviews={reviews} storeId={store.id} avg={rating?.avg} count={rating?.n} />
+
       <div className="panels">
         <div className="panel">
           <h4>أين تجده</h4>
@@ -111,6 +129,40 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         <div className="panel">
           <h4>الدوام</h4>
           <HoursTable hours={store.hours} />
+        </div>
+
+        <div className="panel">
+          <h4>التوصيل والاسترجاع</h4>
+          <dl className="hours-list">
+            <div className="kv">
+              <dt>الاستلام من المحل</dt><dd>مجاناً في الدوام</dd>
+            </div>
+            <div className="kv">
+              <dt>التوصيل داخل بريدة</dt>
+              <dd>{Number(store.delivery_fee) > 0 ? `${Number(store.delivery_fee)} ر.س` : "بالاتفاق مع المحل"}</dd>
+            </div>
+            {store.free_delivery_over && (
+              <div className="kv">
+                <dt>توصيل مجاني</dt><dd>فوق {Number(store.free_delivery_over)} ر.س</dd>
+              </div>
+            )}
+          </dl>
+          <p className="hint" style={{ marginTop: 8 }}>
+            {store.returns_policy || "الاسترجاع خلال ٧ أيام من الاستلام مع المحل وبفاتورته."}
+          </p>
+        </div>
+
+        <div className="panel">
+          <h4>بيانات المحل النظامية</h4>
+          <dl className="hours-list">
+            <div className="kv"><dt>الاسم التجاري</dt><dd>{store.name_ar}</dd></div>
+            {store.cr_number && <div className="kv"><dt>السجل التجاري</dt><dd className="tabular" dir="ltr">{store.cr_number}</dd></div>}
+            {store.vat_number && <div className="kv"><dt>الرقم الضريبي</dt><dd className="tabular" dir="ltr">{store.vat_number}</dd></div>}
+            {store.maroof_number && <div className="kv"><dt>معروف</dt><dd className="tabular" dir="ltr">{store.maroof_number}</dd></div>}
+          </dl>
+          <p className="hint" style={{ marginTop: 8 }}>
+            الأسعار شاملة ضريبة القيمة المضافة. البيع والفاتورة من المحل نفسه.
+          </p>
         </div>
       </div>
 

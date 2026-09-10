@@ -1,36 +1,33 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCart, type CartItem } from "@/lib/cart";
 
+/**
+ * زر البطاقة. المنتج ذو الخيارات لا يُضاف من البطاقة — يُفتح ليختار
+ * المقاس أو العيار، وإلا وصل للمحل طلب بلا خيار.
+ */
 export default function AddToCart({
-  item, label = "أضف للسلة", size = "sm", withQty = false,
-}: { item: Omit<CartItem, "qty">; label?: string; size?: "sm" | "lg"; withQty?: boolean }) {
+  item, label = "أضف للسلة", hasVariants = false, inStock = true,
+}: { item: Omit<CartItem, "qty">; label?: string; hasVariants?: boolean; inStock?: boolean }) {
   const { add } = useCart();
-  const [qty, setQty] = useState(1);
+  const router = useRouter();
   const [done, setDone] = useState(false);
 
-  const onAdd = () => {
-    add(item, qty);
+  if (!inStock) {
+    return <button type="button" className="btn btn-line btn-sm btn-block" disabled>غير متوفّر</button>;
+  }
+
+  const onClick = () => {
+    if (hasVariants) { router.push(`/product/${item.slug}`); return; }
+    add(item, 1);
     setDone(true);
     setTimeout(() => setDone(false), 1600);
   };
 
   return (
-    <>
-      {withQty && (
-        <div className="qty">
-          <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="أنقص">−</button>
-          <span className="tabular">{qty}</span>
-          <button type="button" onClick={() => setQty((q) => q + 1)} aria-label="زد">+</button>
-        </div>
-      )}
-      <button
-        type="button"
-        onClick={onAdd}
-        className={`btn ${done ? "added" : "btn-gold"} ${size === "sm" ? "btn-sm btn-block" : ""}`}
-      >
-        {done ? "أُضيف ✓" : label}
-      </button>
-    </>
+    <button type="button" onClick={onClick} className={`btn ${done ? "added" : "btn-gold"} btn-sm btn-block`}>
+      {done ? "أُضيف ✓" : hasVariants ? "اختر الخيار" : label}
+    </button>
   );
 }

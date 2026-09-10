@@ -24,6 +24,12 @@ export type Store = {
   tier: "free" | "paid" | "featured";
   sort_order: number; is_active: boolean;
   data_updated_at: string;
+  /* الإفصاح النظامي والتوصيل — أضيفت في المرحلة الثانية */
+  is_verified: boolean;
+  cr_number: string | null; vat_number: string | null; maroof_number: string | null;
+  returns_policy: string | null;
+  delivery_fee: string | number;
+  free_delivery_over: string | number | null;
 };
 
 export type Product = {
@@ -32,6 +38,11 @@ export type Product = {
   compare_price: string | number | null; image_path: string | null;
   unit: string | null; tags: string[]; in_stock: boolean;
   sort_order: number; is_active: boolean;
+  views?: number; variant_label?: string | null;
+  category_id?: number | null;
+  specs?: { k: string; v: string }[];
+  created_at?: string;
+  rating?: string | number | null; rating_count?: number;
 };
 
 export type ProductWithStore = Product & {

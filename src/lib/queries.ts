@@ -3,7 +3,9 @@ import type { Store, Wing } from "./types";
 
 const STORE_COLS = `id, slug, wing_id, name_ar, name_en, logo_path, summary_ar,
   dest_type, dest_value, whatsapp_text, address_line, district, city, map_url,
-  phone, hours, tags, tier, sort_order, is_active, data_updated_at`;
+  phone, hours, tags, tier, sort_order, is_active, data_updated_at,
+  is_verified, cr_number, vat_number, maroof_number, returns_policy,
+  delivery_fee, free_delivery_over`;
 
 /** ترتيب الظهور: المميّز أولاً ثم المدفوع ثم الترتيب اليدوي — هذا ما يُباع للتاجر */
 const storeOrder = (p = "") => `ORDER BY
@@ -66,12 +68,17 @@ export function searchStores(term: string): Promise<(Store & { wing_slug: string
 
 /* ── المنتجات ── */
 const P_COLS = `p.id, p.slug, p.store_id, p.name_ar, p.description_ar, p.price,
-  p.compare_price, p.image_path, p.unit, p.tags, p.in_stock, p.sort_order, p.is_active`;
+  p.compare_price, p.image_path, p.unit, p.tags, p.in_stock, p.sort_order, p.is_active,
+  p.specs, p.category_id`;
 const P_JOIN = `FROM products p
   JOIN stores s ON s.id = p.store_id AND s.is_active
   JOIN wings  w ON w.id = s.wing_id  AND w.is_active`;
-const P_SEL = `${P_COLS}, s.name_ar AS store_name, s.slug AS store_slug,
-  w.slug AS wing_slug, w.name_ar AS wing_name`;
+const P_RATING = `(SELECT round(avg(r.rating), 1) FROM reviews r
+    WHERE r.product_id = p.id AND r.status = 'published') AS rating,
+  (SELECT count(*)::int FROM reviews r
+    WHERE r.product_id = p.id AND r.status = 'published') AS rating_count`;
+const P_SEL = `${P_COLS}, p.views, p.variant_label, s.name_ar AS store_name, s.slug AS store_slug,
+  w.slug AS wing_slug, w.name_ar AS wing_name, ${P_RATING}`;
 /** المميّز يتقدّم — هذا ما تُباع به المساحة داخل المول */
 const P_ORDER = `ORDER BY CASE s.tier WHEN 'featured' THEN 0 WHEN 'paid' THEN 1 ELSE 2 END,
   p.sort_order, p.id`;

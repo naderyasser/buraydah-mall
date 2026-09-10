@@ -4,15 +4,26 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 export type CartItem = {
   productId: number; slug: string; name: string; price: number; unit: string | null;
   image: string | null; storeId: number; storeName: string; storeSlug: string; qty: number;
+  /** الخيار المختار (مقاس/لون/عيار) — المنتج بلا خيارات قيمته null */
+  variantId?: number | null; variantName?: string | null;
+};
+
+/** المفتاح منتج + خيار: نفس الفستان بمقاسين سطران مستقلان في السلة */
+export const keyOf = (i: { productId: number; variantId?: number | null }) =>
+  `${i.productId}:${i.variantId ?? 0}`;
+
+export type StoreGroup = {
+  storeId: number; storeName: string; storeSlug: string; items: CartItem[]; subtotal: number;
 };
 
 type Ctx = {
   items: CartItem[]; count: number; total: number; ready: boolean;
   add: (item: Omit<CartItem, "qty">, qty?: number) => void;
-  setQty: (productId: number, qty: number) => void;
-  remove: (productId: number) => void;
+  setQty: (key: string, qty: number) => void;
+  remove: (key: string) => void;
+  removeMany: (productIds: number[]) => void;
   clear: () => void;
-  byStore: () => { storeId: number; storeName: string; storeSlug: string; items: CartItem[]; subtotal: number }[];
+  byStore: () => StoreGroup[];
 };
 
 const KEY = "mall_cart_v1";
@@ -37,7 +48,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add: Ctx["add"] = useCallback((item, qty = 1) => {
     setItems((cur) => {
-      const i = cur.findIndex((x) => x.productId === item.productId);
+      const k = keyOf(item);
+      const i = cur.findIndex((x) => keyOf(x) === k);
       if (i === -1) return [...cur, { ...item, qty }];
       const next = [...cur];
       next[i] = { ...next[i], qty: next[i].qty + qty };
@@ -45,15 +57,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const setQty: Ctx["setQty"] = useCallback((productId, qty) => {
+  const setQty: Ctx["setQty"] = useCallback((key, qty) => {
     setItems((cur) =>
-      qty <= 0 ? cur.filter((x) => x.productId !== productId)
-               : cur.map((x) => (x.productId === productId ? { ...x, qty } : x))
+      qty <= 0 ? cur.filter((x) => keyOf(x) !== key)
+               : cur.map((x) => (keyOf(x) === key ? { ...x, qty } : x))
     );
   }, []);
 
   const remove: Ctx["remove"] = useCallback(
-    (productId) => setItems((cur) => cur.filter((x) => x.productId !== productId)), []);
+    (key) => setItems((cur) => cur.filter((x) => keyOf(x) !== key)), []);
+
+  /** يُستعمل حين يخبرنا الخادم أن منتجات لم تعد متاحة */
+  const removeMany: Ctx["removeMany"] = useCallback(
+    (ids) => setItems((cur) => cur.filter((x) => !ids.includes(x.productId))), []);
 
   const clear = useCallback(() => setItems([]), []);
 
@@ -61,9 +77,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const count = items.reduce((n, x) => n + x.qty, 0);
     const total = items.reduce((n, x) => n + x.qty * x.price, 0);
     return {
-      items, count, total, ready, add, setQty, remove, clear,
+      items, count, total, ready, add, setQty, remove, removeMany, clear,
       byStore: () => {
-        const map = new Map<number, { storeId: number; storeName: string; storeSlug: string; items: CartItem[]; subtotal: number }>();
+        const map = new Map<number, StoreGroup>();
         for (const it of items) {
           const g = map.get(it.storeId) ?? {
             storeId: it.storeId, storeName: it.storeName, storeSlug: it.storeSlug, items: [], subtotal: 0,
@@ -75,7 +91,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return [...map.values()];
       },
     };
-  }, [items, ready, add, setQty, remove, clear]);
+  }, [items, ready, add, setQty, remove, removeMany, clear]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

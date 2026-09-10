@@ -1,9 +1,17 @@
 import Link from "next/link";
 import AddToCart from "./AddToCart";
-import { sar } from "@/lib/money";
+import Stars from "./Stars";
+import Favorite from "./Favorite";
+import Price, { discountPct } from "./Price";
+import { agoAr } from "@/lib/time";
 import type { ProductWithStore } from "@/lib/types";
 
-export default function ProductCard({ p, showStore = true }: { p: ProductWithStore; showStore?: boolean }) {
+export default function ProductCard({
+  p, showStore = true,
+}: { p: ProductWithStore & Record<string, any>; showStore?: boolean }) {
+  const pct = discountPct(p.price, p.compare_price);
+  const fresh = p.created_at && Date.now() - new Date(p.created_at).getTime() < 14 * 864e5;
+
   return (
     <article className="pcard">
       <Link href={`/product/${p.slug}`} className="pcard-img">
@@ -11,21 +19,25 @@ export default function ProductCard({ p, showStore = true }: { p: ProductWithSto
           ? <img src={p.image_path} alt={p.name_ar} loading="lazy" />
           : <span />}
         {showStore && <span className="pcard-store">{p.store_name}</span>}
+        {pct != null && <span className="pcard-off tabular">−{pct}%</span>}
+        {!p.in_stock && <span className="pcard-out">نفد</span>}
       </Link>
+      <Favorite id={p.id} />
       <div className="pcard-body">
         <h3><Link href={`/product/${p.slug}`}>{p.name_ar}</Link></h3>
+        {p.rating ? <Stars value={p.rating} count={p.rating_count} /> : null}
         {p.description_ar && <p className="desc">{p.description_ar}</p>}
-        <div className="price">
-          <b>{sar(p.price)}</b>
-          <span className="cur">ر.س</span>
-          {p.unit && <span className="unit">{p.unit}</span>}
-        </div>
+        <Price price={p.price} compare={p.compare_price} unit={p.unit} />
+        {fresh && p.created_at && <span className="fresh">{agoAr(p.created_at)}</span>}
         <AddToCart
           item={{
             productId: p.id, slug: p.slug, name: p.name_ar, price: Number(p.price),
             unit: p.unit, image: p.image_path, storeId: p.store_id,
             storeName: p.store_name, storeSlug: p.store_slug,
+            variantId: null, variantName: null,
           }}
+          hasVariants={!!p.variant_label}
+          inStock={p.in_stock}
         />
       </div>
     </article>

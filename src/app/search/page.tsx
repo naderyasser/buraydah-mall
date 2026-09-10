@@ -1,69 +1,85 @@
 import Link from "next/link";
-import ProductCard from "@/components/ProductCard";
-import { searchProducts, searchStores } from "@/lib/queries";
+import BrowseView, { optsFromParams } from "@/components/BrowseView";
+import { searchStores } from "@/lib/queries";
+import { getTrendingSearches } from "@/lib/browse";
+import { logSearch } from "@/app/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "البحث" };
 
 const SUGGESTIONS = ["فساتين سهرة", "عيار 21", "قماش عباية", "ساعة", "حقيبة جلد", "طقم عيد"];
 
-export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const term = ((await searchParams).q ?? "").trim();
-  const wide = term === "الكل";
-  const [products, stores] = term.length >= 2
-    ? await Promise.all([searchProducts(wide ? "" : term), wide ? [] : searchStores(term)])
-    : [[], []];
+export default async function SearchPage({
+  searchParams,
+}: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams;
+  const raw = typeof sp.q === "string" ? sp.q.trim() : "";
+  const wide = raw === "الكل";
+  const term = wide ? "" : raw;
+
+  const qs = new URLSearchParams();
+  for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && v) qs.set(k, v);
+
+  const opts = optsFromParams(sp, {});
+  if (wide) opts.term = undefined;
+
+  const [stores, trending] = await Promise.all([
+    term.length >= 2 ? searchStores(term) : Promise.resolve([]),
+    getTrendingSearches(8),
+  ]);
 
   return (
     <div className="wrap">
       <nav className="crumbs"><Link href="/">الرئيسية</Link> ‹ البحث</nav>
-      <section className="section" style={{ paddingTop: 18 }}>
-        <h1 style={{ fontSize: "clamp(24px,4vw,34px)" }}>ابحث في المول</h1>
-        <p style={{ color: "var(--text-2)", marginTop: 8 }}>بالمنتج أو بالمحل أو بالسلعة نفسها.</p>
-        <form className="hero-search" action="/search" style={{ marginTop: 18 }}>
-          <input name="q" defaultValue={wide ? "" : term} placeholder="اكتب ما تبحث عنه" aria-label="بحث"
-            style={{ background: "var(--card)", color: "var(--text)", borderColor: "var(--line-2)" }} />
-          <button type="submit" style={{ background: "var(--chrome)", color: "var(--chrome-text)" }}>ابحث</button>
+
+      <section className="section" style={{ paddingTop: 18, paddingBottom: 10 }}>
+        <h1 style={{ fontSize: "clamp(24px,4vw,34px)" }}>
+          {raw ? <>نتائج «{raw}»</> : "ابحث في المول"}
+        </h1>
+        <form className="hero-search" action="/search" style={{ marginTop: 16 }}>
+          <input name="q" defaultValue={wide ? "" : term} placeholder="اكتب ما تبحث عنه" aria-label="بحث" />
+          <button type="submit">ابحث</button>
         </form>
+
         <div className="chips" style={{ marginTop: 14 }}>
-          {SUGGESTIONS.map((s) => (
+          {(trending.length ? trending.map((t) => t.term) : SUGGESTIONS).map((s) => (
             <Link className="chip" key={s} href={`/search?q=${encodeURIComponent(s)}`}>{s}</Link>
           ))}
         </div>
       </section>
 
-      {term.length >= 2 && (
-        <>
-          {stores.length > 0 && (
-            <section className="section">
-              <div className="section-head"><h2>محلات</h2><span className="tabular">{stores.length}</span></div>
-              <div className="wings-strip">
-                {stores.map((s: any) => (
-                  <Link key={s.id} href={`/store/${s.slug}`} className="wing-pill">
-                    <b>{s.name_ar}</b>
-                    {s.district && <i>حي {s.district}</i>}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-
-          <section className="section">
-            <div className="section-head">
-              <h2>{wide ? "كل المنتجات" : "منتجات"}</h2>
-              <span className="tabular">{products.length}</span>
-            </div>
-            {products.length === 0 ? (
-              <div className="empty">
-                <h3>لا توجد نتائج لـ «{term}»</h3>
-                <p>جرّب كلمة أعمّ، أو تصفّح الأجنحة من الرئيسية.</p>
-              </div>
-            ) : (
-              <div className="grid">{products.map((p: any) => <ProductCard p={p} key={p.id} />)}</div>
-            )}
-          </section>
-        </>
+      {stores.length > 0 && (
+        <section className="section" style={{ paddingBlock: 10 }}>
+          <div className="section-head"><h2>محلات</h2><span className="tabular">{stores.length}</span></div>
+          <div className="wings-strip">
+            {stores.map((s: any) => (
+              <Link key={s.id} href={`/store/${s.slug}`} className="wing-pill">
+                <b>{s.name_ar}</b>
+                {s.district && <i>حي {s.district}</i>}
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
+
+      <BrowseView
+        opts={opts}
+        params={qs}
+        action="/search"
+        empty={
+          <div className="empty">
+            <h3>لا توجد نتائج{raw && ` لـ «${raw}»`}</h3>
+            <p>جرّب كلمة أعمّ، أو تصفّح الأقسام من الرئيسية.</p>
+          </div>
+        }
+      />
+      {term.length >= 2 && <LogTerm term={term} />}
     </div>
   );
+}
+
+/** يُسجّل ما بحث عنه الناس — يكشف ما يطلبه أهل بريدة ولا نعرضه */
+async function LogTerm({ term }: { term: string }) {
+  await logSearch(term);
+  return null;
 }

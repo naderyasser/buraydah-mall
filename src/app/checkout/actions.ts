@@ -1,11 +1,14 @@
 "use server";
 import { q, q1, pool } from "@/db";
 
-type Line = { productId: number; qty: number };
+type Line = { productId: number; variantId?: number | null; qty: number };
+
+const money = (n: number) => Math.round(n * 100) / 100;
 
 /**
  * الأسعار تُعاد قراءتها من قاعدة البيانات ولا تُؤخذ من المتصفّح أبداً:
- * السلة تعيش في جهاز الزائر، فكل رقم قادم منها غير موثوق.
+ * السلة تعيش في جهاز الزائر، فكل رقم قادم منها غير موثوق — والخيار
+ * (المقاس/العيار) يُتحقّق من انتمائه للمنتج قبل أن يُسعّر.
  */
 export async function placeOrder(_prev: unknown, form: FormData) {
   const name = String(form.get("customer_name") ?? "").trim();
@@ -13,10 +16,13 @@ export async function placeOrder(_prev: unknown, form: FormData) {
   const fulfilment = String(form.get("fulfilment") ?? "pickup");
   const district = String(form.get("district") ?? "").trim() || null;
   const note = String(form.get("note") ?? "").trim() || null;
+  const couponCode = String(form.get("coupon") ?? "").trim().toUpperCase() || null;
 
   if (name.length < 2) return { ok: false as const, message: "اكتب اسمك." };
   if (!/^0?5\d{8}$/.test(phone.replace(/\s|-/g, "")))
     return { ok: false as const, message: "رقم الجوال غير صحيح — الصيغة 05xxxxxxxx." };
+  if (fulfilment === "delivery" && !district)
+    return { ok: false as const, message: "اكتب الحي ليصلك الطلب." };
 
   let lines: Line[] = [];
   try {
@@ -27,9 +33,15 @@ export async function placeOrder(_prev: unknown, form: FormData) {
   lines = lines.filter((l) => Number.isInteger(l.productId) && l.qty > 0 && l.qty <= 99);
   if (lines.length === 0) return { ok: false as const, message: "سلتك فارغة." };
 
-  const ids = lines.map((l) => l.productId);
-  const products = await q<{ id: number; store_id: number; name_ar: string; price: string }>(
-    `SELECT id, store_id, name_ar, price FROM products WHERE id = ANY($1) AND is_active AND in_stock`,
+  const ids = [...new Set(lines.map((l) => l.productId))];
+  const products = await q<{
+    id: number; store_id: number; name_ar: string; price: string;
+    delivery_fee: string; free_delivery_over: string | null; store_name: string;
+  }>(
+    `SELECT p.id, p.store_id, p.name_ar, p.price,
+            s.delivery_fee, s.free_delivery_over, s.name_ar AS store_name
+     FROM products p JOIN stores s ON s.id = p.store_id
+     WHERE p.id = ANY($1) AND p.is_active AND p.in_stock AND s.is_active`,
     [ids]
   );
 
@@ -52,43 +64,104 @@ export async function placeOrder(_prev: unknown, form: FormData) {
     };
   }
 
-  const priced = lines.map((l) => {
-    const p = products.find((x) => x.id === l.productId)!;
-    return { ...l, store_id: p.store_id, name_ar: p.name_ar, price: Number(p.price) };
-  });
+  const variantIds = lines.map((l) => l.variantId).filter((v): v is number => Number.isInteger(v as number));
+  const variants = variantIds.length
+    ? await q<{ id: number; product_id: number; name_ar: string; extra_price: string; in_stock: boolean }>(
+        `SELECT id, product_id, name_ar, extra_price, in_stock FROM product_variants WHERE id = ANY($1)`,
+        [variantIds]
+      )
+    : [];
 
-  const total = priced.reduce((n, l) => n + l.price * l.qty, 0);
+  const priced: (Line & { store_id: number; name_ar: string; price: number; variant_name: string | null })[] = [];
+  for (const l of lines) {
+    const p = products.find((x) => x.id === l.productId)!;
+    let extra = 0;
+    let vname: string | null = null;
+    if (l.variantId) {
+      const v = variants.find((x) => x.id === l.variantId && x.product_id === l.productId);
+      if (!v || !v.in_stock) {
+        return { ok: false as const, message: `الخيار المختار من «${p.name_ar}» لم يعد متوفّراً. راجع سلتك.` };
+      }
+      extra = Number(v.extra_price);
+      vname = v.name_ar;
+    }
+    priced.push({ ...l, store_id: p.store_id, name_ar: p.name_ar, price: money(Number(p.price) + extra), variant_name: vname });
+  }
+
+  const subtotal = money(priced.reduce((n, l) => n + l.price * l.qty, 0));
   const itemsCount = priced.reduce((n, l) => n + l.qty, 0);
-  const storesCount = new Set(priced.map((l) => l.store_id)).size;
+  const storeIds = [...new Set(priced.map((l) => l.store_id))];
+
+  /* الخصم يُحسب على الخادم مهما أظهرت الواجهة — الرقم القادم منها غير موثوق */
+  let discount = 0;
+  let coupon: any = null;
+  if (couponCode) {
+    coupon = await q1<any>(
+      `SELECT * FROM coupons WHERE upper(code) = $1 AND is_active
+         AND (expires_on IS NULL OR expires_on >= current_date)
+         AND (max_uses IS NULL OR used_count < max_uses)`,
+      [couponCode]
+    );
+    if (coupon) {
+      const base = coupon.store_id
+        ? money(priced.filter((l) => l.store_id === coupon.store_id).reduce((n, l) => n + l.price * l.qty, 0))
+        : subtotal;
+      if (base >= Number(coupon.min_total)) {
+        discount = coupon.kind === "percent" ? money((base * Number(coupon.value)) / 100)
+                                             : Math.min(Number(coupon.value), base);
+      } else {
+        coupon = null;
+      }
+    }
+  }
+
+  /* التوصيل برسم كل محل، ويسقط عن المحل الذي بلغت سلّته حدّ التوصيل المجاني */
+  let deliveryFee = 0;
+  if (fulfilment === "delivery") {
+    for (const sid of storeIds) {
+      const s = products.find((p) => p.store_id === sid)!;
+      const sub = priced.filter((l) => l.store_id === sid).reduce((n, l) => n + l.price * l.qty, 0);
+      const freeOver = s.free_delivery_over == null ? null : Number(s.free_delivery_over);
+      if (freeOver != null && sub >= freeOver) continue;
+      deliveryFee += Number(s.delivery_fee);
+    }
+    deliveryFee = money(deliveryFee);
+  }
+
+  const total = money(subtotal - discount + deliveryFee);
 
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    // جملتان لا CTE واحد: في PostgreSQL لا ترى جملة UPDATE الصفَّ الذي
-    // أدرجه CTE في نفس العبارة، فيعود RETURNING فارغاً.
     // الرقم المعروض متسلسل، أما رابط التأكيد فبرمز عشوائي: الرابط المتسلسل
     // كان يُخمَّن بالعدّ فيكشف اسم كل عميل وجواله.
     const ins = await client.query(
       `INSERT INTO orders (code, token, customer_name, phone, district, fulfilment, note,
-                           total, items_count, stores_count)
+                           subtotal, discount, delivery_fee, total, items_count, stores_count,
+                           coupon_code, pickup_code)
        VALUES ('tmp-' || gen_random_uuid(), replace(gen_random_uuid()::text,'-',''),
-               $1,$2,$3,$4,$5,$6,$7,$8)
+               $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,
+               lpad((1000 + (random()*8999)::int)::text, 4, '0'))
        RETURNING id`,
-      [name, phone, district, fulfilment, note, total, itemsCount, storesCount]
+      [name, phone, district, fulfilment, note, subtotal, discount, deliveryFee, total,
+       itemsCount, storeIds.length, coupon?.code ?? null]
     );
     const orderId = ins.rows[0].id as number;
     const upd = await client.query(
-      `UPDATE orders SET code = $1 WHERE id = $2 RETURNING id, code, token`,
+      `UPDATE orders SET code = $1 WHERE id = $2 RETURNING id, code, token, pickup_code`,
       [`BRD-${1000 + orderId}`, orderId]
     );
-    const order = upd.rows[0] as { id: number; code: string; token: string };
+    const order = upd.rows[0] as { id: number; code: string; token: string; pickup_code: string };
 
     for (const l of priced) {
       await client.query(
-        `INSERT INTO order_items (order_id, store_id, product_id, name_ar, price, qty)
-         VALUES ($1,$2,$3,$4,$5,$6)`,
-        [order.id, l.store_id, l.productId, l.name_ar, l.price, l.qty]
+        `INSERT INTO order_items (order_id, store_id, product_id, name_ar, price, qty, variant_id, variant_name)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+        [order.id, l.store_id, l.productId, l.name_ar, l.price, l.qty, l.variantId ?? null, l.variant_name]
       );
+    }
+    if (coupon) {
+      await client.query(`UPDATE coupons SET used_count = used_count + 1 WHERE id = $1`, [coupon.id]);
     }
     await client.query("COMMIT");
     return { ok: true as const, code: order.code, token: order.token, message: "تم" };

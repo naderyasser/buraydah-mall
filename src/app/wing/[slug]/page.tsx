@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import ProductCard from "@/components/ProductCard";
 import BrandTile from "@/components/BrandTile";
-import { getWing, getWings, getProductsByWing, getBrands } from "@/lib/queries";
+import BrowseView, { optsFromParams } from "@/components/BrowseView";
+import { getWing, getWings, getBrands } from "@/lib/queries";
+import { getCategories } from "@/lib/browse";
 
-export const revalidate = 300;
-
-export async function generateStaticParams() {
-  return (await getWings()).map((w) => ({ slug: w.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const wing = await getWing((await params).slug);
@@ -20,46 +17,54 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function WingPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function WingPage({
+  params, searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { slug } = await params;
+  const sp = await searchParams;
   const wing = await getWing(slug);
   if (!wing) notFound();
-  const [products, brands] = await Promise.all([getProductsByWing(slug), getBrands(slug)]);
+
+  const [brands, cats] = await Promise.all([getBrands(slug), getCategories(slug)]);
+  const opts = optsFromParams(sp, { wing: slug });
+
+  const qs = new URLSearchParams();
+  for (const [k, v] of Object.entries(sp)) if (typeof v === "string" && v) qs.set(k, v);
 
   return (
     <div className="wrap">
       <nav className="crumbs"><Link href="/">الرئيسية</Link> ‹ {wing.name_ar}</nav>
 
-      <section className="section" style={{ paddingTop: 20 }}>
+      <section className="section" style={{ paddingTop: 20, paddingBottom: 0 }}>
         <h1 style={{ fontSize: "clamp(26px,4.2vw,38px)" }}>{wing.name_ar}</h1>
-        {wing.tagline && <p style={{ color: "var(--text-2)", maxWidth: "56ch", marginTop: 10 }}>{wing.tagline}</p>}
-
+        {wing.tagline && <p style={{ color: "var(--mut)", maxWidth: "56ch", marginTop: 10 }}>{wing.tagline}</p>}
       </section>
 
-      <section className="section" style={{ paddingTop: 26 }}>
+      {cats.length > 0 && (
+        <div className="shortcuts">
+          {cats.map((c: any) => (
+            <Link key={c.slug} href={`/wing/${slug}?cat=${c.slug}`}
+                  className={qs.get("cat") === c.slug ? "on" : ""}>
+              {c.name_ar} <span className="tabular">{c.n}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <section className="section" style={{ paddingTop: 22 }}>
         <div className="section-head">
           <h2>ماركات القسم</h2>
           <span className="tabular">{brands.length}</span>
         </div>
         <div className="brand-wall">
-          {brands.map((b) => <BrandTile b={b} key={b.id} />)}
+          {brands.map((b: any) => <BrandTile b={b} key={b.id} />)}
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <h2>المنتجات</h2>
-          <span className="tabular">{products.length} منتجاً</span>
-        </div>
-        {products.length === 0 ? (
-          <div className="empty">
-            <h3>لا توجد منتجات في هذا الجناح بعد</h3>
-            <p>المحلات مضافة، ومنتجاتها تُدخَل تباعاً.</p>
-          </div>
-        ) : (
-          <div className="grid">{products.map((p) => <ProductCard p={p} key={p.id} />)}</div>
-        )}
-      </section>
+      <BrowseView opts={opts} params={qs} action={`/wing/${slug}`} />
     </div>
   );
 }
