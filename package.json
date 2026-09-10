@@ -1,0 +1,26 @@
+{
+  "name": "buraydah-mall",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3050",
+    "build": "next build",
+    "start": "next start -p 3050",
+    "db:schema": "psql \"$DATABASE_URL\" -f src/db/schema.sql",
+    "db:seed": "node --experimental-strip-types src/db/seed.ts"
+  },
+  "dependencies": {
+    "next": "15.5.4",
+    "pg": "^8.16.3",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "playwright-core": "^1.63.0",
+    "typescript": "^5.9.2"
+  }
+}

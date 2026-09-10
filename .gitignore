@@ -1,0 +1,7 @@
+node_modules/
+.next/
+.env.local
+.tmp-e2e/
+public/logos/*
+public/products/*
+!public/logos/.gitkeep
