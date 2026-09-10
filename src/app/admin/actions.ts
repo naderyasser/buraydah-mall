@@ -6,12 +6,15 @@ import path from "node:path";
 import { q, q1 } from "@/db";
 import { checkCredentials, setSession, clearSession, isLoggedIn } from "@/lib/auth";
 import { hashPassword } from "@/lib/merchant-auth";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 async function guard() {
   if (!(await isLoggedIn())) redirect("/admin/login");
 }
 
 export async function login(_prev: unknown, form: FormData) {
+  if (await tooMany("adminlogin", RATE.login.limit, RATE.login.windowMs))
+    return { ok: false, message: RATE.login.msg };
   const u = String(form.get("username") ?? "");
   const p = String(form.get("password") ?? "");
   if (!checkCredentials(u, p)) return { ok: false, message: "اسم المستخدم أو كلمة المرور غير صحيحة." };

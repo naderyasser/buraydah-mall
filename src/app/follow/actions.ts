@@ -1,11 +1,14 @@
 "use server";
 import { q } from "@/db";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 /**
  * متابعة محل أو كلمة بحث: تحوّل زائراً عابراً إلى قائمة تُبلَّغ عند الجديد.
  * بلا حساب — الجوال وحده، كما يتعامل السوق المحلي.
  */
 export async function followStore(_prev: unknown, form: FormData) {
+  if (await tooMany("follow", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false, message: RATE.form.msg };
   const store_id = Number(form.get("store_id"));
   const phone = String(form.get("phone") ?? "").trim();
   if (!store_id) return { ok: false, message: "محل غير معروف." };
@@ -21,6 +24,8 @@ export async function followStore(_prev: unknown, form: FormData) {
 }
 
 export async function followTerm(_prev: unknown, form: FormData) {
+  if (await tooMany("follow", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false, message: RATE.form.msg };
   const term = String(form.get("term") ?? "").trim().slice(0, 80);
   const phone = String(form.get("phone") ?? "").trim();
   if (term.length < 2) return { ok: false, message: "اكتب كلمة البحث." };

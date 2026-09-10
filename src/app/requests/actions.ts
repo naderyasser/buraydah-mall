@@ -2,12 +2,15 @@
 import { revalidatePath } from "next/cache";
 import { q, q1 } from "@/db";
 import { scrubContact } from "@/lib/sanitize";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 /**
  * طلب شراء معاكس: الزبون ينشر ما يريده والمحلات تعرض عليه.
  * أنسب ما يكون لسوق محلي: يكشف الطلب على بضاعة لا نملكها بعد.
  */
 export async function postBuyRequest(_prev: unknown, form: FormData) {
+  if (await tooMany("buyreq", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false as const, message: RATE.form.msg };
   const title = String(form.get("title") ?? "").trim();
   const body = String(form.get("body") ?? "").trim() || null;
   const name = String(form.get("customer_name") ?? "").trim();

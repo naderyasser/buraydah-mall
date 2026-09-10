@@ -1,5 +1,6 @@
 "use server";
 import { q, q1, pool } from "@/db";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 type Line = { productId: number; variantId?: number | null; qty: number };
 
@@ -11,6 +12,9 @@ const money = (n: number) => Math.round(n * 100) / 100;
  * (المقاس/العيار) يُتحقّق من انتمائه للمنتج قبل أن يُسعّر.
  */
 export async function placeOrder(_prev: unknown, form: FormData) {
+  if (await tooMany("order", RATE.order.limit, RATE.order.windowMs))
+    return { ok: false as const, message: RATE.order.msg };
+
   const name = String(form.get("customer_name") ?? "").trim();
   const phone = String(form.get("phone") ?? "").trim();
   const fulfilment = String(form.get("fulfilment") ?? "pickup");

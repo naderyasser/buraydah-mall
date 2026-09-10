@@ -5,6 +5,7 @@ import { q, q1 } from "@/db";
 import {
   currentStoreId, setMerchantSession, clearMerchantSession, verifyPassword,
 } from "@/lib/merchant-auth";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 async function guard(): Promise<number> {
   const id = await currentStoreId();
@@ -13,6 +14,8 @@ async function guard(): Promise<number> {
 }
 
 export async function merchantLogin(_prev: unknown, form: FormData) {
+  if (await tooMany("merchantlogin", RATE.login.limit, RATE.login.windowMs))
+    return { ok: false, message: RATE.login.msg };
   const username = String(form.get("username") ?? "").trim();
   const password = String(form.get("password") ?? "");
   const m = await q1<any>(

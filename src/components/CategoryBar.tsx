@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { getWings } from "@/lib/queries";
+import type { Wing } from "@/lib/types";
 
-/** شريط الأقسام تحت الترويسة — أسرع طريق للقسم من أي صفحة */
-export default async function CategoryBar() {
-  const wings = await getWings();
+/**
+ * شريط الأقسام تحت الترويسة — أسرع طريق للقسم من أي صفحة.
+ * الأقسام تُمرَّر من التخطيط: استعلام واحد لا اثنان في كل صفحة.
+ */
+export default function CategoryBar({ wings }: { wings: Wing[] }) {
   return (
     <nav className="catbar" aria-label="أقسام المول">
       <div className="wrap">

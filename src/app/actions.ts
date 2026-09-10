@@ -2,8 +2,11 @@
 import { revalidatePath } from "next/cache";
 import { q, q1 } from "@/db";
 import { scrubContact } from "@/lib/sanitize";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 export async function submitJoinRequest(_prev: unknown, form: FormData) {
+  if (await tooMany("join", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false, message: RATE.form.msg };
   const store_name = String(form.get("store_name") ?? "").trim();
   const phone = String(form.get("phone") ?? "").trim();
   if (store_name.length < 2 || phone.length < 8) {
@@ -24,6 +27,8 @@ export async function submitJoinRequest(_prev: unknown, form: FormData) {
 }
 
 export async function submitErrorReport(_prev: unknown, form: FormData) {
+  if (await tooMany("report", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false, message: RATE.form.msg };
   const store_id = Number(form.get("store_id"));
   const note = String(form.get("note") ?? "").trim();
   if (!store_id || note.length < 3) {
@@ -61,6 +66,8 @@ export async function bumpViews(productId: number) {
  * السوق المحلي الصغير لا يحتمل تصفية حسابات بالنجوم.
  */
 export async function submitReview(_prev: unknown, form: FormData) {
+  if (await tooMany("review", RATE.review.limit, RATE.review.windowMs))
+    return { ok: false, message: RATE.review.msg };
   const product_id = Number(form.get("product_id")) || null;
   const store_id = Number(form.get("store_id"));
   const rating = Number(form.get("rating"));
@@ -102,6 +109,8 @@ export async function submitReview(_prev: unknown, form: FormData) {
 
 /** «أعلمني عند التوفّر» — قائمة انتظار تكشف الطلب الحقيقي على منتج نفد */
 export async function notifyWhenBack(_prev: unknown, form: FormData) {
+  if (await tooMany("alert", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false, message: RATE.form.msg };
   const product_id = Number(form.get("product_id"));
   const phone = String(form.get("phone") ?? "").trim();
   if (!product_id) return { ok: false, message: "منتج غير معروف." };
@@ -118,6 +127,8 @@ export async function notifyWhenBack(_prev: unknown, form: FormData) {
 
 /** سؤال عام على المنتج يجيب عنه المحل — يصنع محتوى ويكشف البطيء */
 export async function askQuestion(_prev: unknown, form: FormData) {
+  if (await tooMany("question", RATE.form.limit, RATE.form.windowMs))
+    return { ok: false, message: RATE.form.msg };
   const product_id = Number(form.get("product_id"));
   const store_id = Number(form.get("store_id"));
   const body = String(form.get("body") ?? "").trim();

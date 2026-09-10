@@ -7,12 +7,27 @@ import CategoryBar from "@/components/CategoryBar";
 import CartBar from "@/components/CartBar";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
+
+const DESCRIPTION =
+  "منتجات محلات بريدة: ذهب وساعات وحقائب وأقمشة وفساتين. اطلب من أكثر من محل في طلب واحد، والاستلام من المحل أو التوصيل داخل بريدة.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "مول بريدة — تسوّق من محلات بريدة في سلة واحدة", template: "%s — مول بريدة" },
-  description:
-    "منتجات محلات بريدة: ذهب وساعات وحقائب وأقمشة وفساتين. اطلب من أكثر من محل في طلب واحد، والاستلام من المحل أو التوصيل داخل بريدة.",
+  description: DESCRIPTION,
+  applicationName: SITE_NAME,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website", locale: "ar_SA", siteName: SITE_NAME,
+    title: "مول بريدة — تسوّق من محلات بريدة في سلة واحدة",
+    description: DESCRIPTION, url: SITE_URL,
+  },
+  twitter: { card: "summary_large_image", title: SITE_NAME, description: DESCRIPTION },
+  robots: { index: true, follow: true },
 };
+
+export const viewport = { themeColor: "#0B7A4B" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const demo = process.env.NEXT_PUBLIC_DEMO_BANNER === "1";
@@ -39,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             التوصيل داخل بريدة · الدفع عند الاستلام بدون رسوم · استرجاع خلال ٧ أيام
           </div>
           <Header />
-          <CategoryBar />
+          <CategoryBar wings={wings} />
           <main>{children}</main>
           <footer className="site-foot">
             <div className="wrap">

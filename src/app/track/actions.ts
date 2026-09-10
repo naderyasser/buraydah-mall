@@ -1,11 +1,15 @@
 "use server";
 import { q, q1 } from "@/db";
+import { tooMany, RATE } from "@/lib/ratelimit";
 
 /**
  * التتبّع يطلب رقم الطلب **ورقم الجوال** معاً: أحدهما وحده يفتح بيانات
  * غيرك، وهذا بالضبط ما أُغلق في رابط التأكيد.
  */
 export async function trackOrder(_prev: unknown, form: FormData) {
+  // الرقم والجوال معاً يحميان البيانات، والحدّ يمنع التخمين بالتكرار
+  if (await tooMany("track", RATE.login.limit, RATE.login.windowMs))
+    return { ok: false as const, message: RATE.login.msg };
   const code = String(form.get("code") ?? "").trim().toUpperCase();
   const phone = String(form.get("phone") ?? "").trim().replace(/\s|-/g, "");
   if (!code) return { ok: false as const, message: "اكتب رقم الطلب (مثال: BRD-1003)." };
