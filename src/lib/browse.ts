@@ -19,13 +19,17 @@ export type BrowseOpts = {
   max?: number;
   onSale?: boolean;
   inStock?: boolean;
+  minRating?: number;
+  verified?: boolean;
   sort?: SortKey;
   page?: number;
   perPage?: number;
 };
 
 const ORDER_BY: Record<SortKey, string> = {
-  featured: `CASE s.tier WHEN 'featured' THEN 0 WHEN 'paid' THEN 1 ELSE 2 END, p.sort_order, p.id`,
+  featured: `CASE WHEN s.tier = 'featured' THEN 0
+                  WHEN s.merit_pinned THEN 1
+                  WHEN s.tier = 'paid' THEN 2 ELSE 3 END, p.sort_order, p.id`,
   newest: `p.created_at DESC, p.id DESC`,
   price_asc: `p.price ASC, p.id`,
   price_desc: `p.price DESC, p.id`,
@@ -46,6 +50,11 @@ function where(o: BrowseOpts) {
   if (o.max != null) cond.push(`p.price <= ${p(o.max)}`);
   if (o.inStock) cond.push("p.in_stock");
   if (o.onSale) cond.push("p.compare_price IS NOT NULL AND p.compare_price > p.price");
+  if (o.verified) cond.push("s.is_verified");
+  if (o.minRating) {
+    cond.push(`(SELECT avg(r.rating) FROM reviews r
+                WHERE r.store_id = s.id AND r.status = 'published') >= ${p(o.minRating)}`);
+  }
 
   const term = o.term?.trim();
   if (term) {

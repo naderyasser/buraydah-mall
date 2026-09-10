@@ -12,7 +12,10 @@ import StockAlert from "@/components/StockAlert";
 import ViewCounter from "@/components/ViewCounter";
 import RememberSeen from "@/components/RememberSeen";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import TrustRow from "@/components/TrustRow";
 import { discountPct } from "@/components/Price";
+import { buildDestUrl } from "@/lib/destinations";
+import { readyPromise, holdNote } from "@/lib/promise";
 import { getProduct, getRelatedProducts } from "@/lib/queries";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
@@ -24,8 +27,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const p = await getProduct((await params).slug);
   if (!p) return {};
   return {
-    title: `${p.name_ar} — ${p.store_name}`,
-    description: p.description_ar ?? `${p.name_ar} من ${p.store_name} في بريدة، بسعر ${sar(p.price)} ر.س.`,
+    title: `${p.name_ar} — ${p.store_name} أونلاين في بريدة`,
+    description:
+      (p.description_ar ? p.description_ar + " " : "") +
+      `${p.name_ar} من ${p.store_name} في بريدة بسعر ${sar(p.price)} ر.س شامل الضريبة — الدفع عند الاستلام.`,
     alternates: { canonical: `${SITE_URL}/product/${p.slug}` },
     openGraph: {
       title: `${p.name_ar} — ${p.store_name}`,
@@ -54,14 +59,22 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
        WHERE product_id = $1 AND status = 'published' ORDER BY created_at DESC LIMIT 20`, [p.id]
     ),
     q<any>(
-      `SELECT id, name_ar, slug, district, phone, is_verified, returns_policy,
-              delivery_fee, free_delivery_over, cr_number, vat_number, maroof_number
+      `SELECT id, name_ar, slug, district, phone, hours, is_verified, returns_policy,
+              delivery_fee, free_delivery_over, cr_number, vat_number, maroof_number,
+              ready_minutes, hold_days, dest_type, dest_value, whatsapp_text, badge_year
        FROM stores WHERE id = $1`, [p.store_id]
     ).then((r) => r[0]),
   ]);
 
   const gallery = [p.image_path, ...images.map((i) => i.path)].filter(Boolean) as string[];
   const pct = discountPct(p.price, p.compare_price);
+
+  // واتساب المحل من صفحة المنتج: ما لا يقدّمه جرير ولا نون، وهو أقرب ما
+  // يتعامل به سوق بريدة — والسؤال قبل الشراء يقصّر طريق البيع.
+  const waText = `السلام عليكم، أستفسر عن «${p.name_ar}» المعروض في مول بريدة.`;
+  const waUrl = store?.phone
+    ? `https://wa.me/${String(store.phone).replace(/[^0-9]/g, "").replace(/^0/, "966")}?text=${encodeURIComponent(waText)}`
+    : store ? buildDestUrl(store as any) : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -139,6 +152,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <StockAlert productId={p.id} />
           )}
 
+          <TrustRow />
+
+          {waUrl && (
+            <a className="btn btn-palm btn-block" href={waUrl} target="_blank" rel="noopener nofollow">
+              اسأل المحل عبر واتساب قبل الطلب
+            </a>
+          )}
+
           {p.description_ar && <p className="desc">{p.description_ar}</p>}
 
           {p.tags?.length > 0 && (
@@ -157,6 +178,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           )}
 
           <ul className="assurances">
+            {p.warranty && <li><b>{p.warranty}</b></li>}
+            <li>{readyPromise(store?.hours, store?.ready_minutes ?? 60)} {holdNote(store?.hold_days ?? 3)}</li>
             <li>الدفع عند الاستلام — لا دفع إلكتروني داخل المول.</li>
             <li>
               {store?.free_delivery_over

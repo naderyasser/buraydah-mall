@@ -57,6 +57,24 @@ export async function merchantSetItemStatus(form: FormData) {
   revalidatePath("/merchant");
 }
 
+/** عرض المحل على طلب شراء — يصل الزبون بالجوال، والرقم لا يُنشر في الصفحة */
+export async function merchantMakeOffer(form: FormData) {
+  const storeId = await guard();
+  const requestId = Number(form.get("request_id"));
+  const priceRaw = String(form.get("price") ?? "").trim();
+  const note = String(form.get("note") ?? "").trim();
+  if (!requestId) return;
+  const { scrubContact } = await import("@/lib/sanitize");
+  await q(
+    `INSERT INTO buy_offers (request_id, store_id, price, note) VALUES ($1,$2,$3,$4)
+     ON CONFLICT (request_id, store_id)
+     DO UPDATE SET price = $3, note = $4, created_at = now()`,
+    [requestId, storeId, priceRaw ? Number(priceRaw) : null, note ? scrubContact(note).text : null]
+  );
+  revalidatePath("/merchant/requests");
+  revalidatePath("/requests");
+}
+
 export async function merchantToggleProduct(form: FormData) {
   const storeId = await guard();
   await q(`UPDATE products SET is_active = NOT is_active WHERE id = $1 AND store_id = $2`,

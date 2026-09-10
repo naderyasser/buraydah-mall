@@ -16,7 +16,8 @@ export default function Filters({
 }: { facets: Facets; params: URLSearchParams; action: string }) {
   const val = (k: string) => params.get(k) ?? "";
   const has = (k: string) => params.get(k) === "1";
-  const active = ["cat", "store", "district", "min", "max", "stock", "sale"].some((k) => params.get(k));
+  const active = ["cat", "store", "district", "min", "max", "stock", "sale", "rating", "verified"]
+    .some((k) => params.get(k));
 
   return (
     <form className="filters" action={action}>
@@ -75,9 +76,23 @@ export default function Filters({
         </div>
       </div>
 
+      <label className="fgroup">
+        <span>التقييم</span>
+        <select name="rating" defaultValue={val("rating")}>
+          <option value="">كل التقييمات</option>
+          <option value="4">★ ٤ فأعلى</option>
+          <option value="3">★ ٣ فأعلى</option>
+        </select>
+      </label>
+
       <label className="fcheck">
         <input type="checkbox" name="stock" value="1" defaultChecked={has("stock")} />
         <span>المتوفّر الآن فقط</span>
+      </label>
+
+      <label className="fcheck">
+        <input type="checkbox" name="verified" value="1" defaultChecked={has("verified")} />
+        <span>محلات موثّقة فقط</span>
       </label>
 
       {facets.bounds.on_sale > 0 && (

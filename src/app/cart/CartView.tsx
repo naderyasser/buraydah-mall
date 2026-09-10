@@ -1,10 +1,25 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useCart, keyOf } from "@/lib/cart";
 import { sar } from "@/lib/money";
+import FreeDeliveryBar from "@/components/FreeDeliveryBar";
+import { deliveryInfo } from "./actions";
 
 export default function CartView() {
   const { items, total, count, setQty, remove, byStore, ready } = useCart();
+  const [delivery, setDelivery] = useState<Record<number, { fee: number; freeOver: number | null }>>({});
+
+  const storeKey = items.map((i) => i.storeId).sort().join(",");
+  useEffect(() => {
+    const ids = [...new Set(items.map((i) => i.storeId))];
+    if (!ids.length) return;
+    deliveryInfo(ids)
+      .then((rows) => setDelivery(Object.fromEntries(rows.map((r) => [
+        r.id, { fee: Number(r.delivery_fee), freeOver: r.free_delivery_over == null ? null : Number(r.free_delivery_over) },
+      ]))))
+      .catch(() => {});
+  }, [storeKey]);
 
   if (!ready) return <div className="wrap" style={{ padding: "48px 0" }} />;
 
@@ -38,6 +53,14 @@ export default function CartView() {
                 <Link href={`/store/${g.storeSlug}`}>{g.storeName}</Link>
                 <span className="badge gold tabular">{sar(g.subtotal)} ر.س</span>
               </header>
+              {delivery[g.storeId] && (
+                <FreeDeliveryBar
+                  subtotal={g.subtotal}
+                  freeOver={delivery[g.storeId].freeOver}
+                  fee={delivery[g.storeId].fee}
+                  storeName={g.storeName}
+                />
+              )}
               {g.items.map((it) => (
                 <div className="cart-line" key={keyOf(it)}>
                   {it.image ? <img src={it.image} alt={it.name} />

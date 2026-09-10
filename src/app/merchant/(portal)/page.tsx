@@ -24,7 +24,12 @@ export default async function MerchantHome() {
         (SELECT count(*) FROM clicks WHERE store_id = $1
            AND created_at > now() - interval '30 days')::int                         AS clicks,
         (SELECT round(avg(rating),1) FROM reviews WHERE store_id = $1 AND status='published') AS rating,
-        (SELECT count(*) FROM questions WHERE store_id = $1 AND answer IS NULL)::int AS q_open`,
+        (SELECT count(*) FROM questions WHERE store_id = $1 AND answer IS NULL)::int AS q_open,
+        (SELECT count(*) FROM buy_requests r WHERE r.status = 'open' AND r.expires_on >= current_date
+           AND (r.wing_id IS NULL OR r.wing_id = (SELECT wing_id FROM stores WHERE id = $1))
+           AND NOT EXISTS (SELECT 1 FROM buy_offers o WHERE o.request_id = r.id AND o.store_id = $1)
+        )::int AS open_requests,
+        (SELECT max(data_updated_at) FROM stores WHERE id = $1)                      AS data_updated`,
       [store.id]
     ),
     q<any>(
@@ -63,6 +68,20 @@ export default async function MerchantHome() {
         <div className="stat"><dt>مشاهدات منتجاتك</dt><dd>{t.views}</dd></div>
         <div className="stat"><dt>تقييمك</dt><dd>{t.rating ?? "—"}<small> من ٥</small></dd></div>
       </dl>
+
+      {t.open_requests > 0 && (
+        <p className="ok-note">
+          {t.open_requests} طلب شراء مفتوح في قسمك بلا عرض منك —{" "}
+          <Link href="/merchant/requests">اعرض عليها</Link>؛ الزبون هنا يبحث عن بضاعتك بنفسه.
+        </p>
+      )}
+
+      {t.data_updated && Date.now() - new Date(t.data_updated).getTime() > 14 * 864e5 && (
+        <p className="ok-note" style={{ background: "var(--gold-soft)", color: "#8A5A12" }}>
+          لم تُحدَّث بيانات محلك منذ أكثر من أسبوعين — الكتالوج القديم أكثر ما يقتل
+          الثقة. <Link href="/merchant/settings">راجع بياناتك</Link>.
+        </p>
+      )}
 
       {t.q_open > 0 && (
         <p className="ok-note">

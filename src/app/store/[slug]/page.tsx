@@ -5,7 +5,9 @@ import OpenNow from "@/components/OpenNow";
 import HoursTable from "@/components/HoursTable";
 import ProductCard from "@/components/ProductCard";
 import ReviewsBlock from "@/components/ReviewsBlock";
+import FollowStore from "@/components/FollowStore";
 import Stars from "@/components/Stars";
+import { readyPromise, holdNote } from "@/lib/promise";
 import { getStore, getProductsByStore } from "@/lib/queries";
 import { q, q1 } from "@/db";
 import { DEST_META, buildDestUrl } from "@/lib/destinations";
@@ -76,6 +78,11 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           <h1>
             {store.name_ar}
             {store.is_verified && <span className="badge verified" style={{ marginInlineStart: 10 }}>موثّق ✓</span>}
+            {store.badge_year && (
+              <span className="badge gold" style={{ marginInlineStart: 8 }}>
+                تاجر مميّز {store.badge_year}
+              </span>
+            )}
           </h1>
           {store.summary_ar && <p style={{ color: "var(--text-2)", margin: "8px 0 0", maxWidth: "58ch" }}>{store.summary_ar}</p>}
           <div className="store-facts">
@@ -88,6 +95,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           <div className="buy-row" style={{ marginTop: 14 }}>
             <a className="btn btn-dark btn-sm" href={`/go/${store.slug}`} rel="nofollow sponsored">{meta.button}</a>
             {mapUrl && <a className="btn btn-line btn-sm" href={mapUrl} target="_blank" rel="noopener nofollow">خذني إليه</a>}
+            <FollowStore storeId={store.id} storeName={store.name_ar} />
           </div>
         </div>
       </section>
@@ -136,6 +144,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           <dl className="hours-list">
             <div className="kv">
               <dt>الاستلام من المحل</dt><dd>مجاناً في الدوام</dd>
+            </div>
+            <div className="kv">
+              <dt>وعد الجاهزية</dt>
+              <dd>{readyPromise(store.hours, (store as any).ready_minutes ?? 60)}</dd>
+            </div>
+            <div className="kv">
+              <dt>مدّة الحجز</dt><dd>{holdNote((store as any).hold_days ?? 3)}</dd>
             </div>
             <div className="kv">
               <dt>التوصيل داخل بريدة</dt>

@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { q, q1 } from "@/db";
+import { scrubContact } from "@/lib/sanitize";
 
 export async function submitJoinRequest(_prev: unknown, form: FormData) {
   const store_name = String(form.get("store_name") ?? "").trim();
@@ -89,10 +90,11 @@ export async function submitReview(_prev: unknown, form: FormData) {
   );
   if (dup) return { ok: false, message: "سبق أن قيّمت هذا المحل — تقييمك محفوظ." };
 
+  // الأرقام والروابط تُحجب: الصفقة التي تخرج من المنصّة لا تُقاس ولا يحميها أحد
   await q(
     `INSERT INTO reviews (store_id, product_id, author_name, phone, rating, body)
      VALUES ($1,$2,$3,$4,$5,$6)`,
-    [store_id, product_id, author, phone, rating, body]
+    [store_id, product_id, author, phone, rating, body ? scrubContact(body).text : null]
   );
   revalidatePath("/admin/reviews");
   return { ok: true, message: "وصل تقييمك — يُنشر بعد المراجعة. شكراً لك." };
@@ -125,7 +127,7 @@ export async function askQuestion(_prev: unknown, form: FormData) {
 
   await q(
     `INSERT INTO questions (product_id, store_id, author_name, body) VALUES ($1,$2,$3,$4)`,
-    [product_id, store_id, author, body]
+    [product_id, store_id, scrubContact(author).text, scrubContact(body).text]
   );
   return { ok: true, message: "وصل سؤالك — يظهر مع جواب المحل بعد المراجعة." };
 }

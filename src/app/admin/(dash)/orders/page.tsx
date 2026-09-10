@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
-import { setOrderStatus, setOrderItemStatus } from "@/app/admin/actions";
+import { setOrderStatus, setOrderItemStatus, markRefusal } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الطلبات" };
@@ -84,7 +84,7 @@ export default async function OrdersAdmin() {
             ))}
           </div>
 
-          <footer>
+          <footer style={{ display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
             <form action={setOrderStatus} className="opart-form">
               <input type="hidden" name="id" value={o.id} />
               <span className="hint">أو غيّر الطلب كله:</span>
@@ -93,6 +93,14 @@ export default async function OrdersAdmin() {
               </select>
               <button className="btn btn-line btn-sm">تطبيق على كل المحلات</button>
             </form>
+
+            {!o.refused && o.status !== "cancelled" && (
+              <form action={markRefusal} className="opart-form">
+                <input type="hidden" name="order_id" value={o.id} />
+                <button className="btn btn-line btn-sm">سجّل رفض الاستلام</button>
+              </form>
+            )}
+            {o.refused && <span className="badge st-cancelled">رفض الاستلام</span>}
           </footer>
         </article>
       ))}

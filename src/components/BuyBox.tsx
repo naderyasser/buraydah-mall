@@ -63,6 +63,7 @@ export default function BuyBox({
       <div className="big-price buy-price">
         <b>{sar(price)}</b><span className="cur">ر.س</span>
         {base.unit && <span className="unit">{base.unit}</span>}
+        <span className="vat">شامل ضريبة القيمة المضافة</span>
       </div>
 
       <div className="buy-row">

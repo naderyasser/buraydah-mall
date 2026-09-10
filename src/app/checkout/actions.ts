@@ -24,6 +24,19 @@ export async function placeOrder(_prev: unknown, form: FormData) {
   if (fulfilment === "delivery" && !district)
     return { ok: false as const, message: "اكتب الحي ليصلك الطلب." };
 
+  // آفة الدفع عند الاستلام الأولى: رفض الاستلام المتكرّر. القائمة داخلية
+  // ولا تُنشر — نشر أرقام الناس مخاطرة خصوصية وسمعة.
+  const flag = await q1<{ is_blocked: boolean }>(
+    `SELECT is_blocked FROM phone_flags WHERE phone = $1`,
+    [phone.replace(/\s|-/g, "")]
+  );
+  if (flag?.is_blocked) {
+    return {
+      ok: false as const,
+      message: "تعذّر إرسال الطلب من هذا الرقم. تواصل مع إدارة المول من صفحة الانضمام.",
+    };
+  }
+
   let lines: Line[] = [];
   try {
     lines = JSON.parse(String(form.get("items") ?? "[]"));
@@ -106,9 +119,20 @@ export async function placeOrder(_prev: unknown, form: FormData) {
       const base = coupon.store_id
         ? money(priced.filter((l) => l.store_id === coupon.store_id).reduce((n, l) => n + l.price * l.qty, 0))
         : subtotal;
-      if (base >= Number(coupon.min_total)) {
+      const usedBefore = coupon.first_order_only
+        ? await q1<{ n: number }>(
+            `SELECT count(*)::int AS n FROM orders WHERE phone = $1 AND status <> 'cancelled'`,
+            [phone]
+          )
+        : null;
+
+      if (coupon.first_order_only && (usedBefore?.n ?? 0) > 0) {
+        coupon = null;                       // كوبون أول طلب لمن طلب من قبل
+      } else if (base >= Number(coupon.min_total)) {
         discount = coupon.kind === "percent" ? money((base * Number(coupon.value)) / 100)
                                              : Math.min(Number(coupon.value), base);
+        // سقف الخصم كما في سلة: النسبة على سلة كبيرة قد تأكل هامش المحل
+        if (coupon.max_discount != null) discount = Math.min(discount, Number(coupon.max_discount));
       } else {
         coupon = null;
       }

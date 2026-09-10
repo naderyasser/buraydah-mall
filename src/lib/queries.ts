@@ -5,7 +5,8 @@ const STORE_COLS = `id, slug, wing_id, name_ar, name_en, logo_path, summary_ar,
   dest_type, dest_value, whatsapp_text, address_line, district, city, map_url,
   phone, hours, tags, tier, sort_order, is_active, data_updated_at,
   is_verified, cr_number, vat_number, maroof_number, returns_policy,
-  delivery_fee, free_delivery_over`;
+  delivery_fee, free_delivery_over, ready_minutes, hold_days, badge_year,
+  merit_pinned, lat, lng`;
 
 /** ترتيب الظهور: المميّز أولاً ثم المدفوع ثم الترتيب اليدوي — هذا ما يُباع للتاجر */
 const storeOrder = (p = "") => `ORDER BY

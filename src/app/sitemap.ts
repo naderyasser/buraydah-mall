@@ -21,6 +21,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/search`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
     { url: `${SITE_URL}/join`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/requests`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
+    { url: `${SITE_URL}/track`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/returns`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
     ...wings.map((w) => ({
       url: `${SITE_URL}/wing/${w.slug}`,
       lastModified: now, changeFrequency: "daily" as const, priority: 0.9,

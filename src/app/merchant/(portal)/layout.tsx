@@ -15,6 +15,8 @@ export default async function MerchantLayout({ children }: { children: React.Rea
           <Link href="/merchant">لوحتي</Link>
           <Link href="/merchant/orders">الطلبات</Link>
           <Link href="/merchant/products">منتجاتي</Link>
+          <Link href="/merchant/requests">طلبات الشراء</Link>
+          <Link href="/merchant/settlements">المحفظة</Link>
           <Link href="/merchant/reviews">التقييمات</Link>
           <Link href="/merchant/questions">الأسئلة</Link>
           <Link href="/merchant/settings">بيانات المحل</Link>

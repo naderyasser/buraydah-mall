@@ -3,6 +3,7 @@ import BrowseView, { optsFromParams } from "@/components/BrowseView";
 import { searchStores } from "@/lib/queries";
 import { getTrendingSearches } from "@/lib/browse";
 import { logSearch } from "@/app/actions";
+import FollowTerm from "@/components/FollowTerm";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "البحث" };
@@ -70,6 +71,14 @@ export default async function SearchPage({
           <div className="empty">
             <h3>لا توجد نتائج{raw && ` لـ «${raw}»`}</h3>
             <p>جرّب كلمة أعمّ، أو تصفّح الأقسام من الرئيسية.</p>
+            {term.length >= 2 && (
+              <>
+                <FollowTerm term={term} />
+                <p className="hint" style={{ marginTop: 10 }}>
+                  أو <Link href="/requests">انشر طلب شراء</Link> وتعرض عليك المحلات مباشرة.
+                </p>
+              </>
+            )}
           </div>
         }
       />

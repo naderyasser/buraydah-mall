@@ -18,6 +18,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/reviews">التقييمات</Link>
           <Link href="/admin/coupons">الكوبونات</Link>
           <Link href="/admin/merchants">حسابات التجار</Link>
+          <Link href="/admin/buy-requests">طلبات الشراء</Link>
+          <Link href="/admin/promotions">الترقية</Link>
+          <Link href="/admin/settlements">التسويات</Link>
+          <Link href="/admin/flags">الأرقام الموقوفة</Link>
           <Link href="/admin/requests">الطلبات والبلاغات</Link>
           <span className="sep" />
           <Link href="/">عرض الموقع</Link>

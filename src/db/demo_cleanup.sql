@@ -6,5 +6,7 @@ DELETE FROM questions WHERE author_name = 'زائر' AND answer LIKE 'نعم، �
 DELETE FROM product_images;                                 -- معرض الصور التجريبي
 UPDATE products SET views = 0;
 DELETE FROM orders WHERE phone LIKE '05000%';               -- طلبات الاختبار
+DELETE FROM buy_requests WHERE phone = '0550000000';        -- طلبات الشراء التجريبية
+DELETE FROM phone_flags;                                    -- أعلام الاختبار
 -- المنتجات والمحلات نفسها تُستبدل يدوياً من لوحة التحكّم، لا تُحذف هنا.
 COMMIT;

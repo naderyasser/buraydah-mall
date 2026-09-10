@@ -30,6 +30,9 @@ export type Store = {
   returns_policy: string | null;
   delivery_fee: string | number;
   free_delivery_over: string | number | null;
+  ready_minutes: number; hold_days: number;
+  badge_year: number | null; merit_pinned: boolean;
+  lat: string | number | null; lng: string | number | null;
 };
 
 export type Product = {

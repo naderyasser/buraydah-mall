@@ -530,3 +530,44 @@ table.admin a{color:var(--brand);font-weight:700}
 .admin-gallery img{width:110px;height:110px;object-fit:cover;border-radius:var(--r-sm);border:1px solid var(--line)}
 .admin-bar.merchant{background:var(--dark-2)}
 .admin-bar .mstore{color:var(--gold);margin-inline-end:8px}
+
+/* ═══ المرحلة الثالثة: طلبات الشراء والمتابعة والثقة ═══ */
+.req-layout{display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start}
+.req-form{position:sticky;top:88px}
+.req-list{display:flex;flex-direction:column;gap:12px}
+.req{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh-1);padding:14px 16px}
+.req header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.req h3{font-size:16px}
+.req p{margin:8px 0 0;color:var(--mut);font-size:14.5px}
+.req footer{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:10px;
+  font-size:13px;color:var(--mut)}
+.req footer a{color:var(--brand-d)}
+
+/* شريط التوصيل المجاني */
+.fd-bar{background:var(--brand-soft);border-radius:var(--r-sm);padding:10px 12px;margin:8px 0 12px}
+.fd-bar.done{background:var(--brand-soft)}
+.fd-bar p{margin:7px 0 0;font-size:13px;color:var(--brand-d)}
+.fd-track{height:6px;background:#fff;border-radius:99px;overflow:hidden}
+.fd-track span{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .3s}
+.fd-note{margin:6px 0 10px;font-size:13px;color:var(--mut)}
+
+/* صف الثقة تحت زر الشراء */
+.trust-row{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.trust-row li{display:flex;align-items:center;gap:8px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 11px;font-size:13px;color:var(--mut)}
+.trust-row .ti{width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:99px;
+  background:var(--brand-soft);color:var(--brand-d);font-size:12px;font-weight:800}
+
+/* المتابعة والتنبيه */
+.follow-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.follow-row input{width:150px;padding:7px 10px;font:inherit;font-size:13.5px;
+  border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--card);color:var(--ink)}
+.term-alert{margin-top:12px}
+.big-price .vat{font-size:12px;color:var(--mut);font-weight:400;width:100%}
+
+@media (max-width:900px){
+  .req-layout{grid-template-columns:1fr}
+  .req-form{position:static}
+}

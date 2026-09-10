@@ -27,6 +27,8 @@ export function optsFromParams(sp: Record<string, string | string[] | undefined>
     max: num("max"),
     inStock: one("stock") === "1",
     onSale: one("sale") === "1",
+    verified: one("verified") === "1",
+    minRating: num("rating"),
     sort: SORT_KEYS.includes(sort ?? "") ? (sort as SortKey) : "featured",
     page: num("page") ?? 1,
   };

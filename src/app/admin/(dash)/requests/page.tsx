@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { q } from "@/db";
-import { setRequestStatus, setReportStatus } from "@/app/admin/actions";
+import { setRequestStatus, setReportStatus, reviewJoinRequest } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الطلبات والبلاغات" };
@@ -27,7 +27,7 @@ export default async function RequestsAdmin() {
     <div className="wrap">
       <div className="section-head" style={{ marginTop: 34 }}>
         <h2>طلبات الانضمام</h2>
-        <span>لا يُنشر أي محل قبل المراجعة</span>
+        <span>لا يُنشر أي محل قبل المراجعة — والمهلة المعلنة للتاجر ٤٨ ساعة</span>
       </div>
       <div className="tablewrap">
         <table className="admin">
@@ -41,14 +41,24 @@ export default async function RequestsAdmin() {
                 <td>{r.wing ?? "—"}</td>
                 <td>{REQ_STATUS[r.status] ?? r.status}</td>
                 <td>
-                  <form action={setRequestStatus} style={{ display: "flex", gap: 6 }}>
+                  <form action={reviewJoinRequest} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     <input type="hidden" name="id" value={r.id} />
                     <select name="status" defaultValue={r.status}
-                      style={{ padding: "4px 8px", fontSize: 13, background: "var(--surface)", color: "var(--text)", border: "1px solid var(--line-2)", borderRadius: 2 }}>
+                      style={{ padding: "4px 8px", fontSize: 13, background: "var(--card)",
+                               color: "var(--ink)", border: "1px solid var(--line-2)", borderRadius: 4 }}>
                       {Object.entries(REQ_STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                     </select>
-                    <button className="btn btn-ghost" style={{ padding: "4px 11px", fontSize: 13 }}>حفظ</button>
+                    <input name="reject_reason" placeholder="سبب الرفض (يُبلَّغ للتاجر)"
+                      defaultValue={r.reject_reason ?? ""}
+                      style={{ width: 190, padding: "4px 8px", fontSize: 13,
+                               border: "1px solid var(--line-2)", borderRadius: 4 }} />
+                    <button className="btn btn-line btn-sm">حفظ</button>
                   </form>
+                  {r.reviewed_at && (
+                    <span className="hint tabular">
+                      رُوجع {new Date(r.reviewed_at).toLocaleDateString("ar-SA-u-nu-latn")}
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}

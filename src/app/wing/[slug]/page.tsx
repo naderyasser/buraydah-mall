@@ -12,8 +12,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const wing = await getWing((await params).slug);
   if (!wing) return {};
   return {
-    title: `${wing.name_ar} في بريدة`,
-    description: wing.tagline ?? `منتجات ${wing.name_ar} من محلات بريدة، بأسعارها وأصحابها.`,
+    title: `${wing.name_ar} أونلاين في بريدة — أسعار محلات المدينة`,
+    description:
+      (wing.tagline ? wing.tagline + " " : "") +
+      `تسوّق ${wing.name_ar} من محلات بريدة بأسعارها، الدفع عند الاستلام والتوصيل داخل المدينة.`,
   };
 }
 

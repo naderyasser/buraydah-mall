@@ -16,6 +16,7 @@ export default function Header() {
           <button type="submit">بحث</button>
         </form>
         <div className="top-actions">
+          <Link href="/requests" className="icon-btn ghost">اطلب ما لا تجده</Link>
           <Link href="/track" className="icon-btn ghost">تتبّع طلبك</Link>
           <Link href="/favorites" className="icon-btn ghost">المفضلة</Link>
           <Link href="/join" className="icon-btn">انضم كتاجر</Link>
