@@ -8,6 +8,8 @@ import CartBar from "@/components/CartBar";
 import BottomNav from "@/components/BottomNav";
 import TopStrip from "@/components/TopStrip";
 import Skyline from "@/components/Skyline";
+import WhatsAppFab from "@/components/WhatsAppFab";
+import { getSetting, waNumber } from "@/lib/settings";
 import { BURAYDAH_DISTRICTS, hijriDate, currentOccasion } from "@/lib/saudi";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
@@ -38,6 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const demo = process.env.NEXT_PUBLIC_DEMO_BANNER === "1";
   const [wings, trending] = await Promise.all([getWings(), getTrendingSearches(6).catch(() => [])]);
   const occ = currentOccasion();
+  const mallWa = waNumber(await getSetting("mall_whatsapp").catch(() => ""));
 
   return (
     <html lang="ar" dir="rtl">
@@ -109,6 +112,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </footer>
           <CartBar />
           <BottomNav />
+          <WhatsAppFab number={mallWa} />
           <VisitBeacon />
         </CartProvider>
       </body>

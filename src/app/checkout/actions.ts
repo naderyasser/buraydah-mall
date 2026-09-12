@@ -1,6 +1,7 @@
 "use server";
 import { q, q1, pool } from "@/db";
 import { tooMany, RATE } from "@/lib/ratelimit";
+import { pushToStore } from "@/lib/push";
 
 type Line = { productId: number; variantId?: number | null; qty: number };
 
@@ -192,6 +193,11 @@ export async function placeOrder(_prev: unknown, form: FormData) {
       await client.query(`UPDATE coupons SET used_count = used_count + 1 WHERE id = $1`, [coupon.id]);
     }
     await client.query("COMMIT");
+    // إشعار كل محل بنصيبه — بعد الالتزام، ولا يُنتظر ولا يُفشل الطلب إن تعطّل
+    for (const sid of new Set(priced.map((l) => l.store_id))) {
+      const n = priced.filter((l) => l.store_id === sid).reduce((a, l) => a + l.qty, 0);
+      void pushToStore(sid, { title: `طلب جديد ${order.code}`, body: `${n} قطعة من ${name} — افتح البوابة لتأكيده`, url: "/merchant/orders", tag: order.code }).catch(() => {});
+    }
     return {
       ok: true as const, code: order.code, token: order.token, message: "تم",
       customer: { name, phone, district: district ?? "", mode: fulfilment },

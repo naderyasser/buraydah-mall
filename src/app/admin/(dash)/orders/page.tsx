@@ -8,7 +8,7 @@ import { setOrderStatus, setOrderItemStatus, markRefusal } from "@/app/admin/act
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الطلبات" };
 
-const LABEL: Record<string, string> = { new: "جديد", confirmed: "مؤكَّد", done: "مكتمل", cancelled: "ملغى" };
+const LABEL: Record<string, string> = { new: "جديد", confirmed: "مؤكَّد", ready: "جاهز / في الطريق", done: "مكتمل", cancelled: "ملغى" };
 
 type Part = {
   order_id: number; store_id: number; store: string; slug: string;

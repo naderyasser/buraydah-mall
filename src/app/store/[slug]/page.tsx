@@ -33,7 +33,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     q1<Wing>(`SELECT * FROM wings WHERE id = $1`, [store.wing_id]),
     getProductsByStore(store.id),
     q<any>(
-      `SELECT id, author_name, rating, body, reply, created_at FROM reviews
+      `SELECT id, author_name, rating, body, reply, created_at, image_path FROM reviews
        WHERE store_id = $1 AND status = 'published' ORDER BY created_at DESC LIMIT 20`,
       [store.id]
     ),

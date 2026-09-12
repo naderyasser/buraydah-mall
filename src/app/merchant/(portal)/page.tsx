@@ -3,12 +3,15 @@ import Riyal from "@/components/Riyal";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
+import PushToggle from "@/components/PushToggle";
+import { getSetting } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "لوحة التاجر", robots: { index: false } };
 
 export default async function MerchantHome() {
   const store = await requireStore();
+  const vapid = await getSetting("vapid_public");
   const [[t], top, alerts] = await Promise.all([
     q<any>(
       `SELECT
@@ -58,6 +61,7 @@ export default async function MerchantHome() {
           الأرقام لآخر ٣٠ يوماً ما لم يُذكر غير ذلك.
           {t.orders_new > 0 && <> عندك <b>{t.orders_new}</b> طلباً ينتظر تأكيدك.</>}
         </p>
+        {vapid && <PushToggle vapid={vapid} />}
       </section>
 
       <dl className="stat-row">

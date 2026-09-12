@@ -43,7 +43,7 @@ export async function merchantSetItemStatus(form: FormData) {
   const storeId = await guard();
   const orderId = Number(form.get("order_id"));
   const status = String(form.get("status"));
-  if (!orderId || !["new", "confirmed", "done", "cancelled"].includes(status)) return;
+  if (!orderId || !["new", "confirmed", "ready", "done", "cancelled"].includes(status)) return;
 
   await q(`UPDATE order_items SET status = $1 WHERE order_id = $2 AND store_id = $3`,
     [status, orderId, storeId]);
@@ -53,6 +53,7 @@ export async function merchantSetItemStatus(form: FormData) {
          WHEN count(*) FILTER (WHERE status <> 'cancelled') = 0 THEN 'cancelled'
          WHEN count(*) FILTER (WHERE status = 'new') > 0        THEN 'new'
          WHEN count(*) FILTER (WHERE status <> 'cancelled' AND status <> 'done') = 0 THEN 'done'
+         WHEN count(*) FILTER (WHERE status = 'confirmed') = 0 THEN 'ready'
          ELSE 'confirmed' END AS status
        FROM order_items WHERE order_id = $1
      ) d WHERE o.id = $1`,
@@ -210,4 +211,16 @@ export async function merchantImportCsv(_prev: unknown, form: FormData) {
   const res = await importProductsCsv(storeId, await file.text());
   revalidatePath("/merchant/products"); revalidatePath("/", "layout");
   return res;
+}
+
+/** اشتراك متصفّح التاجر في إشعارات الدفع */
+export async function savePushSubscription(sub: { endpoint: string; p256dh: string; auth: string }) {
+  const storeId = await guard();
+  if (!sub?.endpoint?.startsWith("https://") || !sub.p256dh || !sub.auth) return;
+  await q(`INSERT INTO push_subscriptions (store_id, endpoint, p256dh, auth) VALUES ($1,$2,$3,$4)
+           ON CONFLICT (endpoint) DO UPDATE SET store_id = $1, p256dh = $3, auth = $4`, [storeId, sub.endpoint, sub.p256dh, sub.auth]);
+}
+export async function removePushSubscription(endpoint: string) {
+  const storeId = await guard();
+  await q(`DELETE FROM push_subscriptions WHERE endpoint = $1 AND store_id = $2`, [endpoint, storeId]);
 }

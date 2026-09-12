@@ -55,6 +55,7 @@ export default async function ProductEditor({ params }: { params: Promise<{ id: 
           </label>
           <label>السعر (ر.س) *<input name="price" type="number" step="0.01" required defaultValue={p?.price ?? ""} /></label>
           <label>السعر قبل الخصم<input name="compare_price" type="number" step="0.01" defaultValue={p?.compare_price ?? ""} /></label>
+          <label>الوزن بالجرام (للذهب)<input name="weight_g" type="number" step="0.01" dir="ltr" defaultValue={p?.weight_g ?? ""} placeholder="مثال 12.5" /></label>
           <label>ينتهي العرض في<input name="sale_ends_at" type="datetime-local"
             defaultValue={p?.sale_ends_at ? new Date(p.sale_ends_at).toLocaleString("sv-SE", { timeZone: "Asia/Riyadh" }).slice(0, 16).replace(" ", "T") : ""} /></label>
           <label>الوحدة<input name="unit" defaultValue={p?.unit ?? ""} placeholder="للقطعة، للمتر، للجرام" /></label>

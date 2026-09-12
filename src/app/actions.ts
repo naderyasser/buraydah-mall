@@ -2,6 +2,8 @@
 import { revalidatePath } from "next/cache";
 import { q, q1 } from "@/db";
 import { scrubContact } from "@/lib/sanitize";
+import { writeFile, mkdir } from "node:fs/promises";
+import path from "node:path";
 import { tooMany, RATE } from "@/lib/ratelimit";
 
 export async function submitJoinRequest(_prev: unknown, form: FormData) {
@@ -97,11 +99,24 @@ export async function submitReview(_prev: unknown, form: FormData) {
   );
   if (dup) return { ok: false, message: "سبق أن قيّمت هذا المحل — تقييمك محفوظ." };
 
+  // صورة من العميل (نون/أمازون): تُحفظ ولا تُنشر إلا بعد مراجعة الإدارة — وقاعدة «لا صور أشخاص» تُطبَّق هناك
+  let image_path: string | null = null;
+  const file = form.get("image") as File | null;
+  if (file && file.size > 0) {
+    if (file.size > 4_000_000) return { ok: false, message: "الصورة أكبر من 4MB." };
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (!["jpg", "jpeg", "png", "webp"].includes(ext)) return { ok: false, message: "الصورة يجب أن تكون JPG أو PNG أو WebP." };
+    const dir = path.join(process.cwd(), "public", "reviews");
+    await mkdir(dir, { recursive: true });
+    const nm = `r-${store_id}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+    await writeFile(path.join(dir, nm), Buffer.from(await file.arrayBuffer()));
+    image_path = `/reviews/${nm}`;
+  }
   // الأرقام والروابط تُحجب: الصفقة التي تخرج من المنصّة لا تُقاس ولا يحميها أحد
   await q(
-    `INSERT INTO reviews (store_id, product_id, author_name, phone, rating, body)
-     VALUES ($1,$2,$3,$4,$5,$6)`,
-    [store_id, product_id, author, phone, rating, body ? scrubContact(body).text : null]
+    `INSERT INTO reviews (store_id, product_id, author_name, phone, rating, body, image_path)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+    [store_id, product_id, author, phone, rating, body ? scrubContact(body).text : null, image_path]
   );
   revalidatePath("/admin/reviews");
   return { ok: true, message: "وصل تقييمك — يُنشر بعد المراجعة. شكراً لك." };

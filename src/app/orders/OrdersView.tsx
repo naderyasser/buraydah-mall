@@ -7,7 +7,7 @@ import { ORDERS_KEY } from "@/components/RememberOrder";
 import { sar } from "@/lib/money";
 import { agoAr } from "@/lib/time";
 
-const LABEL: Record<string, string> = { new: "قيد المراجعة", confirmed: "مؤكَّد", done: "مكتمل", cancelled: "ملغى" };
+const LABEL: Record<string, string> = { new: "قيد المراجعة", confirmed: "مؤكَّد", ready: "جاهز / في الطريق", done: "مكتمل", cancelled: "ملغى" };
 
 export default function OrdersView() {
   const [rows, setRows] = useState<Awaited<ReturnType<typeof ordersByTokens>> | null>(null);

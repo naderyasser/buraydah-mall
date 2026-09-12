@@ -56,5 +56,5 @@ export type OrderRow = {
   id: number; code: string; token: string; customer_name: string; phone: string;
   district: string | null; fulfilment: "pickup" | "delivery"; note: string | null;
   total: string; items_count: number; stores_count: number;
-  status: "new" | "confirmed" | "done" | "cancelled"; created_at: string;
+  status: "new" | "confirmed" | "ready" | "done" | "cancelled"; created_at: string;
 };

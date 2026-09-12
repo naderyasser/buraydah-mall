@@ -70,7 +70,7 @@ export function searchStores(term: string): Promise<(Store & { wing_slug: string
 /* ── المنتجات ── */
 const P_COLS = `p.id, p.slug, p.store_id, p.name_ar, p.description_ar, p.price,
   p.compare_price, p.image_path, p.unit, p.tags, p.in_stock, p.sort_order, p.is_active,
-  p.specs, p.category_id, p.sale_ends_at, p.created_at`;
+  p.specs, p.category_id, p.sale_ends_at, p.created_at, p.weight_g`;
 const P_JOIN = `FROM products p
   JOIN stores s ON s.id = p.store_id AND s.is_active
   JOIN wings  w ON w.id = s.wing_id  AND w.is_active`;

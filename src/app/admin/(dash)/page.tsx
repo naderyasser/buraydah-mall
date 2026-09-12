@@ -96,7 +96,7 @@ export default async function Dashboard() {
                 <td className="tabular">{o.items_count}</td>
                 <td className="tabular">{o.stores_count}</td>
                 <td className="tabular">{sar(o.total)} <Riyal /></td>
-                <td>{o.status === "new" ? "جديد" : o.status === "confirmed" ? "مؤكَّد" : o.status === "done" ? "مكتمل" : "ملغى"}</td>
+                <td>{o.status === "new" ? "جديد" : o.status === "confirmed" ? "مؤكَّد" : o.status === "ready" ? "جاهز" : o.status === "done" ? "مكتمل" : "ملغى"}</td>
               </tr>
             ))}
             {recent.length === 0 && <tr><td colSpan={6}>لا توجد طلبات بعد.</td></tr>}

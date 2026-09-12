@@ -1,6 +1,7 @@
 const STEPS = [
   { key: "new", label: "قيد المراجعة" },
   { key: "confirmed", label: "أكّده المحل" },
+  { key: "ready", label: "جاهز / في الطريق" },
   { key: "done", label: "تم التسليم" },
 ];
 

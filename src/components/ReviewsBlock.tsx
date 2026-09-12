@@ -4,7 +4,7 @@ import PhoneField from "@/components/PhoneField";
 import Stars from "./Stars";
 import { submitReview } from "@/app/actions";
 
-type Review = {
+type Review = { image_path?: string | null;
   id: number; author_name: string; rating: number; body: string | null;
   reply: string | null; created_at: string;
 };
@@ -62,6 +62,8 @@ export default function ReviewsBlock({
             </select>
           </label>
           <label>رأيك<textarea name="body" rows={3} placeholder="ما الذي أعجبك أو لم يعجبك؟" /></label>
+          <label>صورة للمنتج بعد الاستلام (اختياري — صورة المنتج نفسه بلا أشخاص)
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp" /></label>
           {state && !state.ok && <p className="error">{state.message}</p>}
           <button className="btn btn-brand" disabled={pending}>{pending ? "جارٍ الإرسال…" : "أرسل التقييم"}</button>
           <p className="hint">التقييم يُنشر بعد المراجعة، ولا يُحذف بعد نشره — للمحل حق الردّ عليه.</p>
@@ -81,6 +83,7 @@ export default function ReviewsBlock({
               </span>
             </header>
             {r.body && <p>{r.body}</p>}
+            {r.image_path && <a href={r.image_path} target="_blank" rel="noopener"><img src={r.image_path} alt="صورة من العميل" className="review-img" loading="lazy" /></a>}
             {r.reply && <div className="reply"><b>ردّ المحل:</b> {r.reply}</div>}
           </article>
         ))}

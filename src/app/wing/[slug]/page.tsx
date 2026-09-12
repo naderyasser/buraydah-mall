@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import BrandTile from "@/components/BrandTile";
 import BrowseView, { optsFromParams } from "@/components/BrowseView";
+import GoldStrip from "@/components/GoldStrip";
 import { getWing, getWings, getBrands } from "@/lib/queries";
 import { getCategories } from "@/lib/browse";
 
@@ -43,6 +44,7 @@ export default async function WingPage({
       <section className="section" style={{ paddingTop: 20, paddingBottom: 0 }}>
         <h1 style={{ fontSize: "clamp(26px,4.2vw,38px)" }}>{wing.name_ar}</h1>
         {wing.tagline && <p style={{ color: "var(--mut)", maxWidth: "56ch", marginTop: 10 }}>{wing.tagline}</p>}
+        {slug === "gold" && <GoldStrip />}
       </section>
 
       {cats.length > 0 && (

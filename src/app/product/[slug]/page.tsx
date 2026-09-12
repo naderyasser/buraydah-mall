@@ -15,6 +15,8 @@ import RememberSeen from "@/components/RememberSeen";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import TrustRow from "@/components/TrustRow";
 import ShareButtons from "@/components/ShareButtons";
+import GoldStrip from "@/components/GoldStrip";
+import SizeGuide from "@/components/SizeGuide";
 import { discountPct, activeCompare, saleEndsLabel } from "@/components/Price";
 import { buildDestUrl } from "@/lib/destinations";
 import { readyPromise, holdNote } from "@/lib/promise";
@@ -54,7 +56,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
        WHERE product_id = $1 ORDER BY sort_order, id`, [p.id]
     ),
     q<any>(
-      `SELECT id, author_name, rating, body, reply, created_at FROM reviews
+      `SELECT id, author_name, rating, body, reply, created_at, image_path FROM reviews
        WHERE product_id = $1 AND status = 'published' ORDER BY created_at DESC LIMIT 20`, [p.id]
     ),
     q<any>(
@@ -168,6 +170,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               اسأل المحل عبر واتساب قبل الطلب
             </a>
           )}
+
+          {p.wing_slug === "gold" && <GoldStrip weight={p.weight_g} karat={(p.tags ?? []).find((t: string) => /عيار/.test(t)) ?? (Array.isArray(p.specs) ? p.specs.find((x: any) => /عيار/.test(x.k))?.v : null)} />}
+          {["clothing", "dresses"].includes(p.wing_slug) && <SizeGuide wing={p.wing_slug} />}
 
           {p.description_ar && <p className="desc">{p.description_ar}</p>}
 

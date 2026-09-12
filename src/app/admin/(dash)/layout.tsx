@@ -23,6 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/settlements">التسويات</Link>
           <Link href="/admin/flags">الأرقام الموقوفة</Link>
           <Link href="/admin/requests">الطلبات والبلاغات</Link>
+          <Link href="/admin/settings">الإعدادات</Link>
           <span className="sep" />
           <Link href="/">عرض الموقع</Link>
           <form action={logout}>

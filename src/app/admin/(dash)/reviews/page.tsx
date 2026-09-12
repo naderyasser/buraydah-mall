@@ -42,6 +42,7 @@ export default async function ReviewsAdmin() {
                 <td><Stars value={r.rating} /></td>
                 <td style={{ maxWidth: 320 }}>
                   {r.body}
+                  {r.image_path && <><br /><a href={r.image_path} target="_blank" rel="noopener"><img src={r.image_path} alt="" style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 6, marginTop: 6 }} /></a><br /><span className="hint">راجع الصورة: لا تُنشر إن كان فيها أشخاص</span></>}
                   {r.reply && <><br /><span className="hint">ردّ المحل: {r.reply}</span></>}
                 </td>
                 <td>{ST[r.status]}</td>

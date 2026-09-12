@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "طلبات محلي", robots: { index: false } };
 
 const LABEL: Record<string, string> = {
-  new: "قيد المراجعة", confirmed: "أكّدته", done: "سلّمته", cancelled: "ملغى",
+  new: "قيد المراجعة", confirmed: "أكّدته", ready: "جاهز / في الطريق", done: "سلّمته", cancelled: "ملغى",
 };
 
 export default async function MerchantOrders() {
@@ -75,11 +75,17 @@ export default async function MerchantOrders() {
                 )}
                 {o.status === "confirmed" && (
                   <>
+                    <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="ready" />
+                      <button className="btn btn-brand">{o.fulfilment === "delivery" ? "خرج للتوصيل" : "جاهز للاستلام"}</button></form>
                     <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="done" />
-                      <button className="btn btn-gold">تم التسليم</button></form>
+                      <button className="btn btn-gold btn-sm">تم التسليم</button></form>
                     <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="cancelled" />
                       <button className="btn btn-line btn-sm">إلغاء</button></form>
                   </>
+                )}
+                {o.status === "ready" && (
+                  <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="done" />
+                    <button className="btn btn-gold">تم التسليم</button></form>
                 )}
                 {o.status === "done" && <span className="badge st-done">مكتمل</span>}
                 {o.status === "cancelled" && (
