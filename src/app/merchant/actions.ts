@@ -6,6 +6,8 @@ import {
   currentStoreId, setMerchantSession, clearMerchantSession, verifyPassword,
 } from "@/lib/merchant-auth";
 import { tooMany, RATE } from "@/lib/ratelimit";
+import { occasionEnd, OCCASION_TAG } from "@/lib/saudi";
+import { importProductsCsv } from "@/lib/import-products";
 
 async function guard(): Promise<number> {
   const id = await currentStoreId();
@@ -150,4 +152,62 @@ export async function merchantSaveSettings(form: FormData) {
   );
   revalidatePath("/merchant/settings");
   revalidatePath("/", "layout");
+}
+
+/**
+ * المشاركة في عروض المناسبة بضغطة (كما تفعل سلة وزد في المواسم): يختار التاجر
+ * منتجاته ونسبة الخصم، والمول يحفظ السعر الأصلي في compare_price ويضبط تاريخ
+ * الانتهاء ويوسمها؛ وفحص الصحة يعيد السعر تلقائياً بعد النهاية.
+ */
+export async function merchantJoinOccasion(form: FormData) {
+  const storeId = await guard();
+  const ids = form.getAll("product_id").map(Number).filter((n) => Number.isInteger(n) && n > 0);
+  const pct = Number(form.get("pct"));
+  const win = occasionEnd();
+  if (!win || ids.length === 0 || !(pct >= 5 && pct <= 90)) return;
+  await q(
+    `UPDATE products
+       SET compare_price = coalesce(compare_price, price),
+           price = round(coalesce(compare_price, price) * (1 - $3::numeric / 100), 2),
+           sale_ends_at = $4,
+           tags = CASE WHEN $5 = ANY(tags) THEN tags ELSE array_append(coalesce(tags, '{}'), $5) END
+     WHERE store_id = $1 AND id = ANY($2) AND is_active`,
+    [storeId, ids, pct, win.ends, OCCASION_TAG]
+  );
+  revalidatePath("/merchant/occasion");
+  revalidatePath("/national-day");
+  revalidatePath("/", "layout");
+}
+
+/** سحب منتج من عروض المناسبة: يعود سعره كما كان فوراً */
+export async function merchantLeaveOccasion(form: FormData) {
+  const storeId = await guard();
+  await q(
+    `UPDATE products SET price = coalesce(compare_price, price), compare_price = NULL, sale_ends_at = NULL,
+            tags = array_remove(tags, $3)
+     WHERE store_id = $1 AND id = $2 AND $3 = ANY(tags)`,
+    [storeId, Number(form.get("id")), OCCASION_TAG]
+  );
+  revalidatePath("/merchant/occasion");
+  revalidatePath("/national-day");
+  revalidatePath("/", "layout");
+}
+
+/** عدد الطلبات الجديدة لمحل التاجر — تسأله البوابة كل دقيقة */
+export async function merchantNewCount(): Promise<number> {
+  const storeId = await guard();
+  const r = await q1<{ n: number }>(
+    `SELECT count(DISTINCT order_id)::int AS n FROM order_items WHERE store_id = $1 AND status = 'new'`, [storeId]);
+  return r?.n ?? 0;
+}
+
+/** استيراد CSV لمحل التاجر نفسه */
+export async function merchantImportCsv(_prev: unknown, form: FormData) {
+  const storeId = await guard();
+  const file = form.get("file") as File | null;
+  if (!file || file.size === 0) return { inserted: 0, skipped: 0, errors: ["اختر الملف."] };
+  if (file.size > 2_000_000) return { inserted: 0, skipped: 0, errors: ["الملف أكبر من 2MB."] };
+  const res = await importProductsCsv(storeId, await file.text());
+  revalidatePath("/merchant/products"); revalidatePath("/", "layout");
+  return res;
 }

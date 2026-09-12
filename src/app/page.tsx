@@ -45,7 +45,7 @@ export default async function Home() {
     <>
     <div className="wrap">
       {occ && (
-        <Link href="/search?q=الكل&sale=1" className={`occ-banner occ-${occ.key}`}>
+        <Link href={occ.key === "national" ? "/national-day" : "/search?q=الكل&sale=1"} className={`occ-banner occ-${occ.key}`}>
           <span><b>{occ.label}</b><small>{occ.note}</small></span>
           <span className="occ-cta">العروض ←</span>
         </Link>

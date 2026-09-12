@@ -20,7 +20,7 @@ export default function ReviewsBlock({
   const [state, action, pending] = useActionState(submitReview, null as any);
 
   return (
-    <section className="section reviews">
+    <section className="section reviews" id="reviews">
       <div className="section-head">
         <h2>التقييمات {count ? <span className="tabular">({count})</span> : null}</h2>
         {!open && !state?.ok && (

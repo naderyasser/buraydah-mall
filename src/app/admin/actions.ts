@@ -1,6 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { importProductsCsv } from "@/lib/import-products";
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { q, q1 } from "@/db";
@@ -584,4 +585,16 @@ export async function reviewJoinRequest(form: FormData) {
      Number(form.get("id"))]
   );
   revalidatePath("/admin/requests");
+}
+
+/** استيراد CSV لأي محل — الإدارة تُدخل أول ٤٠–٦٠ محلاً، وهذا ما يجعل ذلك ممكناً في يوم لا شهر */
+export async function adminImportCsv(_prev: unknown, form: FormData) {
+  await guard();
+  const storeId = Number(form.get("store_id"));
+  const file = form.get("file") as File | null;
+  if (!storeId || !file || file.size === 0) return { inserted: 0, skipped: 0, errors: ["اختر المحل والملف."] };
+  if (file.size > 2_000_000) return { inserted: 0, skipped: 0, errors: ["الملف أكبر من 2MB."] };
+  const res = await importProductsCsv(storeId, await file.text());
+  revalidatePath("/admin/products"); revalidatePath("/", "layout");
+  return res;
 }

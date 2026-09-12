@@ -192,7 +192,10 @@ export async function placeOrder(_prev: unknown, form: FormData) {
       await client.query(`UPDATE coupons SET used_count = used_count + 1 WHERE id = $1`, [coupon.id]);
     }
     await client.query("COMMIT");
-    return { ok: true as const, code: order.code, token: order.token, message: "تم" };
+    return {
+      ok: true as const, code: order.code, token: order.token, message: "تم",
+      customer: { name, phone, district: district ?? "", mode: fulfilment },
+    };
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("[checkout] order failed", err);

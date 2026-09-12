@@ -3,7 +3,8 @@ import Riyal from "@/components/Riyal";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
-import { merchantToggleProduct, merchantSetStock } from "../../actions";
+import { merchantToggleProduct, merchantSetStock, merchantImportCsv } from "../../actions";
+import ImportCsv from "@/components/ImportCsv";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "منتجاتي", robots: { index: false } };
@@ -22,6 +23,7 @@ export default async function MerchantProducts() {
 
   return (
     <div className="wrap">
+      <ImportCsv action={merchantImportCsv} />
       <div className="section-head" style={{ marginTop: 32 }}>
         <h2>منتجاتك ({rows.length})</h2>
         <span>لإضافة منتج جديد راسل إدارة المول — الإضافة بمراجعة</span>

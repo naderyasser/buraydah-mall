@@ -4,6 +4,7 @@ import Stars from "./Stars";
 import Favorite from "./Favorite";
 import Price, { discountPct, activeCompare, saleEndsLabel } from "./Price";
 import { agoAr } from "@/lib/time";
+import { OCCASION_TAG } from "@/lib/saudi";
 import type { ProductWithStore } from "@/lib/types";
 
 /** وسم «صناعة سعودية» أو «منتج محلي» يظهر كشارة — ما يميّز تفصيل بريدة عن المستورد */
@@ -26,6 +27,7 @@ export default function ProductCard({
           ? <img src={p.image_path} alt={p.name_ar} loading="lazy" />
           : <span />}
         {pct != null && <span className="pcard-off tabular">−{pct}%</span>}
+        {pct != null && p.tags?.includes(OCCASION_TAG) && <span className="pcard-occ">عرض اليوم الوطني</span>}
         {!p.in_stock && <span className="pcard-out">نفد</span>}
         {isSaudiMade(p.tags) && <span className="pcard-sa">صنع في السعودية</span>}
       </Link>

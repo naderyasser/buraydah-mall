@@ -57,6 +57,40 @@ export function currentOccasion(d: Date = new Date()): Occasion | null {
   return null;
 }
 
+/** نهاية نافذة المناسبة الجارية أو القادمة (آخر لحظة بتوقيت الرياض) — تُضبط بها عروض التجّار */
+export function occasionEnd(d: Date = new Date()): { occ: Occasion; ends: Date } | null {
+  let cur = currentOccasion(d) ?? upcomingOccasion(d);
+  if (!cur) return null;
+  // امشِ يوماً يوماً حتى يخرج التاريخ من النافذة
+  let t = new Date(d.getTime());
+  if (!currentOccasion(t)) t = new Date(t.getTime() + (upcomingOccasion(d)!.days) * 864e5);
+  let last = t;
+  for (let i = 0; i < 40; i++) {
+    const n = new Date(t.getTime() + 864e5);
+    if (currentOccasion(n)?.key !== cur.key) break;
+    t = n; last = n;
+  }
+  const g = riyadhParts(last);
+  const ends = new Date(`${g.year}-${String(g.month).padStart(2, "0")}-${String(g.day).padStart(2, "0")}T23:59:00+03:00`);
+  return { occ: cur, ends };
+}
+
+/** أول يوم في نافذة المناسبة القادمة (منتصف ليل الرياض) — لعدّ تنازلي قبل بدء العروض */
+export function occasionStart(d: Date = new Date()): Date | null {
+  for (let i = 0; i <= 45; i++) {
+    const t = new Date(d.getTime() + i * 864e5);
+    if (currentOccasion(t)) {
+      const g = riyadhParts(t);
+      return new Date(`${g.year}-${String(g.month).padStart(2, "0")}-${String(g.day).padStart(2, "0")}T00:00:00+03:00`);
+    }
+  }
+  return null;
+}
+
+/** كود الكوبون الموحّد لكل مناسبة — يُعرض في صفحة المناسبة ويصنعه المدير في الكوبونات */
+export const OCCASION_COUPON: Record<string, string> = { national: "KSA96", founding: "FOUNDING", ramadan: "RAMADAN", fitr: "EID", adha: "EID" };
+export const OCCASION_TAG = "اليوم الوطني";
+
 /** أقرب يوم مناسبة (اليوم نفسه لا بداية حملته) خلال ٤٥ يوماً — «بعد ١١ يوماً: اليوم الوطني» */
 export function upcomingOccasion(d: Date = new Date()): (Occasion & { days: number }) | null {
   for (let i = 1; i <= 45; i++) {

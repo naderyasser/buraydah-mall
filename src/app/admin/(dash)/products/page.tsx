@@ -3,13 +3,15 @@ import Riyal from "@/components/Riyal";
 import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
-import { toggleProduct } from "@/app/admin/actions";
+import { toggleProduct, adminImportCsv } from "@/app/admin/actions";
+import ImportCsv from "@/components/ImportCsv";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "المنتجات" };
 
 export default async function ProductsAdmin() {
   await requireAdmin();
+  const stores = await q<{ id: number; name_ar: string }>(`SELECT id, name_ar FROM stores WHERE is_active ORDER BY name_ar`);
   const rows = await q<any>(
     `SELECT p.id, p.name_ar, p.slug, p.price, p.unit, p.is_active, p.in_stock, p.image_path,
             s.name_ar AS store, w.name_ar AS wing,
@@ -24,6 +26,7 @@ export default async function ProductsAdmin() {
         <h2>المنتجات ({rows.length})</h2>
         <Link className="btn btn-gold btn-sm" href="/admin/products/new">+ منتج جديد</Link>
       </div>
+      <ImportCsv action={adminImportCsv} stores={stores} />
       <div className="tablewrap">
         <table className="admin">
           <thead><tr><th></th><th>المنتج</th><th>المحل</th><th>السعر</th><th>مبيع</th><th>الحالة</th><th></th></tr></thead>

@@ -8,7 +8,7 @@ import CartBar from "@/components/CartBar";
 import BottomNav from "@/components/BottomNav";
 import TopStrip from "@/components/TopStrip";
 import Skyline from "@/components/Skyline";
-import { BURAYDAH_DISTRICTS, hijriDate } from "@/lib/saudi";
+import { BURAYDAH_DISTRICTS, hijriDate, currentOccasion } from "@/lib/saudi";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
 import { getTrendingSearches } from "@/lib/browse";
@@ -37,6 +37,7 @@ export const viewport = { themeColor: "#0B7A4B" };
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const demo = process.env.NEXT_PUBLIC_DEMO_BANNER === "1";
   const [wings, trending] = await Promise.all([getWings(), getTrendingSearches(6).catch(() => [])]);
+  const occ = currentOccasion();
 
   return (
     <html lang="ar" dir="rtl">
@@ -48,7 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Noto+Kufi+Arabic:wght@700;800&display=swap"
         />
       </head>
-      <body>
+      <body className={occ ? `occ occ-${occ.key}` : undefined}>
         <CartProvider>
           {demo && (
             <div className="demo-strip">
@@ -84,6 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <div><Link href="/join">انضم إلى المول</Link></div>
                   <div><Link href="/merchant">بوابة التاجر</Link></div>
                   <div><Link href="/stores">دليل المحلات</Link></div>
+                  <div><Link href="/national-day">عروض اليوم الوطني</Link></div>
                 </div>
                 <div>
                   <h4>خدمة العملاء</h4>

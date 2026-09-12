@@ -15,15 +15,22 @@ export default function CheckoutForm() {
   const [state, action, pending] = useActionState(placeOrder, null as any);
   const [coupon, couponAction, couponPending] = useActionState(checkCoupon, null as any);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
+  // بيانات آخر طلب على هذا الجهاز — الطلب الثاني يصير ضغطة واحدة (نمط نون بلا حساب)
+  const [saved, setSaved] = useState<{ name?: string; phone?: string; district?: string; mode?: string } | null | undefined>(undefined);
+  useEffect(() => {
+    try { const v = JSON.parse(localStorage.getItem("mall_customer") || "null"); setSaved(v); if (v?.mode === "delivery") setMode("delivery"); }
+    catch { setSaved(null); }
+  }, []);
 
   useEffect(() => {
     if (state?.ok && state.token) {
+      try { if (state.customer) localStorage.setItem("mall_customer", JSON.stringify(state.customer)); } catch {}
       clear();
       router.push(`/order/${state.token}`);
     }
   }, [state, clear, router]);
 
-  if (!ready) return <div className="wrap" style={{ padding: "48px 0" }} />;
+  if (!ready || saved === undefined) return <div className="wrap" style={{ padding: "48px 0" }} />;
 
   if (count === 0 && !state?.ok) {
     return (
@@ -59,10 +66,10 @@ export default function CheckoutForm() {
           </p>
 
           <div className="form-grid">
-            <label>الاسم<input name="customer_name" required autoComplete="name" /></label>
+            <label>الاسم<input name="customer_name" required autoComplete="name" defaultValue={saved?.name ?? ""} /></label>
             <label>
               رقم الجوال
-              <PhoneField />
+              <PhoneField defaultValue={saved?.phone ?? ""} />
             </label>
           </div>
 
@@ -70,12 +77,12 @@ export default function CheckoutForm() {
             <span style={{ fontSize: 13.5, color: "var(--mut)" }}>طريقة الاستلام</span>
             <div className="radio-row" style={{ marginTop: 8 }}>
               <label className="radio-card">
-                <input type="radio" name="fulfilment" value="pickup" defaultChecked
+                <input type="radio" name="fulfilment" value="pickup" defaultChecked={saved?.mode !== "delivery"}
                        onChange={() => setMode("pickup")} />
                 <span>الاستلام من المحل<small>مجاناً — تمرّ على المحل برمز الاستلام</small></span>
               </label>
               <label className="radio-card">
-                <input type="radio" name="fulfilment" value="delivery" onChange={() => setMode("delivery")} />
+                <input type="radio" name="fulfilment" value="delivery" defaultChecked={saved?.mode === "delivery"} onChange={() => setMode("delivery")} />
                 <span>توصيل داخل بريدة<small>رسوم كل محل تظهر في التأكيد</small></span>
               </label>
             </div>
@@ -83,7 +90,7 @@ export default function CheckoutForm() {
 
           <label>
             الحي {mode === "delivery" ? "(مطلوب للتوصيل)" : "(اختياري)"}
-            <input name="district" required={mode === "delivery"} placeholder="الصفراء، الخبيب…" list="buraydah-districts" autoComplete="off" />
+            <input name="district" required={mode === "delivery"} placeholder="الصفراء، الخبيب…" list="buraydah-districts" autoComplete="off" defaultValue={saved?.district ?? ""} />
           </label>
           <label>ملاحظات<textarea name="note" rows={3} placeholder="مقاس، لون، وقت مناسب للاتصال…" /></label>
 

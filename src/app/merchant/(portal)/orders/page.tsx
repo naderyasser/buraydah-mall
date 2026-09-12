@@ -63,13 +63,30 @@ export default async function MerchantOrders() {
                 <span className="hint">{o.lines}</span>
                 <OrderTimeline status={o.status} />
               </div>
-              <form action={merchantSetItemStatus} className="opart-form">
-                <input type="hidden" name="order_id" value={o.id} />
-                <select name="status" defaultValue={o.status}>
-                  {Object.entries(LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                </select>
-                <button className="btn btn-line btn-sm">حفظ</button>
-              </form>
+              {/* زرّ واحد كبير للخطوة التالية (تطبيق سلة للتاجر) بدل قائمة منسدلة وحفظ */}
+              <div className="opart-form">
+                {o.status === "new" && (
+                  <>
+                    <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="confirmed" />
+                      <button className="btn btn-brand">أكّد الطلب</button></form>
+                    <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="cancelled" />
+                      <button className="btn btn-line btn-sm">تعذّر التنفيذ</button></form>
+                  </>
+                )}
+                {o.status === "confirmed" && (
+                  <>
+                    <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="done" />
+                      <button className="btn btn-gold">تم التسليم</button></form>
+                    <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="cancelled" />
+                      <button className="btn btn-line btn-sm">إلغاء</button></form>
+                  </>
+                )}
+                {o.status === "done" && <span className="badge st-done">مكتمل</span>}
+                {o.status === "cancelled" && (
+                  <form action={merchantSetItemStatus}><input type="hidden" name="order_id" value={o.id} /><input type="hidden" name="status" value="new" />
+                    <button className="btn btn-line btn-sm">إرجاع إلى جديد</button></form>
+                )}
+              </div>
             </div>
           </div>
 

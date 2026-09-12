@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Riyal from "@/components/Riyal";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart, type CartItem } from "@/lib/cart";
 import { sar } from "@/lib/money";
 
@@ -20,6 +21,7 @@ export default function BuyBox({
   inStock: boolean;
 }) {
   const { add } = useCart();
+  const router = useRouter();
   const [vid, setVid] = useState<number | null>(variants.find((v) => v.in_stock)?.id ?? null);
   const [qty, setQty] = useState(1);
   const [done, setDone] = useState(false);
@@ -33,6 +35,12 @@ export default function BuyBox({
     add({ ...base, price, variantId: chosen?.id ?? null, variantName: chosen?.name_ar ?? null }, qty);
     setDone(true);
     setTimeout(() => setDone(false), 2000);
+  };
+  // «اشترِ الآن» (نون/أمازون): أغلب طلبات المحلات المحلية قطعة واحدة — طريق أقصر من السلة
+  const onBuyNow = () => {
+    if (blocked) return;
+    add({ ...base, price, variantId: chosen?.id ?? null, variantName: chosen?.name_ar ?? null }, qty);
+    router.push("/checkout");
   };
 
   return (
@@ -76,6 +84,7 @@ export default function BuyBox({
         <button type="button" className={`btn ${done ? "added" : "btn-gold"}`} onClick={onAdd} disabled={blocked}>
           {blocked ? "غير متوفّر حالياً" : done ? "أُضيف إلى السلة ✓" : "أضف إلى السلة"}
         </button>
+        {!blocked && !done && <button type="button" className="btn btn-brand" onClick={onBuyNow}>اشترِ الآن</button>}
         {done && <Link href="/cart" className="btn btn-line">إتمام الطلب</Link>}
       </div>
     </div>

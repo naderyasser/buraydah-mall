@@ -102,9 +102,15 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
                 </div>
               ))}
             </dl>
-            <a className="btn btn-palm btn-sm" href={wa} target="_blank" rel="noopener" style={{ marginTop: 12 }}>
-              أرسل الطلب للمحل عبر واتساب
-            </a>
+            {g.items[0]?.status === "done" ? (
+              <Link className="btn btn-gold btn-sm" href={`/store/${g.slug}#reviews`} style={{ marginTop: 12 }}>
+                استلمت؟ قيّم {g.name}
+              </Link>
+            ) : g.items[0]?.status !== "cancelled" && (
+              <a className="btn btn-palm btn-sm" href={wa} target="_blank" rel="noopener" style={{ marginTop: 12 }}>
+                أرسل الطلب للمحل عبر واتساب
+              </a>
+            )}
           </div>
         );
       })}
