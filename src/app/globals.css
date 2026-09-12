@@ -1190,3 +1190,45 @@ table.admin th{background:#F5EFEB;color:#5B4A2A;border-bottom:2px solid #D8BA75}
   .circle{width:62px;font-size:11.5px}.circle>span{width:46px;height:46px}.circle>span svg{width:22px;height:22px}
   .banner-x{aspect-ratio:2.6/1}
 }
+
+/* ═══ الواجهة بثلاثة أعمدة: ترحيب وضمانات يميناً، بحث وسطاً، مواقيت وحال المول يساراً ═══ */
+.najd-grid{display:grid;grid-template-columns:minmax(240px,1fr) minmax(320px,1.35fr) minmax(240px,1fr);gap:24px;align-items:center}
+.najd-side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.najd-side-e{align-items:stretch}
+.najd-lead{margin:0;font-size:13.5px;line-height:1.7;color:#4A3A20;max-width:34ch}
+.najd-trust{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.najd-trust li{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink)}
+.najd-trust li span{display:flex;flex-direction:column;line-height:1.35}
+.najd-trust li b{font-size:13px;color:var(--brand-d)}
+.najd-trust li small{font-size:11.5px;color:#6B5A3A}
+.nt-ico{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:9px;font-style:normal;font-weight:800;font-size:14px;
+  background:linear-gradient(180deg,#0A4435,#062D25);color:#F3EBDD;border:1px solid rgba(216,186,117,.6);box-shadow:0 3px 8px -3px rgba(0,0,0,.35)}
+.najd-today{background:rgba(255,255,255,.72);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.7);border-radius:12px;padding:8px 12px;
+  display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink)}
+.najd-today .nt-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.najd-today .nt-row b{font-size:13.5px;color:var(--brand-d)}
+.najd-today .nt-row a{margin-inline-start:auto;color:var(--brand-d);font-weight:700;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.nt-dot{width:8px;height:8px;border-radius:50%;background:#1DB954;box-shadow:0 0 0 3px rgba(29,185,84,.22)}
+.nt-gold{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:800;background:linear-gradient(180deg,#E5C77F,#C8A45D);color:#3A2A00}
+.nt-pin{color:var(--pin);font-size:10px}
+/* حافتا الواجهة: عمود زخرفي نجدي على كل جانب */
+.najd-edge{position:absolute;top:10px;bottom:26px;width:18px;z-index:1;opacity:.55;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='30' viewBox='0 0 18 30'%3E%3Cpath d='M9 2l6 6-6 6-6-6z' fill='none' stroke='%23062D25' stroke-width='1.2'/%3E%3Cpath d='M9 20l3 3-3 3-3-3z' fill='%23062D25'/%3E%3C/svg%3E") repeat-y center/18px 30px}
+.najd-edge-s{inset-inline-start:8px}.najd-edge-e{inset-inline-end:8px}
+.najd-in{padding-inline:36px}
+@media (max-width:1100px){
+  .najd-grid{grid-template-columns:1fr 1fr;gap:16px}
+  .najd-center{grid-column:1/-1;grid-row:1}
+  .najd-side-s{grid-row:2}.najd-side-e{grid-row:2}
+}
+@media (max-width:860px){
+  .najd-in{padding-inline:16px}
+  .najd-grid{grid-template-columns:1fr;gap:12px}
+  .najd-side-s{grid-row:1}.najd-center{grid-row:2}.najd-side-e{grid-row:3}
+  .najd-trust{flex-direction:row;gap:8px}
+  .najd-trust li{flex:1;flex-direction:column;align-items:flex-start;gap:5px}
+  .najd-trust li small{display:none}
+  .najd-lead{display:none}
+  .najd-edge{display:none}
+  .najd-today .nt-row a{margin-inline-start:0}
+}

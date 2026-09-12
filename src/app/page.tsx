@@ -10,6 +10,10 @@ import { getBestSellers, getNewArrivals, getOnSale, getTrendingSearches } from "
 import { q } from "@/db";
 import { currentOccasion, upcomingOccasion } from "@/lib/saudi";
 import PrayerCard from "@/components/PrayerCard";
+import Riyal from "@/components/Riyal";
+import { isOpenNow } from "@/lib/hours";
+import { getSettings } from "@/lib/settings";
+import { sar } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +29,7 @@ const COUNTER_MIN = Number(process.env.PUBLIC_COUNTER_MIN ?? 50);
  * ما تحتها (العروض، الأكثر مبيعاً، المحلات) يبقى للمتصفّح المتمهّل.
  */
 export default async function Home() {
-  const [brands, wings, onSale, best, fresh, trending, visitors, districts, [totals]] = await Promise.all([
+  const [brands, wings, onSale, best, fresh, trending, visitors, districts, [totals], hoursRows, settings] = await Promise.all([
     getBrands(),
     getWingIndex(),
     getOnSale(10),
@@ -41,7 +45,11 @@ export default async function Home() {
       `SELECT (SELECT count(*) FROM products WHERE is_active)::int AS products,
               (SELECT count(*) FROM stores   WHERE is_active)::int AS stores`
     ),
+    q<{ hours: any }>(`SELECT hours FROM stores WHERE is_active AND hours IS NOT NULL`),
+    getSettings(["gold_gram_21", "gold_gram_24"]).catch(() => ({ gold_gram_21: "", gold_gram_24: "" })),
   ]);
+  const openNow = hoursRows.filter((r) => isOpenNow(r.hours) === true).length;
+  const verified = brands.filter((b: any) => b.is_verified).length;
 
   const occ = currentOccasion();
   const soon = occ ? null : upcomingOccasion();
@@ -52,36 +60,60 @@ export default async function Home() {
 
       <section className="najd">
         <div className="wrap najd-in">
-          <div className="najd-top">
-            <h1 className="najd-welcome">يا هلا ومرحبا بأهل القصيم، نوّرتم مولكم!</h1>
-            <PrayerCard />
-          </div>
-          <div className="najd-center">
-            <p className="najd-kicker">سوق بريدة كامل، في سلة واحدة</p>
-            <form className="najd-search" action="/search" role="search">
-              <input name="q" placeholder="ابحث عن منتج أو محل…" aria-label="بحث" />
-              <button type="submit">بحث</button>
-            </form>
-            <div className="pills">
-              <Link href="/search?q=الكل&sale=1" className="pill">العروض</Link>
-              <Link href="/search?q=الكل&sort=newest" className="pill">الجديد</Link>
-              <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
-              <details className="hf-dd pill-dd">
-                <summary className="pill">الحي ▾</summary>
-                <div className="hf-menu">
-                  <Link href="/stores">كل الأحياء</Link>
-                  {districts.map((d) => (
-                    <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
-                      حي {d.district} <small className="tabular">({d.n})</small>
-                    </Link>
-                  ))}
-                </div>
-              </details>
-              <Link href="/search?q=الكل" className="pill">الكل</Link>
+          <div className="najd-grid">
+            {/* يمين: الترحيب وثلاث ضمانات */}
+            <div className="najd-side najd-side-s">
+              <h1 className="najd-welcome">يا هلا ومرحبا بأهل القصيم، نوّرتم مولكم!</h1>
+              <p className="najd-lead">محلات بريدة كلها في سلة واحدة — تطلب من أكثر من محل، وتستلم من المحل أو يوصلك.</p>
+              <ul className="najd-trust">
+                <li><i className="nt-ico">﷼</i><span><b>الدفع عند الاستلام</b><small>لا بطاقة ولا تحويل — تدفع للمحل بيدك</small></span></li>
+                <li><i className="nt-ico">↩</i><span><b>استرجاع خلال ٧ أيام</b><small>وفق نظام التجارة الإلكترونية</small></span></li>
+                <li><i className="nt-ico">✓</i><span><b>محلات بسجل تجاري</b><small>{verified > 0 ? `${verified} محلاً موثّقاً` : "لكل محل صفحة إفصاح"}</small></span></li>
+              </ul>
             </div>
-            <p className="najd-stats tabular">{totals.stores} محلاً · {totals.products} منتجاً · الدفع عند الاستلام{soon ? ` · ${soon.label} بعد ${soon.days} ${soon.days <= 10 ? "أيام" : "يوماً"}` : ""}</p>
+
+            {/* وسط: البحث والفلاتر */}
+            <div className="najd-center">
+              <p className="najd-kicker">سوق بريدة كامل، في سلة واحدة</p>
+              <form className="najd-search" action="/search" role="search">
+                <input name="q" placeholder="ابحث عن منتج أو محل…" aria-label="بحث" />
+                <button type="submit">بحث</button>
+              </form>
+              <div className="pills">
+                <Link href="/search?q=الكل&sale=1" className="pill">العروض</Link>
+                <Link href="/search?q=الكل&sort=newest" className="pill">الجديد</Link>
+                <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
+                <details className="hf-dd pill-dd">
+                  <summary className="pill">الحي ▾</summary>
+                  <div className="hf-menu">
+                    <Link href="/stores">كل الأحياء</Link>
+                    {districts.map((d) => (
+                      <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
+                        حي {d.district} <small className="tabular">({d.n})</small>
+                      </Link>
+                    ))}
+                  </div>
+                </details>
+                <Link href="/search?q=الكل" className="pill">الكل</Link>
+              </div>
+              <p className="najd-stats tabular">{totals.stores} محلاً · {totals.products} منتجاً · {districts.length} أحياء{soon ? ` · ${soon.label} بعد ${soon.days} ${soon.days <= 10 ? "أيام" : "يوماً"}` : ""}</p>
+            </div>
+
+            {/* يسار: مواقيت اليوم وحال المول الآن */}
+            <div className="najd-side najd-side-e">
+              <PrayerCard />
+              <div className="najd-today">
+                <div className="nt-row"><span className="nt-dot" /><b className="tabular">{openNow}</b> محلاً مفتوحاً الآن <Link href="/stores?open=1">اعرضها</Link></div>
+                {settings.gold_gram_21 && Number(settings.gold_gram_21) > 0 && (
+                  <div className="nt-row"><span className="nt-gold">ذ</span> جرام الذهب عيار ٢١ اليوم <b className="tabular">{sar(settings.gold_gram_21)}</b> <Riyal /> <Link href="/wing/gold">الأسعار</Link></div>
+                )}
+                <div className="nt-row"><span className="nt-pin">●</span> التوصيل داخل بريدة · <Link href="/requests">اطلب ما لا تجده</Link></div>
+              </div>
+            </div>
           </div>
         </div>
+        <span className="najd-edge najd-edge-s" aria-hidden="true" />
+        <span className="najd-edge najd-edge-e" aria-hidden="true" />
         <div className="najd-parapet" aria-hidden="true" />
       </section>
 
