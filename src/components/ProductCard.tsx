@@ -6,6 +6,11 @@ import Price, { discountPct, activeCompare, saleEndsLabel } from "./Price";
 import { agoAr } from "@/lib/time";
 import type { ProductWithStore } from "@/lib/types";
 
+/** وسم «صناعة سعودية» أو «منتج محلي» يظهر كشارة — ما يميّز تفصيل بريدة عن المستورد */
+export function isSaudiMade(tags?: string[] | null) {
+  return !!tags?.some((t) => /سعودي|محلي|صنع في السعودية|تفصيل/.test(t));
+}
+
 export default function ProductCard({
   p, showStore = true,
 }: { p: ProductWithStore & Record<string, any>; showStore?: boolean }) {
@@ -23,6 +28,7 @@ export default function ProductCard({
         {showStore && <span className="pcard-store">{p.store_name}</span>}
         {pct != null && <span className="pcard-off tabular">−{pct}%</span>}
         {!p.in_stock && <span className="pcard-out">نفد</span>}
+        {isSaudiMade(p.tags) && <span className="pcard-sa">صنع في السعودية</span>}
       </Link>
       <Favorite id={p.id} />
       <div className="pcard-body">
@@ -30,11 +36,11 @@ export default function ProductCard({
         {p.rating ? <Stars value={p.rating} count={p.rating_count} /> : null}
         {p.description_ar && <p className="desc">{p.description_ar}</p>}
         <Price price={p.price} compare={compare} unit={p.unit} />
-        {ends && <span className="sale-ends">⏱ {ends}</span>}
+        {ends && <span className="sale-ends">{ends}</span>}
         {(p.district || (fresh && p.created_at)) && (
           <span className="pcard-meta">
-            {p.district && <span>📍 {p.district}</span>}
-            {fresh && p.created_at && <span>⏱ {agoAr(p.created_at)}</span>}
+            {p.district && <span>حي {p.district}</span>}
+            {fresh && p.created_at && <span>{agoAr(p.created_at)}</span>}
           </span>
         )}
         <AddToCart

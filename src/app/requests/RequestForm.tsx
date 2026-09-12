@@ -1,5 +1,6 @@
 "use client";
 import { useActionState } from "react";
+import PhoneField from "@/components/PhoneField";
 import { postBuyRequest } from "./actions";
 import type { Wing } from "@/lib/types";
 
@@ -35,7 +36,7 @@ export default function RequestForm({ wings }: { wings: Wing[] }) {
         </div>
         <div className="form-grid">
           <label>اسمك<input name="customer_name" required /></label>
-          <label>جوالك<input name="phone" required inputMode="tel" dir="ltr" placeholder="05xxxxxxxx" /></label>
+          <label>جوالك<PhoneField /></label>
         </div>
         <label>الحي<input name="district" placeholder="الصفراء، الخبيب…" /></label>
         {state && !state.ok && <p className="error">{state.message}</p>}

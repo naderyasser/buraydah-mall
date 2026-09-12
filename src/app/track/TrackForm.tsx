@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import PhoneField from "@/components/PhoneField";
 import Riyal from "@/components/Riyal";
 import { useActionState } from "react";
 import { sar } from "@/lib/money";
@@ -22,7 +23,7 @@ export default function TrackForm() {
         <form action={action} className="panel form">
           <div className="form-grid">
             <label>رقم الطلب<input name="code" required dir="ltr" placeholder="BRD-1003" /></label>
-            <label>رقم الجوال<input name="phone" required inputMode="tel" dir="ltr" placeholder="05xxxxxxxx" /></label>
+            <label>رقم الجوال<PhoneField /></label>
           </div>
           {state && !state.ok && <p className="error">{state.message}</p>}
           <button className="btn btn-gold" disabled={pending}>{pending ? "جارٍ البحث…" : "اعرض حالة الطلب"}</button>

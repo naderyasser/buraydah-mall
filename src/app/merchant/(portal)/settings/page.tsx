@@ -20,7 +20,7 @@ export default async function MerchantSettings() {
 
         <div className="form-grid">
           <label>الجوال / واتساب<input name="phone" dir="ltr" defaultValue={store.phone ?? ""} /></label>
-          <label>الحي<input name="district" defaultValue={store.district ?? ""} /></label>
+          <label>الحي<input name="district" defaultValue={store.district ?? ""} list="buraydah-districts" autoComplete="off" /></label>
         </div>
         <label>العنوان<input name="address_line" defaultValue={store.address_line ?? ""} /></label>
         <label>رابط الموقع على الخريطة<input name="map_url" dir="ltr" defaultValue={store.map_url ?? ""} /></label>

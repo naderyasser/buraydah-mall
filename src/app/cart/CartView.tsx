@@ -90,6 +90,7 @@ export default function CartView() {
           <div className="row"><span>عدد القطع</span><b className="tabular">{count}</b></div>
           <div className="row"><span>عدد المحلات</span><b className="tabular">{groups.length}</b></div>
           <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(total)} <Riyal /></b></div>
+          <div className="row vat"><span>تشمل ضريبة القيمة المضافة ١٥٪</span><span className="tabular">{sar(total * 15 / 115)} <Riyal /></span></div>
           <Link href="/checkout" className="btn btn-gold btn-block" style={{ marginTop: 14 }}>متابعة الطلب</Link>
           <p className="hint" style={{ marginTop: 12 }}>
             الأسعار شاملة ضريبة القيمة المضافة · لا دفع إلكتروني — تدفع عند الاستلام.

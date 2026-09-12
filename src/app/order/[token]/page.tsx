@@ -9,6 +9,7 @@ import CancelOrder from "@/components/CancelOrder";
 import PrintButton from "@/components/PrintButton";
 import RememberOrder from "@/components/RememberOrder";
 import type { OrderRow } from "@/lib/types";
+import { hijriDate, gregorianDate } from "@/lib/saudi";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "تأكيد الطلب", robots: { index: false } };
@@ -46,7 +47,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
       <RememberOrder token={token} code={order.code} />
       <div className="print-only receipt-head">
         <b>مول بريدة الإلكتروني</b> — إيصال طلب (الدفع عند الاستلام، الفاتورة من المحل)
-        <br />التاريخ: {new Date(order.created_at).toLocaleDateString("ar-SA-u-nu-latn", { year: "numeric", month: "long", day: "numeric" })}
+        <br />التاريخ: {hijriDate(new Date(order.created_at))} — {gregorianDate(new Date(order.created_at))}
         {" · "}العميل: {order.customer_name} · <span dir="ltr">{order.phone}</span>
       </div>
       <section className="section" style={{ paddingTop: 30 }}>
@@ -56,6 +57,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
         <h1 style={{ fontSize: "clamp(26px,4.4vw,36px)", marginTop: 12 }}>
           طلبك رقم <span className="tabular">{order.code}</span>
         </h1>
+        <p className="hint tabular">{hijriDate(new Date(order.created_at), { weekday: true })}</p>
         <p style={{ color: "var(--mut)", maxWidth: "58ch" }}>
           سنتصل بك على <span className="tabular" dir="ltr">{order.phone}</span> للتأكيد.
           طلبك موزّع على {order.stores_count} {order.stores_count === 1 ? "محل" : "محلات"}،
@@ -121,6 +123,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
         )}
         <div className="row"><span>طريقة الاستلام</span><b>{order.fulfilment === "delivery" ? "توصيل داخل بريدة" : "استلام من المحل"}</b></div>
         <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(order.total)} <Riyal /></b></div>
+        <div className="row vat"><span>تشمل ضريبة القيمة المضافة ١٥٪</span><span className="tabular">{sar(Number(order.total) * 15 / 115)} <Riyal /></span></div>
       </div>
 
       <div className="no-print" style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>

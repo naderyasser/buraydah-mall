@@ -3,9 +3,12 @@ import BrandTile from "@/components/BrandTile";
 import ProductRow from "@/components/ProductRow";
 import FeedRow from "@/components/FeedRow";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import { getBrands, getVisitorStats } from "@/lib/queries";
+import { getBrands, getVisitorStats, getWingIndex } from "@/lib/queries";
 import { getBestSellers, getNewArrivals, getOnSale, getTrendingSearches } from "@/lib/browse";
 import { q } from "@/db";
+import { currentOccasion, upcomingOccasion } from "@/lib/saudi";
+import PrayerCard from "@/components/PrayerCard";
+import WingCarousel from "@/components/WingCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +21,9 @@ const COUNTER_MIN = Number(process.env.PUBLIC_COUNTER_MIN ?? 50);
  * ما تحتها (العروض، الأكثر مبيعاً، المحلات) يبقى للمتصفّح المتمهّل.
  */
 export default async function Home() {
-  const [brands, onSale, best, fresh, trending, visitors, districts, [totals]] = await Promise.all([
+  const [brands, wings, onSale, best, fresh, trending, visitors, districts, [totals]] = await Promise.all([
     getBrands(),
+    getWingIndex(),
     getOnSale(10),
     getBestSellers(10),
     getNewArrivals(14),
@@ -35,42 +39,64 @@ export default async function Home() {
     ),
   ]);
 
+  const occ = currentOccasion();
+  const soon = occ ? null : upcomingOccasion();
   return (
+    <>
     <div className="wrap">
-      <section className="hsec">
-        <h1>سوق بريدة كامل، في سلة واحدة</h1>
-        <p className="hsub">
-          <span className="tabular">{totals.stores}</span> محلاً و<span className="tabular">{totals.products}</span> منتجاً
-          من داخل المدينة · الدفع عند الاستلام
-          {visitors.total >= COUNTER_MIN && <> · زارنا <b className="tabular">{visitors.total.toLocaleString("en-US")}</b></>}
-        </p>
+      {occ && (
+        <Link href="/search?q=الكل&sale=1" className={`occ-banner occ-${occ.key}`}>
+          <span><b>{occ.label}</b><small>{occ.note}</small></span>
+          <span className="occ-cta">العروض ←</span>
+        </Link>
+      )}
+      <section className="welcome">
+        <div>
+          <h1>يا هلا ومرحبا بأهل بريدة، نوّرتم مولكم</h1>
+          <p>محلات المدينة كلها في مكان واحد — تختار من أكثر من محل في سلة واحدة، وتستلم من المحل أو يوصلك.</p>
+          {soon && <Link href="/search?q=الكل&sale=1" className="soon">{soon.label} بعد <b className="tabular">{soon.days}</b> {soon.days <= 10 ? "أيام" : "يوماً"} — عروض المحلات</Link>}
+        </div>
+        <PrayerCard />
+      </section>
+      </div>
 
-        <div className="hfilters">
-          <details className="hf-dd">
-            <summary>📍 الحي</summary>
-            <div className="hf-menu">
-              <Link href="/stores">كل الأحياء</Link>
-              {districts.map((d) => (
-                <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
-                  حي {d.district} <small className="tabular">({d.n})</small>
-                </Link>
+      <section className="najd">
+        <div className="wrap najd-in">
+          <p className="najd-kicker">سوق بريدة كامل، في سلة واحدة</p>
+          <form className="najd-search" action="/search" role="search">
+            <input name="q" placeholder="ابحث عن منتج أو محل…" aria-label="بحث" />
+            <button type="submit">بحث</button>
+          </form>
+          <p className="najd-stats tabular">{totals.stores} محلاً · {totals.products} منتجاً · الدفع عند الاستلام{visitors.total >= COUNTER_MIN && ` · زارنا ${visitors.total.toLocaleString("en-US")}`}</p>
+          <div className="hfilters">
+            <details className="hf-dd">
+              <summary>الحي ▾</summary>
+              <div className="hf-menu">
+                <Link href="/stores">كل الأحياء</Link>
+                {districts.map((d) => (
+                  <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
+                    حي {d.district} <small className="tabular">({d.n})</small>
+                  </Link>
+                ))}
+              </div>
+            </details>
+            <Link href="/stores?open=1" className="hf-btn">مفتوح الآن</Link>
+            <Link href="/search?q=الكل&sort=newest" className="hf-btn">الجديد</Link>
+            <Link href="/search?q=الكل&sale=1" className="hf-btn">العروض</Link>
+          </div>
+          {trending.length > 0 && (
+            <div className="trending">
+              <span>الأكثر بحثاً:</span>
+              {trending.map((t) => (
+                <Link key={t.term} href={`/search?q=${encodeURIComponent(t.term)}`}>{t.term}</Link>
               ))}
             </div>
-          </details>
-          <Link href="/stores?open=1" className="hf-btn">🕐 مفتوح الآن</Link>
-          <Link href="/search?q=الكل&sort=newest" className="hf-btn">✨ الجديد</Link>
-          <Link href="/search?q=الكل&sale=1" className="hf-btn">🏷 العروض</Link>
+          )}
         </div>
-
-        {trending.length > 0 && (
-          <div className="trending">
-            <span>الأكثر بحثاً:</span>
-            {trending.map((t) => (
-              <Link key={t.term} href={`/search?q=${encodeURIComponent(t.term)}`}>{t.term}</Link>
-            ))}
-          </div>
-        )}
       </section>
+
+      <div className="wrap">
+      <WingCarousel wings={wings} />
 
       <section className="section" style={{ paddingTop: 6 }}>
         <div className="section-head">
@@ -79,6 +105,21 @@ export default async function Home() {
         </div>
         <div className="feed">
           {fresh.map((p: any) => <FeedRow p={p} key={p.id} />)}
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-head">
+          <h2>تسوّق حسب الحي</h2>
+          <Link href="/stores">كل الأحياء</Link>
+        </div>
+        <div className="district-wall">
+          {districts.map((d) => (
+            <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`} className="district-tile">
+              <span className="dt-name">حي {d.district}</span>
+              <span className="dt-n tabular">{d.n} {d.n === 1 ? "محل" : d.n <= 10 ? "محلات" : "محلاً"}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -104,14 +145,8 @@ export default async function Home() {
 
       <RecentlyViewed />
 
-      <section className="section how">
-        <div className="section-head"><h2>كيف تشتري من المول؟</h2></div>
-        <ol className="steps">
-          <li><b>اختر</b> من أي محل — أو من أكثر من محل في سلة واحدة.</li>
-          <li><b>اطلب</b> باسمك وجوالك فقط. لا دفع إلكتروني ولا تسجيل.</li>
-          <li><b>استلم</b> من المحل برمز الاستلام، أو اطلب التوصيل داخل بريدة.</li>
-        </ol>
-      </section>
+
     </div>
+    </>
   );
 }

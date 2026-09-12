@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PhoneField from "@/components/PhoneField";
 import SubmitForm from "@/components/SubmitForm";
 import { submitJoinRequest } from "@/app/actions";
 import { getWings } from "@/lib/queries";
@@ -24,7 +25,7 @@ export default async function JoinPage() {
       <SubmitForm action={submitJoinRequest} submitLabel="أرسل الطلب">
         <label>اسم المحل<input name="store_name" required /></label>
         <label>اسم المسؤول<input name="contact_name" /></label>
-        <label>رقم الجوال<input name="phone" required inputMode="tel" dir="ltr" placeholder="05xxxxxxxx" /></label>
+        <label>رقم الجوال<PhoneField /></label>
         <label>
           الجناح
           <select name="wing_id" defaultValue="">

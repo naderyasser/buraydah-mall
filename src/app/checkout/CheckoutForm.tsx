@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import PhoneField from "@/components/PhoneField";
 import Riyal from "@/components/Riyal";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
@@ -61,7 +62,7 @@ export default function CheckoutForm() {
             <label>الاسم<input name="customer_name" required autoComplete="name" /></label>
             <label>
               رقم الجوال
-              <input name="phone" required inputMode="tel" dir="ltr" placeholder="05xxxxxxxx" autoComplete="tel" />
+              <PhoneField />
             </label>
           </div>
 
@@ -82,7 +83,7 @@ export default function CheckoutForm() {
 
           <label>
             الحي {mode === "delivery" ? "(مطلوب للتوصيل)" : "(اختياري)"}
-            <input name="district" required={mode === "delivery"} placeholder="الصفراء، الخبيب…" />
+            <input name="district" required={mode === "delivery"} placeholder="الصفراء، الخبيب…" list="buraydah-districts" autoComplete="off" />
           </label>
           <label>ملاحظات<textarea name="note" rows={3} placeholder="مقاس، لون، وقت مناسب للاتصال…" /></label>
 
@@ -142,6 +143,7 @@ export default function CheckoutForm() {
             <span>الإجمالي</span>
             <b className="tabular">{sar(total - discount)} <Riyal /></b>
           </div>
+          <div className="row vat"><span>تشمل ضريبة القيمة المضافة ١٥٪</span><span className="tabular">{sar((total - discount) * 15 / 115)} <Riyal /></span></div>
           <p className="hint" style={{ marginTop: 8 }}>
             {mode === "delivery"
               ? "تُضاف رسوم توصيل كل محل عند التأكيد، وتسقط عمّن بلغت سلّته حدّ التوصيل المجاني."

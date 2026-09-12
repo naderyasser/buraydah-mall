@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useState } from "react";
+import PhoneField from "@/components/PhoneField";
 import Stars from "./Stars";
 import { submitReview } from "@/app/actions";
 
@@ -47,7 +48,7 @@ export default function ReviewsBlock({
             <label>اسمك<input name="author_name" required /></label>
             <label>
               جوالك (نفس رقم الطلب)
-              <input name="phone" required inputMode="tel" dir="ltr" placeholder="05xxxxxxxx" />
+              <PhoneField />
             </label>
           </div>
           <label>

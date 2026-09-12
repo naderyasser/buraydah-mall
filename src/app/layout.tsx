@@ -6,6 +6,9 @@ import Header from "@/components/Header";
 import CategoryBar from "@/components/CategoryBar";
 import CartBar from "@/components/CartBar";
 import BottomNav from "@/components/BottomNav";
+import TopStrip from "@/components/TopStrip";
+import Skyline from "@/components/Skyline";
+import { BURAYDAH_DISTRICTS, hijriDate } from "@/lib/saudi";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
 import { getTrendingSearches } from "@/lib/browse";
@@ -42,7 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Noto+Kufi+Arabic:wght@700;800&display=swap"
         />
       </head>
       <body>
@@ -52,14 +55,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               نسخة تجريبية — المحلات والمنتجات والأسعار والتقييمات المعروضة كلها أمثلة توضيحية وليست حقيقية
             </div>
           )}
-          <div className="topstrip">
-            التوصيل داخل بريدة · الدفع عند الاستلام بدون رسوم · استرجاع خلال ٧ أيام
-          </div>
+          <TopStrip />
           <Header trending={trending.map((t) => t.term)} />
           <CategoryBar wings={wings} />
           <main>{children}</main>
+          <datalist id="buraydah-districts">
+            {BURAYDAH_DISTRICTS.map((d) => <option value={d} key={d} />)}
+          </datalist>
           <footer className="site-foot">
             <div className="wrap">
+              <Skyline className="foot-sky" />
               <div className="cols">
                 <div>
                   <h4>مول بريدة</h4>
@@ -97,6 +102,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 مخفية. كل الأسماء والشعارات ملك أصحابها. لإزالة محل أو تصحيح بياناته
                 راسلنا من صفحة الانضمام.
               </p>
+              <p className="made">بريدة، القصيم — المملكة العربية السعودية · {hijriDate()}<br /><small>صورة الواجهة: قرية عيون الجواء التراثية، القصيم — Richard Mortel، <a href="https://creativecommons.org/licenses/by/2.0" rel="license noopener" target="_blank">CC BY 2.0</a></small></p>
             </div>
           </footer>
           <CartBar />

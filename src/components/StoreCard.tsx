@@ -27,7 +27,7 @@ export default function StoreCard({ store }: { store: Store & { product_count?: 
             : <span className="mode links">{DEST_META[store.dest_type as keyof typeof DEST_META]?.label ?? "زيارة"} ↗</span>}
         </div>
         {store.map_url && (
-          <a href={store.map_url} target="_blank" rel="noopener nofollow" className="scard-dir">📍 الاتجاهات</a>
+          <a href={store.map_url} target="_blank" rel="noopener nofollow" className="scard-dir">الاتجاهات ↗</a>
         )}
       </div>
     </article>

@@ -6,7 +6,7 @@ import BuyBox from "@/components/BuyBox";
 import Gallery from "@/components/Gallery";
 import Stars from "@/components/Stars";
 import Favorite from "@/components/Favorite";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { isSaudiMade } from "@/components/ProductCard";
 import ReviewsBlock from "@/components/ReviewsBlock";
 import QuestionsBlock from "@/components/QuestionsBlock";
 import StockAlert from "@/components/StockAlert";
@@ -131,6 +131,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <p className="from">
             من <Link href={`/store/${p.store_slug}`}>{p.store_name}</Link>
             {store?.is_verified && <span className="badge verified">موثّق ✓</span>}
+            {isSaudiMade(p.tags) && <span className="badge sa">صنع في السعودية</span>}
             {p.rating ? <Stars value={p.rating} count={p.rating_count} /> : null}
             {p.views > 0 && <span className="hint tabular">{p.views} مشاهدة</span>}
           </p>
@@ -139,7 +140,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <p className="save tabular">
               وفّر {sar(Number(compare) - Number(p.price))} <Riyal /> — بدل{" "}
               <s>{sar(compare!)}</s>
-              {ends && <span className="sale-ends">⏱ {ends}</span>}
+              {ends && <span className="sale-ends">{ends}</span>}
             </p>
           )}
 

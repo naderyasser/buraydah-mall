@@ -77,7 +77,7 @@ export default async function StoreEditor({ params }: { params: Promise<{ id: st
         </label>
 
         <div className="form-grid">
-          <label>الحي<input name="district" defaultValue={store?.district ?? ""} /></label>
+          <label>الحي<input name="district" defaultValue={store?.district ?? ""} list="buraydah-districts" autoComplete="off" /></label>
           <label>المدينة<input name="city" defaultValue={store?.city ?? "بريدة"} /></label>
           <label>العنوان<input name="address_line" defaultValue={store?.address_line ?? ""} /></label>
           <label>الجوال<input name="phone" dir="ltr" defaultValue={store?.phone ?? ""} /></label>

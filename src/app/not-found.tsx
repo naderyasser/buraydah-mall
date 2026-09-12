@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Skyline from "@/components/Skyline";
 
 export const metadata = { title: "الصفحة غير موجودة" };
 
@@ -6,6 +7,7 @@ export default function NotFound() {
   return (
     <div className="wrap" style={{ maxWidth: 620 }}>
       <div className="empty" style={{ marginTop: 60 }}>
+        <Skyline height={70} className="empty-sky" />
         <h3>لم نجد هذه الصفحة</h3>
         <p>
           قد يكون المنتج بيع أو أُخفي، أو المحل لم يعد في المول. جرّب البحث أو

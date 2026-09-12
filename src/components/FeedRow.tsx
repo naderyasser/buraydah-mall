@@ -16,9 +16,9 @@ export default function FeedRow({ p }: { p: any }) {
       <span className="feed-body">
         <span className="feed-title">{p.name_ar}</span>
         <span className="feed-meta">
-          {p.district && <span>📍 حي {p.district}</span>}
-          {p.created_at && <span>⏱ {agoAr(p.created_at)}</span>}
-          <span>🏬 {p.store_name}</span>
+          {p.district && <span>حي {p.district}</span>}
+          {p.created_at && <span>{agoAr(p.created_at)}</span>}
+          <span>{p.store_name}</span>
         </span>
       </span>
       <span className="feed-price">
