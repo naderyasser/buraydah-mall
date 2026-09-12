@@ -1152,3 +1152,41 @@ table.admin th{background:#F5EFEB;color:#5B4A2A;border-bottom:2px solid #D8BA75}
 /* الترويسة: سطر ذهبي فوق السدو */
 .topbar{box-shadow:0 1px 0 rgba(216,186,117,.55),var(--sh-1)}
 @media (max-width:560px){main>.wrap>.crumbs,main>div>.wrap>.crumbs{margin:0 -16px;border-radius:0 0 10px 10px}}
+
+/* ═══ تهدئة الرئيسية: أحجام أصغر ومساحات أهدأ ═══ */
+.najd-in{padding-block:16px 52px}
+.najd-top{align-items:center}
+.najd-welcome{font-size:clamp(17px,1.9vw,22px);max-width:none;margin:0}
+.najd-center{margin-top:10px}
+.najd-kicker{font-size:clamp(19px,2.3vw,25px);margin-bottom:10px}
+.najd-search input{padding:12px 16px;font-size:15px}
+.najd-search button{padding:0 22px;font-size:14px}
+.pills{margin-top:10px;gap:6px}
+.pill{padding:5px 13px;font-size:12.5px;font-weight:600}
+.najd-stats{font-size:12.5px;margin-top:8px;opacity:.8}
+/* بطاقة المواقيت: صفّ واحد مضغوط */
+.pcardx{min-width:0;padding:8px 12px;border-radius:12px}
+.pcardx-h{flex-direction:row;align-items:baseline;gap:8px;margin-bottom:4px}
+.pcardx-h b{font-size:12.5px}.pcardx-h small{font-size:11px}
+.pcardx dl{display:flex;gap:12px}
+.pcardx dl>div{flex-direction:column;align-items:center;gap:0;font-size:12px;padding:0}
+.pcardx dt{font-size:11px}.pcardx dd{font-size:12.5px}
+/* الدوائر: أصغر وأخفّ */
+.circles{gap:14px;margin-top:-28px}
+.circle{width:72px;font-size:12px;font-weight:500;gap:5px;color:var(--mut)}
+.circle>span{width:52px;height:52px;border-width:2px}
+.circle>span svg{width:24px;height:24px}
+/* اللافتتان أنحف وبعد المنتجات */
+.banners{margin-top:24px}
+.banner-x{aspect-ratio:3.2/1}
+.banner-txt b{font-size:clamp(17px,2vw,22px)}
+.section{padding-top:26px}
+@media (max-width:860px){
+  .najd-in{padding-block:14px 46px}
+  .najd-welcome{font-size:17px}
+  .najd-top{flex-direction:column;align-items:stretch;gap:10px}
+  .pcardx dl{justify-content:space-between;gap:4px}
+  .circles{gap:8px;margin-top:-24px}
+  .circle{width:62px;font-size:11.5px}.circle>span{width:46px;height:46px}.circle>span svg{width:22px;height:22px}
+  .banner-x{aspect-ratio:2.6/1}
+}

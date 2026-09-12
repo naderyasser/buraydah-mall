@@ -13,6 +13,9 @@ import PrayerCard from "@/components/PrayerCard";
 
 export const dynamic = "force-dynamic";
 
+/** أسماء قصيرة للدوائر — سطر واحد تحت كل أيقونة كي لا يزدحم الصفّ */
+const SHORT: Record<string, string> = { gold: "ذهب", watches: "ساعات", bags: "شنط", fabrics: "أقمشة", clothing: "ملابس", dresses: "فساتين" };
+
 /** لا يُعرض عدّاد الزوار قبل أن يصير رقماً محترماً — رقم صغير يضرّ أكثر مما ينفع */
 const COUNTER_MIN = Number(process.env.PUBLIC_COUNTER_MIN ?? 50);
 
@@ -87,7 +90,7 @@ export default async function Home() {
         <Link href="/search?q=%D8%A7%D9%84%D9%83%D9%84" className="circle"><span><WingIcon slug="all" /></span>الكل</Link>
         {wings.map((w: any, i: number) => (
           <Link key={w.slug} href={`/wing/${w.slug}`} className={`circle${i % 2 ? " earth" : ""}`}>
-            <span><WingIcon slug={w.slug} /></span>{w.name_ar.replace(/^ال/, "")}
+            <span><WingIcon slug={w.slug} /></span>{SHORT[w.slug] ?? w.name_ar.replace(/^ال/, "")}
           </Link>
         ))}
         <Link href="/stores" className="circle earth"><span><WingIcon slug="stores" /></span>المحلات</Link>
@@ -95,17 +98,6 @@ export default async function Home() {
 
       <NationalBanner />
 
-      <section className="banners">
-        {wings.filter((w: any) => w.cover).slice(0, 2).map((w: any, i: number) => (
-          <Link href={`/wing/${w.slug}`} className={`banner-x${i === 0 ? " dark" : ""}`} key={w.slug} style={{ backgroundImage: `url(${w.cover})` }}>
-            <span className="banner-txt">
-              <small>{w.tagline ?? "من محلات بريدة"}</small>
-              <b>{w.name_ar}</b>
-              <span className="tabular">{w.brand_count} محلاً · تسوّق الآن</span>
-            </span>
-          </Link>
-        ))}
-      </section>
 
       <section className="section" style={{ paddingTop: 6 }}>
         <div className="section-head">
@@ -130,6 +122,18 @@ export default async function Home() {
             </Link>
           ))}
         </div>
+      </section>
+
+      <section className="banners">
+        {wings.filter((w: any) => w.cover).slice(0, 2).map((w: any, i: number) => (
+          <Link href={`/wing/${w.slug}`} className={`banner-x${i === 0 ? " dark" : ""}`} key={w.slug} style={{ backgroundImage: `url(${w.cover})` }}>
+            <span className="banner-txt">
+              <small>{w.tagline ?? "من محلات بريدة"}</small>
+              <b>{w.name_ar}</b>
+              <span className="tabular">{w.brand_count} محلاً · تسوّق الآن</span>
+            </span>
+          </Link>
+        ))}
       </section>
 
       <ProductRow title="عروض المول" items={onSale}

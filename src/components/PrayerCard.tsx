@@ -10,7 +10,7 @@ export default function PrayerCard() {
       <dl>
         {prayerTimes(now).filter((p) => p.key !== "sunrise").map((p) => (
           <div key={p.key} className={p.key === next ? "next" : ""}>
-            <dt>{p.name}</dt><dd className="tabular">{p.time}</dd>
+            <dt>{p.name}</dt><dd className="tabular">{p.time.replace(/ [صم]$/, "")}</dd>
           </div>
         ))}
       </dl>
