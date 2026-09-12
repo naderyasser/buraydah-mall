@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import OpenNow from "@/components/OpenNow";
@@ -158,7 +159,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
             </div>
             {store.free_delivery_over && (
               <div className="kv">
-                <dt>توصيل مجاني</dt><dd>فوق {Number(store.free_delivery_over)} ر.س</dd>
+                <dt>توصيل مجاني</dt><dd>فوق {Number(store.free_delivery_over)} <Riyal /></dd>
               </div>
             )}
           </dl>

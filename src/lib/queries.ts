@@ -78,7 +78,7 @@ const P_RATING = `(SELECT round(avg(r.rating), 1) FROM reviews r
     WHERE r.product_id = p.id AND r.status = 'published') AS rating,
   (SELECT count(*)::int FROM reviews r
     WHERE r.product_id = p.id AND r.status = 'published') AS rating_count`;
-const P_SEL = `${P_COLS}, p.views, p.variant_label, s.name_ar AS store_name, s.slug AS store_slug,
+const P_SEL = `${P_COLS}, p.views, p.variant_label, s.name_ar AS store_name, s.slug AS store_slug, s.district,
   w.slug AS wing_slug, w.name_ar AS wing_name, ${P_RATING}`;
 /** المميّز يتقدّم — هذا ما تُباع به المساحة داخل المول */
 const P_ORDER = `ORDER BY CASE s.tier WHEN 'featured' THEN 0 WHEN 'paid' THEN 1 ELSE 2 END,

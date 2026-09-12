@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
@@ -63,7 +64,7 @@ export default async function MerchantHome() {
         <div className="stat"><dt>طلبات تنتظرك</dt>
           <dd style={{ color: t.orders_new > 0 ? "var(--price)" : undefined }}>{t.orders_new}</dd></div>
         <div className="stat"><dt>طلبات (٣٠ يوماً)</dt><dd>{t.orders_30}</dd></div>
-        <div className="stat"><dt>قيمة المبيعات</dt><dd>{sar(t.value_30)}<small> ر.س</small></dd></div>
+        <div className="stat"><dt>قيمة المبيعات</dt><dd>{sar(t.value_30)}<small> <Riyal /></small></dd></div>
         <div className="stat"><dt>منتجاتك</dt><dd>{t.products}<small> منها {t.out_stock} نافد</small></dd></div>
         <div className="stat"><dt>مشاهدات منتجاتك</dt><dd>{t.views}</dd></div>
         <div className="stat"><dt>تقييمك</dt><dd>{t.rating ?? "—"}<small> من ٥</small></dd></div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
@@ -34,7 +35,7 @@ export default async function ProductsAdmin() {
                 </td>
                 <td>{r.name_ar}</td>
                 <td>{r.store}<br /><span className="hint">{r.wing}</span></td>
-                <td className="tabular">{sar(r.price)} ر.س<br /><span className="hint">{r.unit}</span></td>
+                <td className="tabular">{sar(r.price)} <Riyal /><br /><span className="hint">{r.unit}</span></td>
                 <td className="tabular">{r.sold}</td>
                 <td>
                   <form action={toggleProduct}>

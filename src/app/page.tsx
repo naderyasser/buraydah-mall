@@ -1,9 +1,10 @@
 import Link from "next/link";
 import BrandTile from "@/components/BrandTile";
 import ProductRow from "@/components/ProductRow";
+import FeedRow from "@/components/FeedRow";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import { getWingIndex, getBrands, getVisitorStats } from "@/lib/queries";
-import { getBestSellers, getNewArrivals, getOnSale, getMostViewed, getTrendingSearches } from "@/lib/browse";
+import { getBrands, getVisitorStats } from "@/lib/queries";
+import { getBestSellers, getNewArrivals, getOnSale, getTrendingSearches } from "@/lib/browse";
 import { q } from "@/db";
 
 export const dynamic = "force-dynamic";
@@ -11,16 +12,23 @@ export const dynamic = "force-dynamic";
 /** لا يُعرض عدّاد الزوار قبل أن يصير رقماً محترماً — رقم صغير يضرّ أكثر مما ينفع */
 const COUNTER_MIN = Number(process.env.PUBLIC_COUNTER_MIN ?? 50);
 
+/**
+ * الرئيسية على طريقة حراج: بحث أولاً، ثم صفّ فلاتر من ثلاثة أزرار (الحي/مفتوح
+ * الآن/الجديد)، ثم قائمة «آخر ما أضيف» تُقرأ سطراً سطراً — لا لافتة ولا شعارات كبيرة.
+ * ما تحتها (العروض، الأكثر مبيعاً، المحلات) يبقى للمتصفّح المتمهّل.
+ */
 export default async function Home() {
-  const [wings, brands, onSale, best, fresh, viewed, trending, visitors, [totals]] = await Promise.all([
-    getWingIndex(),
+  const [brands, onSale, best, fresh, trending, visitors, districts, [totals]] = await Promise.all([
     getBrands(),
     getOnSale(10),
     getBestSellers(10),
-    getNewArrivals(10),
-    getMostViewed(10),
-    getTrendingSearches(8),
+    getNewArrivals(14),
+    getTrendingSearches(6),
     getVisitorStats(),
+    q<{ district: string; n: number }>(
+      `SELECT district, count(*)::int AS n FROM stores WHERE is_active AND district IS NOT NULL
+       GROUP BY district ORDER BY n DESC, district LIMIT 8`
+    ),
     q<{ products: number; stores: number }>(
       `SELECT (SELECT count(*) FROM products WHERE is_active)::int AS products,
               (SELECT count(*) FROM stores   WHERE is_active)::int AS stores`
@@ -28,120 +36,82 @@ export default async function Home() {
   ]);
 
   return (
-    <>
-      <div className="wrap">
-        <section className="banner">
-          <div>
-            <h1>سوق بريدة كامل، في سلة واحدة</h1>
-            <p>
-              {totals.stores} ماركة ومحلاً داخل المدينة، و{totals.products} منتجاً بأسعارها.
-              اطلب من أكثر من محل في طلب واحد، واستلم من المحل أو اطلب التوصيل.
-            </p>
-            {trending.length > 0 && (
-              <div className="trending">
-                <span>الأكثر بحثاً:</span>
-                {trending.slice(0, 5).map((t) => (
-                  <Link key={t.term} href={`/search?q=${encodeURIComponent(t.term)}`}>{t.term}</Link>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="side">
-            <Link href="/search?q=%D8%A7%D9%84%D9%83%D9%84" className="cta">تسوّق الآن</Link>
-            {visitors.total >= COUNTER_MIN && (
-              <span className="visitors">
-                <span className="dot" />
-                زارنا <b className="tabular">{visitors.total.toLocaleString("en-US")}</b> زائر
-                {visitors.today > 0 && <> · اليوم <b className="tabular">{visitors.today}</b></>}
-              </span>
-            )}
-          </div>
-        </section>
-      </div>
+    <div className="wrap">
+      <section className="hsec">
+        <h1>سوق بريدة كامل، في سلة واحدة</h1>
+        <p className="hsub">
+          <span className="tabular">{totals.stores}</span> محلاً و<span className="tabular">{totals.products}</span> منتجاً
+          من داخل المدينة · الدفع عند الاستلام
+          {visitors.total >= COUNTER_MIN && <> · زارنا <b className="tabular">{visitors.total.toLocaleString("en-US")}</b></>}
+        </p>
 
-      <div className="trust-strip">
-        <div className="wrap">
-          <span>الدفع عند الاستلام — بدون رسوم</span>
-          <span>استرجاع خلال ٧ أيام</span>
-          <span>الأسعار شاملة ضريبة القيمة المضافة</span>
-          <span>محلات لها فرع فعلي في بريدة</span>
+        <div className="hfilters">
+          <details className="hf-dd">
+            <summary>📍 الحي</summary>
+            <div className="hf-menu">
+              <Link href="/stores">كل الأحياء</Link>
+              {districts.map((d) => (
+                <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
+                  حي {d.district} <small className="tabular">({d.n})</small>
+                </Link>
+              ))}
+            </div>
+          </details>
+          <Link href="/stores?open=1" className="hf-btn">🕐 مفتوح الآن</Link>
+          <Link href="/search?q=الكل&sort=newest" className="hf-btn">✨ الجديد</Link>
+          <Link href="/search?q=الكل&sale=1" className="hf-btn">🏷 العروض</Link>
         </div>
-      </div>
 
-      <div className="wrap">
-        <section className="section">
-          <div className="section-head">
-            <h2>أقسام المول</h2>
-            <span className="tabular">{totals.stores} ماركة · {totals.products} منتجاً</span>
-          </div>
-          <div className="wing-grid">
-            {wings.map((w: any) => (
-              <Link href={`/wing/${w.slug}`} key={w.id} className="wing-tile">
-                {w.cover && <img src={w.cover} alt="" loading="lazy" />}
-                <span className="veil" />
-                <span className="txt">
-                  <h3>{w.name_ar}</h3>
-                  {w.tagline && <small>{w.tagline}</small>}
-                  <span className="n">
-                    <span className="tabular">{w.brand_count} ماركة</span>
-                    {w.selling_count > 0 && <span className="tabular">{w.selling_count} تبيع أونلاين</span>}
-                  </span>
-                </span>
-              </Link>
+        {trending.length > 0 && (
+          <div className="trending">
+            <span>الأكثر بحثاً:</span>
+            {trending.map((t) => (
+              <Link key={t.term} href={`/search?q=${encodeURIComponent(t.term)}`}>{t.term}</Link>
             ))}
           </div>
-        </section>
+        )}
+      </section>
 
-        <ProductRow title="عروض المول" items={onSale}
-          more={{ href: "/search?q=الكل&sale=1", label: "كل العروض" }} />
+      <section className="section" style={{ paddingTop: 6 }}>
+        <div className="section-head">
+          <h2>آخر ما أضيف في بريدة</h2>
+          <Link href="/search?q=الكل&sort=newest">كل الجديد</Link>
+        </div>
+        <div className="feed">
+          {fresh.map((p: any) => <FeedRow p={p} key={p.id} />)}
+        </div>
+      </section>
 
-        <ProductRow title="الأكثر مبيعاً" items={best} note="من طلبات حقيقية داخل المول" />
+      <ProductRow title="عروض المول" items={onSale}
+        more={{ href: "/search?q=الكل&sale=1", label: "كل العروض" }} />
 
-        <ProductRow title="وصل حديثاً" items={fresh}
-          more={{ href: "/search?q=الكل&sort=newest", label: "كل الجديد" }} />
+      <ProductRow title="الأكثر مبيعاً" items={best} note="من طلبات حقيقية داخل المول" />
 
-        <section className="section">
-          <div className="section-head">
-            <h2>الماركات</h2>
-            <Link href="/stores">دليل المحلات حسب الحي</Link>
-          </div>
-          <div className="brand-wall">
-            {brands.map((b: any) => <BrandTile b={b} key={b.id} />)}
-          </div>
-        </section>
+      <section className="section">
+        <div className="section-head">
+          <h2>المحلات</h2>
+          <Link href="/stores">دليل المحلات حسب الحي</Link>
+        </div>
+        <div className="brand-wall">
+          {brands.slice(0, 12).map((b: any) => <BrandTile b={b} key={b.id} />)}
+        </div>
+        {brands.length > 12 && (
+          <p style={{ textAlign: "center", marginTop: 14 }}>
+            <Link href="/stores" className="btn btn-line">عرض كل المحلات ({brands.length})</Link>
+          </p>
+        )}
+      </section>
 
-        <ProductRow title="الأكثر مشاهدة" items={viewed}
-          more={{ href: "/search?q=الكل&sort=popular", label: "تصفّح الكل" }} />
+      <RecentlyViewed />
 
-        <RecentlyViewed />
-
-        <section className="section">
-          <div className="section-head"><h2>كيف يشتغل المول</h2></div>
-          <div className="panels">
-            <div className="panel">
-              <h4>ماركات تدخل متجرها</h4>
-              <p style={{ margin: 0, color: "var(--mut)" }}>
-                الماركات الكبرى ولها موقعها أو متجرها الخاص: تضغط الشعار فينقلك
-                المول إلى متجرها مباشرة. الوجود في الدليل مجاني.
-              </p>
-            </div>
-            <div className="panel">
-              <h4>محلات تشتري منها هنا</h4>
-              <p style={{ margin: 0, color: "var(--mut)" }}>
-                محلات المدينة التي لا متجر إلكتروني لها: تعرض منتجاتها داخل المول،
-                وتضيفها لسلة واحدة ولو من أكثر من محل.
-              </p>
-            </div>
-            <div className="panel">
-              <h4>طلب واحد يُوزَّع</h4>
-              <p style={{ margin: 0, color: "var(--mut)" }}>
-                اسم ورقم جوال فقط، ولا دفع إلكتروني. كل محل يستلم نصيبه من الطلب
-                ويؤكّده، ويصلك رمز استلام واحد.
-              </p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
+      <section className="section how">
+        <div className="section-head"><h2>كيف تشتري من المول؟</h2></div>
+        <ol className="steps">
+          <li><b>اختر</b> من أي محل — أو من أكثر من محل في سلة واحدة.</li>
+          <li><b>اطلب</b> باسمك وجوالك فقط. لا دفع إلكتروني ولا تسجيل.</li>
+          <li><b>استلم</b> من المحل برمز الاستلام، أو اطلب التوصيل داخل بريدة.</li>
+        </ol>
+      </section>
+    </div>
   );
 }

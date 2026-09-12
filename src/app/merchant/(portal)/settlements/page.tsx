@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import Riyal from "@/components/Riyal";
 import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
 
@@ -37,9 +38,9 @@ export default async function MerchantSettlements() {
       </div>
 
       <dl className="stat-row">
-        <div className="stat"><dt>مبيعات هذا الشهر (مسلّمة)</dt><dd>{sar(gross)}<small> ر.س</small></dd></div>
+        <div className="stat"><dt>مبيعات هذا الشهر (مسلّمة)</dt><dd>{sar(gross)}<small> <Riyal /></small></dd></div>
         <div className="stat"><dt>نسبة عمولة المول</dt><dd>{pct}<small>%</small></dd></div>
-        <div className="stat"><dt>العمولة المستحقّة</dt><dd>{sar(commission)}<small> ر.س</small></dd></div>
+        <div className="stat"><dt>العمولة المستحقّة</dt><dd>{sar(commission)}<small> <Riyal /></small></dd></div>
         <div className="stat"><dt>طلبات مسلّمة</dt><dd>{live?.orders ?? 0}</dd></div>
       </dl>
 
@@ -61,9 +62,9 @@ export default async function MerchantSettlements() {
                   {new Date(r.period_start).toLocaleDateString("ar-SA-u-nu-latn")} —{" "}
                   {new Date(r.period_end).toLocaleDateString("ar-SA-u-nu-latn")}
                 </td>
-                <td className="tabular">{sar(r.gross)} ر.س</td>
-                <td className="tabular">{sar(r.commission)} ر.س</td>
-                <td className="tabular">{sar(Number(r.gross) - Number(r.commission))} ر.س</td>
+                <td className="tabular">{sar(r.gross)} <Riyal /></td>
+                <td className="tabular">{sar(r.commission)} <Riyal /></td>
+                <td className="tabular">{sar(Number(r.gross) - Number(r.commission))} <Riyal /></td>
                 <td>{ST[r.status]}</td>
               </tr>
             ))}

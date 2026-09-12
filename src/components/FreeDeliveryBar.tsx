@@ -1,5 +1,6 @@
 "use client";
 import { sar } from "@/lib/money";
+import Riyal from "@/components/Riyal";
 
 /**
  * شريط «كم بقي على التوصيل المجاني» — أعلى ما يرفع متوسط قيمة الطلب في
@@ -10,7 +11,7 @@ export default function FreeDeliveryBar({
 }: { subtotal: number; freeOver: number | null; fee: number; storeName: string }) {
   if (freeOver == null || freeOver <= 0) {
     return fee > 0
-      ? <p className="fd-note">التوصيل من {storeName}: <b className="tabular">{sar(fee)} ر.س</b></p>
+      ? <p className="fd-note">التوصيل من {storeName}: <b className="tabular">{sar(fee)} <Riyal /></b></p>
       : null;
   }
 
@@ -23,7 +24,7 @@ export default function FreeDeliveryBar({
       <p>
         {remaining === 0
           ? <>حصلت على <b>التوصيل المجاني</b> من {storeName} ✓</>
-          : <>أضف <b className="tabular">{sar(remaining)} ر.س</b> من {storeName} وتحصل على التوصيل المجاني</>}
+          : <>أضف <b className="tabular">{sar(remaining)} <Riyal /></b> من {storeName} وتحصل على التوصيل المجاني</>}
       </p>
     </div>
   );

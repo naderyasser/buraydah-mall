@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import Riyal from "@/components/Riyal";
 import { requireAdmin } from "@/lib/auth";
 import { sar } from "@/lib/money";
 import { getWings } from "@/lib/queries";
@@ -79,7 +80,7 @@ export default async function PromotionsAdmin() {
                 <td>{r.kind === "pin" ? "تثبيت" : "زيادة ظهور"}</td>
                 <td>{r.wing ?? "كل المول"}</td>
                 <td className="tabular">{new Date(r.ends_on).toLocaleDateString("ar-SA-u-nu-latn")}</td>
-                <td className="tabular">{sar(r.price)} ر.س</td>
+                <td className="tabular">{sar(r.price)} <Riyal /></td>
                 <td>
                   <form action={deletePromotion}>
                     <input type="hidden" name="id" value={r.id} />

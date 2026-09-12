@@ -9,6 +9,7 @@
   --line:#E2E8EE; --line-2:#CFD9E2;
   --brand:#0B7A4B; --brand-d:#096139; --brand-soft:#E7F3ED;
   --price:#D62B2B; --gold:#F0A82A; --gold-soft:#FDF3E0;
+  --sand:#C9A96A; --sand-soft:#F7F1E4; --najd:#8A5A12; --sadu-red:#A63A2B;
   --dark:#101B26; --dark-2:#1B2A38; --dark-mut:#8FA3B5;
   --sh-1:0 1px 3px rgba(22,32,43,.07);
   --sh-2:0 4px 16px -6px rgba(22,32,43,.18);
@@ -34,9 +35,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .demo-strip{background:var(--gold-soft);color:#8A5A12;font-size:12.5px;text-align:center;padding:6px 14px}
 .topstrip{background:var(--brand);color:#fff;font-size:13px;text-align:center;padding:7px 14px}
 .topbar{background:var(--card);box-shadow:var(--sh-1);position:sticky;top:0;z-index:30}
-.topbar .wrap{display:flex;align-items:center;gap:12px;height:72px}
+.topbar .wrap{display:flex;align-items:center;gap:12px;height:66px}
 .brand{display:flex;align-items:center;gap:9px;font-size:21px;font-weight:800;color:var(--brand);white-space:nowrap}
-.brand-mark{width:36px;height:36px;flex:none;display:grid;place-items:center;background:var(--brand);color:#fff;border-radius:10px;font-size:18px;font-weight:800}
+.brand-mark{width:36px;height:36px;flex:none;border-radius:11px}
 .hsearch{flex:1;display:flex;max-width:540px;margin-inline:8px}
 .hsearch input{flex:1;min-width:0;border:1px solid var(--line);border-inline-end:0;
   border-radius:var(--r-sm) 0 0 var(--r-sm);padding:11px 15px;font:inherit;font-size:14.5px;background:var(--card);color:var(--ink)}
@@ -55,9 +56,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .catbar{background:var(--card);border-top:1px solid var(--line);box-shadow:var(--sh-1)}
 .catbar .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:11px;scrollbar-width:none}
 .catbar .wrap::-webkit-scrollbar{display:none}
-.catbar a{white-space:nowrap;padding:8px 16px;border-radius:99px;background:var(--sunk);
-  font-size:14px;font-weight:500;color:var(--mut)}
-.catbar a:hover{background:var(--brand-soft);color:var(--brand-d)}
+.cat-tile{display:flex;flex-direction:column;align-items:center;gap:5px;flex:none;min-width:76px;padding:8px 10px;
+  border-radius:var(--r-sm);color:var(--mut);font-size:12.5px;font-weight:500;white-space:nowrap}
+.cat-tile svg{color:var(--brand);background:var(--brand-soft);border-radius:12px;padding:8px;width:44px;height:44px}
+.cat-tile:hover{background:var(--sunk);color:var(--ink)}
+.cat-tile:hover svg{background:var(--brand);color:#fff}
+.catbar .wrap{padding-block:8px;justify-content:center}
 .catbar a.on{background:var(--brand);color:#fff}
 
 /* ── لافتة الترحيب ── */
@@ -85,7 +89,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 /* ── عناوين الأقسام ── */
 .section{padding-top:30px}
 .section-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.section-head h2{font-size:clamp(19px,2.6vw,23px);font-weight:800}
+.section-head h2{font-size:clamp(19px,2.6vw,23px);font-weight:800;display:flex;align-items:center;gap:9px}
+.section-head h2::before{content:"";width:18px;height:12px;flex:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'%3E%3Cpath d='M0 12V6l3-4 3 4 3-4 3 4 3-4 3 4v6z' fill='%23C9A96A'/%3E%3C/svg%3E") no-repeat center/contain}
 .section-head a,.section-head span{margin-inline-start:auto;font-size:13.5px;color:var(--mut)}
 .section-head a{color:var(--brand);font-weight:700}
 
@@ -285,12 +291,13 @@ table.admin a{color:var(--brand);font-weight:700}
   .top-actions .ghost{display:none}
 }
 @media (max-width:560px){
-  .topbar .wrap{height:60px;gap:8px}
+  .topbar .wrap{gap:8px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .brand-wall{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
   .banner{padding:22px 20px}
   .banner .side{margin-inline-start:0}
   body{padding-bottom:64px}
+  .topstrip{display:none}
 }
 
 /* ── لوحة التحكّم: بطاقة الطلب ونصيب كل محل ── */
@@ -637,3 +644,91 @@ table.admin a{color:var(--brand);font-weight:700}
 .chip.on{background:var(--brand);color:#fff}
 a.chip:hover{background:var(--brand-soft);color:var(--brand-d)}
 a.chip.on:hover{background:var(--brand-d);color:#fff}
+
+/* ═══ هوية سعودية: السدو والنقش النجدي ورمز الريال ═══ */
+.riyal{width:.78em;height:.78em;vertical-align:-.06em;display:inline-block;margin-inline-start:2px}
+.price .cur,.big-price .cur{display:inline-flex;align-items:center}
+.sadu{height:7px;background:
+  linear-gradient(135deg,var(--sadu-red) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(225deg,var(--sadu-red) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(315deg,var(--sand) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(45deg,var(--sand) 25%,transparent 25%) 0 0/14px 14px,
+  var(--brand-d)}
+.site-foot{padding-top:0}
+.site-foot::before{margin-bottom:32px}
+.site-foot::before{content:"";display:block;height:7px;background:
+  linear-gradient(135deg,var(--sadu-red) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(225deg,var(--sadu-red) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(315deg,var(--sand) 25%,transparent 25%) 0 0/14px 14px,
+  linear-gradient(45deg,var(--sand) 25%,transparent 25%) 0 0/14px 14px,
+  var(--brand-d)}
+.brand-txt{font-size:20px}
+
+/* ═══ الرئيسية على طريقة حراج ═══ */
+.hsec{padding-block:22px 6px;text-align:center}
+.hsec h1{font-size:clamp(21px,3.4vw,30px);font-weight:800;color:var(--brand-d)}
+.hsub{margin:6px 0 0;color:var(--mut);font-size:14px}
+.hfilters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hf-btn,.hf-dd>summary{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border:1px solid var(--line-2);
+  background:var(--card);border-radius:var(--r-sm);font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
+.hf-btn:hover,.hf-dd>summary:hover{border-color:var(--brand);color:var(--brand-d);background:var(--brand-soft)}
+.hf-dd{position:relative}
+.hf-dd>summary::-webkit-details-marker{display:none}
+.hf-dd[open]>summary{border-color:var(--brand);color:var(--brand-d)}
+.hf-menu{position:absolute;top:calc(100% + 6px);inset-inline-start:0;min-width:200px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r-sm);box-shadow:var(--sh-2);padding:6px;z-index:20;display:flex;flex-direction:column;text-align:start}
+.hf-menu a{padding:8px 10px;border-radius:8px;font-size:14px}
+.hf-menu a:hover{background:var(--sunk)}
+.hf-menu small{color:var(--faint)}
+.trending{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;font-size:13px;color:var(--mut)}
+.trending a{padding:3px 11px;border-radius:99px;background:var(--sand-soft);color:var(--najd);font-weight:500}
+.trending a:hover{background:var(--sand);color:#fff}
+
+.feed{display:flex;flex-direction:column;gap:8px}
+.feed-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:9px 10px;color:var(--ink)}
+.feed-row:hover{border-color:var(--brand);box-shadow:var(--sh-2)}
+.feed-img{width:72px;height:72px;flex:none;border-radius:8px;overflow:hidden;background:var(--sunk)}
+.feed-img img{width:100%;height:100%;object-fit:cover}
+.feed-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.feed-title{font-size:15.5px;font-weight:700;color:var(--brand-d);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+.feed-price{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px;color:var(--price);font-size:15px}
+.feed-price>span{display:inline-flex;align-items:center;gap:2px;font-weight:800}
+.feed-price small{font-size:11.5px;font-weight:700;color:var(--brand-d);background:var(--brand-soft);padding:1px 7px;border-radius:99px}
+.feed-price small.out{color:var(--mut);background:var(--sunk)}
+.steps{margin:0;padding:0 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 16px 52px;
+  position:relative;color:var(--mut);font-size:14px}
+.steps li b{color:var(--ink)}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;inset-inline-start:14px;top:14px;width:28px;height:28px;
+  display:grid;place-items:center;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:14px}
+
+/* بطاقة المنتج: الحي والوقت كسطر حراج */
+.pcard-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--faint)}
+
+/* ═══ الشريط السفلي على الجوال ═══ */
+.bnav{display:none}
+@media (max-width:860px){
+  .bnav{position:fixed;inset-inline:0;bottom:0;z-index:45;display:grid;grid-template-columns:1fr 1fr 1.3fr 1fr 1fr;
+    background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+  .bnav-i{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mut);padding:4px 0}
+  .bnav-i.on{color:var(--brand-d);font-weight:700}
+  .bnav-ico{position:relative;display:inline-flex}
+  .bnav-ico i{position:absolute;top:-6px;inset-inline-end:-9px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;
+    background:var(--price);color:#fff;font-size:10px;font-weight:700;font-style:normal;display:grid;place-items:center}
+  .bnav-cta{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:10.5px;color:var(--brand-d);font-weight:700;margin-top:-16px}
+  .bnav-cta b{width:46px;height:46px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;
+    font-size:26px;font-weight:400;box-shadow:0 6px 16px -4px rgba(11,122,75,.5);border:3px solid var(--card)}
+  body{padding-bottom:78px}
+  .cartbar{bottom:66px}
+  .top-actions .ghost{display:none}
+  .cat-tile{min-width:64px;padding:6px 4px;font-size:11.5px}
+  .cat-tile svg{width:40px;height:40px}
+  .catbar .wrap{justify-content:flex-start}
+  .feed-img{width:64px;height:64px}
+  .feed-meta{gap:8px;font-size:11.5px}
+  .feed-price{font-size:14px}
+  .hfilters{gap:6px}
+  .hf-btn,.hf-dd>summary{padding:8px 12px;font-size:13px}
+}

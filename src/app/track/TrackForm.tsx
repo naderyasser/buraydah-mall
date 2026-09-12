@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { useActionState } from "react";
 import { sar } from "@/lib/money";
 import { trackOrder } from "./actions";
@@ -38,7 +39,7 @@ export default function TrackForm() {
                   {new Date(state.order.created_at).toLocaleDateString("ar-SA-u-nu-latn")}
                 </span>
               </div>
-              <div className="tabular ototal">{sar(state.order.total)} ر.س</div>
+              <div className="tabular ototal">{sar(state.order.total)} <Riyal /></div>
             </header>
 
             <div className="pickup-code">
@@ -54,7 +55,7 @@ export default function TrackForm() {
                     <span className="hint">{p.lines}</span>
                     <OrderTimeline status={p.status} />
                   </div>
-                  <span className="tabular opart-val">{sar(p.value)} ر.س</span>
+                  <span className="tabular opart-val">{sar(p.value)} <Riyal /></span>
                 </div>
               ))}
             </div>

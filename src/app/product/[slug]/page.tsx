@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import BuyBox from "@/components/BuyBox";
@@ -136,7 +137,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           {pct != null && (
             <p className="save tabular">
-              وفّر {sar(Number(compare) - Number(p.price))} ر.س — بدل{" "}
+              وفّر {sar(Number(compare) - Number(p.price))} <Riyal /> — بدل{" "}
               <s>{sar(compare!)}</s>
               {ends && <span className="sale-ends">⏱ {ends}</span>}
             </p>

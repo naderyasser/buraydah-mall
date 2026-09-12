@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
@@ -56,7 +57,7 @@ export default async function Dashboard() {
         <div className="stat"><dt>الزوار (الكل)</dt><dd>{t.visits_all}</dd></div>
         <div className="stat"><dt>الزوار (30 يوماً)</dt><dd>{t.visits_30}</dd></div>
         <div className="stat"><dt>الطلبات (30 يوماً)</dt><dd>{t.orders_30}<small> من {t.orders_all} إجمالاً</small></dd></div>
-        <div className="stat"><dt>قيمة الطلبات (30 يوماً)</dt><dd>{sar(t.value_30)}<small> ر.س</small></dd></div>
+        <div className="stat"><dt>قيمة الطلبات (30 يوماً)</dt><dd>{sar(t.value_30)}<small> <Riyal /></small></dd></div>
         <div className="stat"><dt>نقرات التواصل</dt><dd>{t.clicks_30}</dd></div>
         <div className="stat"><dt>طلبات لم تُؤكَّد</dt><dd style={{ color: t.orders_new > 0 ? "var(--date)" : undefined }}>{t.orders_new}</dd></div>
       </dl>
@@ -72,7 +73,7 @@ export default async function Dashboard() {
               <tr key={r.id}>
                 <td>{r.name_ar}</td>
                 <td className="tabular">{r.orders}</td>
-                <td className="tabular">{sar(r.value)} ر.س</td>
+                <td className="tabular">{sar(r.value)} <Riyal /></td>
                 <td className="tabular">{r.clicks}</td>
                 <td><Link href={`/store/${r.slug}`}>الصفحة</Link></td>
               </tr>
@@ -94,7 +95,7 @@ export default async function Dashboard() {
                 <td>{o.customer_name}</td>
                 <td className="tabular">{o.items_count}</td>
                 <td className="tabular">{o.stores_count}</td>
-                <td className="tabular">{sar(o.total)} ر.س</td>
+                <td className="tabular">{sar(o.total)} <Riyal /></td>
                 <td>{o.status === "new" ? "جديد" : o.status === "confirmed" ? "مؤكَّد" : o.status === "done" ? "مكتمل" : "ملغى"}</td>
               </tr>
             ))}

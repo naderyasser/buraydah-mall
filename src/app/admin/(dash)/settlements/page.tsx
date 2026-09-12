@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import Riyal from "@/components/Riyal";
 import { requireAdmin } from "@/lib/auth";
 import { sar } from "@/lib/money";
 import { generateSettlements, setSettlementStatus, setStoreCommission } from "@/app/admin/actions";
@@ -50,8 +51,8 @@ export default async function SettlementsAdmin() {
               <tr key={r.id}>
                 <td>{r.store}</td>
                 <td className="tabular">{new Date(r.period_start).toLocaleDateString("ar-SA-u-nu-latn")}</td>
-                <td className="tabular">{sar(r.gross)} ر.س</td>
-                <td className="tabular">{sar(r.commission)} ر.س</td>
+                <td className="tabular">{sar(r.gross)} <Riyal /></td>
+                <td className="tabular">{sar(r.commission)} <Riyal /></td>
                 <td>{ST[r.status]}</td>
                 <td>
                   <form action={setSettlementStatus} style={{ display: "flex", gap: 6 }}>
@@ -82,7 +83,7 @@ export default async function SettlementsAdmin() {
             {stores.map((s: any) => (
               <tr key={s.id}>
                 <td>{s.name_ar}</td>
-                <td className="tabular">{sar(s.lifetime)} ر.س</td>
+                <td className="tabular">{sar(s.lifetime)} <Riyal /></td>
                 <td className="tabular">{Number(s.commission_pct)}%</td>
                 <td>
                   <form action={setStoreCommission} style={{ display: "flex", gap: 6 }}>

@@ -1,4 +1,5 @@
 import { sar } from "@/lib/money";
+import Riyal from "@/components/Riyal";
 
 /** السعر بالسعودي: الحالي أحمر، والمشطوب بجانبه، والخصم بنسبة مئوية */
 export function discountPct(price: number | string, compare?: number | string | null): number | null {
@@ -35,7 +36,7 @@ export default function Price({
   return (
     <div className={size === "lg" ? "big-price" : "price"}>
       <b>{sar(price)}</b>
-      <span className="cur">ر.س</span>
+      <span className="cur"><Riyal /></span>
       {pct != null && (
         <>
           <s className="was tabular">{sar(compare!)}</s>

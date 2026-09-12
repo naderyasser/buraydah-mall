@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { useEffect, useState } from "react";
 import { sar } from "@/lib/money";
 
@@ -33,7 +34,7 @@ export default function RecentlyViewed({ exclude }: { exclude?: number }) {
           <Link href={`/product/${p.slug}`} key={p.id} className="seen">
             {p.image ? <img src={p.image} alt="" loading="lazy" /> : <span className="ph" />}
             <b>{p.name}</b>
-            <span className="tabular">{sar(p.price)} ر.س</span>
+            <span className="tabular">{sar(p.price)} <Riyal /></span>
           </Link>
         ))}
       </div>

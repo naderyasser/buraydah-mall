@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
@@ -56,7 +57,7 @@ export default async function OrdersAdmin() {
                 {new Date(o.created_at).toLocaleDateString("ar-SA-u-nu-latn")}
               </span>
             </div>
-            <div className="tabular ototal">{sar(o.total)} ر.س</div>
+            <div className="tabular ototal">{sar(o.total)} <Riyal /></div>
           </header>
 
           <div className="ocust">
@@ -73,7 +74,7 @@ export default async function OrdersAdmin() {
                   <Link href={`/store/${p.slug}`}><b>{p.store}</b></Link>
                   <span className="hint">{p.lines}</span>
                 </div>
-                <span className="tabular opart-val">{sar(p.value)} ر.س</span>
+                <span className="tabular opart-val">{sar(p.value)} <Riyal /></span>
                 <form action={setOrderItemStatus} className="opart-form">
                   <input type="hidden" name="order_id" value={o.id} />
                   <input type="hidden" name="store_id" value={p.store_id} />

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { notFound } from "next/navigation";
 import { q, q1 } from "@/db";
 import { sar } from "@/lib/money";
@@ -86,7 +87,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
           <div className="shop-group" key={g.slug}>
             <header>
               <Link href={`/store/${g.slug}`}>{g.name}</Link>
-              <span className="badge gold tabular">{sar(g.subtotal)} ر.س</span>
+              <span className="badge gold tabular">{sar(g.subtotal)} <Riyal /></span>
             </header>
             <OrderTimeline status={g.items[0]?.status ?? "new"} />
             <dl className="hours-list">
@@ -95,7 +96,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
                   <dt style={{ color: "var(--ink)" }}>
                     {i.name_ar}{i.variant_name ? ` — ${i.variant_name}` : ""} <span className="tabular">×{i.qty}</span>
                   </dt>
-                  <dd className="tabular">{sar(Number(i.price) * i.qty)} ر.س</dd>
+                  <dd className="tabular">{sar(Number(i.price) * i.qty)} <Riyal /></dd>
                 </div>
               ))}
             </dl>
@@ -108,26 +109,26 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
 
       <div className="totals" style={{ position: "static", marginTop: 6 }}>
         <div className="row"><span>عدد القطع</span><b className="tabular">{order.items_count}</b></div>
-        <div className="row"><span>المجموع</span><span className="tabular">{sar(order.subtotal ?? order.total)} ر.س</span></div>
+        <div className="row"><span>المجموع</span><span className="tabular">{sar(order.subtotal ?? order.total)} <Riyal /></span></div>
         {Number(order.discount) > 0 && (
           <div className="row discount">
             <span>الخصم {order.coupon_code ? `(${order.coupon_code})` : ""}</span>
-            <span className="tabular">− {sar(order.discount)} ر.س</span>
+            <span className="tabular">− {sar(order.discount)} <Riyal /></span>
           </div>
         )}
         {Number(order.delivery_fee) > 0 && (
-          <div className="row"><span>التوصيل</span><span className="tabular">{sar(order.delivery_fee)} ر.س</span></div>
+          <div className="row"><span>التوصيل</span><span className="tabular">{sar(order.delivery_fee)} <Riyal /></span></div>
         )}
         <div className="row"><span>طريقة الاستلام</span><b>{order.fulfilment === "delivery" ? "توصيل داخل بريدة" : "استلام من المحل"}</b></div>
-        <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(order.total)} ر.س</b></div>
+        <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(order.total)} <Riyal /></b></div>
       </div>
 
-      <p className="no-print" style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+      <div className="no-print" style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
         <Link href="/" className="btn btn-line">عودة إلى المول</Link>
         <Link href="/orders" className="btn btn-line">طلباتي</Link>
         <PrintButton />
         {order.status === "new" && <CancelOrder token={token} />}
-      </p>
+      </div>
     </div>
   );
 }

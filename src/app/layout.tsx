@@ -5,6 +5,7 @@ import { CartProvider } from "@/lib/cart";
 import Header from "@/components/Header";
 import CategoryBar from "@/components/CategoryBar";
 import CartBar from "@/components/CartBar";
+import BottomNav from "@/components/BottomNav";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
 import { getTrendingSearches } from "@/lib/browse";
@@ -99,6 +100,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
           </footer>
           <CartBar />
+          <BottomNav />
           <VisitBeacon />
         </CartProvider>
       </body>

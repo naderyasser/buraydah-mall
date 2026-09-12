@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
@@ -44,7 +45,7 @@ export default async function MerchantOrders() {
               <span className={`badge st-${o.status}`}>{LABEL[o.status]}</span>
               <span className="hint tabular">{new Date(o.created_at).toLocaleDateString("ar-SA-u-nu-latn")}</span>
             </div>
-            <div className="tabular ototal">{sar(o.value)} ر.س</div>
+            <div className="tabular ototal">{sar(o.value)} <Riyal /></div>
           </header>
 
           <div className="ocust">

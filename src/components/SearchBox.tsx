@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { sar } from "@/lib/money";
@@ -81,7 +82,7 @@ export default function SearchBox({ trending = [] }: { trending?: string[] }) {
                 <Link key={p.slug} href={`/product/${p.slug}`} className="sugg-p" onClick={() => setOpen(false)}>
                   {p.image_path ? <img src={p.image_path} alt="" /> : <span className="sugg-noimg" />}
                   <span>{p.name_ar} <small>{p.store_name}</small></span>
-                  <b className="tabular">{sar(p.price)} ر.س</b>
+                  <b className="tabular">{sar(p.price)} <Riyal /></b>
                 </Link>
               ))}
             </div>

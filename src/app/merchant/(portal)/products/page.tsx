@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
@@ -38,7 +39,7 @@ export default async function MerchantProducts() {
                     style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }} />}
                 </td>
                 <td><Link href={`/product/${r.slug}`}>{r.name_ar}</Link></td>
-                <td className="tabular">{sar(r.price)} ر.س<br />
+                <td className="tabular">{sar(r.price)} <Riyal /><br />
                   {r.compare_price && <span className="hint"><s>{sar(r.compare_price)}</s></span>}</td>
                 <td className="tabular">{r.sold}</td>
                 <td className="tabular">{r.views}</td>

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { sar } from "@/lib/money";
@@ -13,7 +14,7 @@ export default function CartBar() {
   return (
     <div className="cartbar">
       <span className="sum">
-        <b className="tabular">{count}</b> قطعة · <b className="tabular">{sar(total)}</b> ر.س
+        <b className="tabular">{count}</b> قطعة · <b className="tabular">{sar(total)}</b> <Riyal />
       </span>
       <Link href="/cart" className="btn btn-gold btn-sm">مراجعة السلة</Link>
     </div>

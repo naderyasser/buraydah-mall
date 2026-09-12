@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import type { Metadata } from "next";
 import { q } from "@/db";
 import { getWings } from "@/lib/queries";
@@ -62,7 +63,7 @@ export default async function RequestsPage() {
                   <header>
                     <h3>{r.title}</h3>
                     {r.budget_max && (
-                      <span className="badge gold tabular">حتى {sar(r.budget_max)} ر.س</span>
+                      <span className="badge gold tabular">حتى {sar(r.budget_max)} <Riyal /></span>
                     )}
                   </header>
                   {r.body && <p>{r.body}</p>}

@@ -31,7 +31,12 @@ export default function ProductCard({
         {p.description_ar && <p className="desc">{p.description_ar}</p>}
         <Price price={p.price} compare={compare} unit={p.unit} />
         {ends && <span className="sale-ends">⏱ {ends}</span>}
-        {fresh && p.created_at && <span className="fresh">{agoAr(p.created_at)}</span>}
+        {(p.district || (fresh && p.created_at)) && (
+          <span className="pcard-meta">
+            {p.district && <span>📍 {p.district}</span>}
+            {fresh && p.created_at && <span>⏱ {agoAr(p.created_at)}</span>}
+          </span>
+        )}
         <AddToCart
           item={{
             productId: p.id, slug: p.slug, name: p.name_ar, price: Number(p.price),

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { useEffect, useState } from "react";
 import { useCart, keyOf } from "@/lib/cart";
 import { sar } from "@/lib/money";
@@ -51,7 +52,7 @@ export default function CartView() {
             <div className="shop-group" key={g.storeId}>
               <header>
                 <Link href={`/store/${g.storeSlug}`}>{g.storeName}</Link>
-                <span className="badge gold tabular">{sar(g.subtotal)} ر.س</span>
+                <span className="badge gold tabular">{sar(g.subtotal)} <Riyal /></span>
               </header>
               {delivery[g.storeId] && (
                 <FreeDeliveryBar
@@ -68,7 +69,7 @@ export default function CartView() {
                   <div className="info">
                     <h4><Link href={`/product/${it.slug}`}>{it.name}</Link></h4>
                     {it.variantName && <span className="vtag">{it.variantName}</span>}
-                    <small className="tabular">{sar(it.price)} ر.س {it.unit ?? ""}</small>
+                    <small className="tabular">{sar(it.price)} <Riyal /> {it.unit ?? ""}</small>
                     <div className="qty" style={{ marginTop: 8 }}>
                       <button type="button" onClick={() => setQty(keyOf(it), it.qty - 1)} aria-label="أنقص">−</button>
                       <span className="tabular">{it.qty}</span>
@@ -88,7 +89,7 @@ export default function CartView() {
         <aside className="totals">
           <div className="row"><span>عدد القطع</span><b className="tabular">{count}</b></div>
           <div className="row"><span>عدد المحلات</span><b className="tabular">{groups.length}</b></div>
-          <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(total)} ر.س</b></div>
+          <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(total)} <Riyal /></b></div>
           <Link href="/checkout" className="btn btn-gold btn-block" style={{ marginTop: 14 }}>متابعة الطلب</Link>
           <p className="hint" style={{ marginTop: 12 }}>
             الأسعار شاملة ضريبة القيمة المضافة · لا دفع إلكتروني — تدفع عند الاستلام.

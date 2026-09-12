@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Riyal from "@/components/Riyal";
 import Link from "next/link";
 import { useCart, type CartItem } from "@/lib/cart";
 import { sar } from "@/lib/money";
@@ -61,7 +62,7 @@ export default function BuyBox({
       )}
 
       <div className="big-price buy-price">
-        <b>{sar(price)}</b><span className="cur">ر.س</span>
+        <b>{sar(price)}</b><span className="cur"><Riyal /></span>
         {base.unit && <span className="unit">{base.unit}</span>}
         <span className="vat">شامل ضريبة القيمة المضافة</span>
       </div>

@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import Riyal from "@/components/Riyal";
 import { sar } from "@/lib/money";
 import { agoAr } from "@/lib/time";
 import { requireStore } from "@/lib/merchant-auth";
@@ -42,7 +43,7 @@ export default async function MerchantRequests() {
           <header>
             <div className="ohead">
               <b>{r.title}</b>
-              {r.budget_max && <span className="badge gold tabular">حتى {sar(r.budget_max)} ر.س</span>}
+              {r.budget_max && <span className="badge gold tabular">حتى {sar(r.budget_max)} <Riyal /></span>}
               <span className="hint">{agoAr(r.created_at)}</span>
             </div>
             <div className="hint tabular">{r.offers} عرضاً</div>

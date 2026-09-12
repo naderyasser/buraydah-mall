@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { useEffect, useState } from "react";
 import { ordersByTokens } from "@/app/order/actions";
 import { ORDERS_KEY } from "@/components/RememberOrder";
@@ -36,7 +37,7 @@ export default function OrdersView() {
             <span className="hint"> · {agoAr(o.created_at)} · {o.items_count} قطعة من {o.stores_count} {o.stores_count === 1 ? "محل" : "محلات"}</span>
           </div>
           <span className={`badge st-${o.status}`}>{LABEL[o.status] ?? o.status}</span>
-          <b className="tabular">{sar(o.total)} ر.س</b>
+          <b className="tabular">{sar(o.total)} <Riyal /></b>
         </Link>
       ))}
     </div>

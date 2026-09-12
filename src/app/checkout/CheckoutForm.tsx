@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Riyal from "@/components/Riyal";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
@@ -133,13 +134,13 @@ export default function CheckoutForm() {
             <p className={coupon.ok ? "ok-note sm" : "error sm"}>{coupon.message}</p>
           )}
 
-          <div className="row"><span>المجموع</span><span className="tabular">{sar(total)} ر.س</span></div>
+          <div className="row"><span>المجموع</span><span className="tabular">{sar(total)} <Riyal /></span></div>
           {discount > 0 && (
-            <div className="row discount"><span>الخصم</span><span className="tabular">− {sar(discount)} ر.س</span></div>
+            <div className="row discount"><span>الخصم</span><span className="tabular">− {sar(discount)} <Riyal /></span></div>
           )}
           <div className="row grand">
             <span>الإجمالي</span>
-            <b className="tabular">{sar(total - discount)} ر.س</b>
+            <b className="tabular">{sar(total - discount)} <Riyal /></b>
           </div>
           <p className="hint" style={{ marginTop: 8 }}>
             {mode === "delivery"
