@@ -1232,3 +1232,13 @@ table.admin th{background:#F5EFEB;color:#5B4A2A;border-bottom:2px solid #D8BA75}
   .najd-edge{display:none}
   .najd-today .nt-row a{margin-inline-start:0}
 }
+/* دوائر الأقسام تحت الواجهة: أصغر وأهدأ — صفّ تنقّل لا عناصر بطولية */
+.circles{gap:10px;margin-top:-22px;padding-bottom:2px}
+.circle{width:64px;font-size:11.5px;font-weight:500;gap:4px}
+.circle>span{width:42px;height:42px;border-width:2px;box-shadow:0 4px 10px -5px rgba(0,0,0,.3)}
+.circle>span svg{width:19px;height:19px}
+.circle:hover>span{transform:scale(1.05)}
+@media (max-width:860px){
+  .circles{gap:6px;margin-top:-20px}
+  .circle{width:56px;font-size:11px}.circle>span{width:38px;height:38px}.circle>span svg{width:17px;height:17px}
+}
