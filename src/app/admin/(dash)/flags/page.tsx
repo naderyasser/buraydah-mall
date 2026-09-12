@@ -1,10 +1,12 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { togglePhoneBlock } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الأرقام الموقوفة" };
 
 export default async function FlagsAdmin() {
+  await requireAdmin();
   const rows = await q<any>(
     `SELECT f.*, (SELECT count(*)::int FROM orders o
                    WHERE regexp_replace(o.phone,'[^0-9]','','g') = f.phone) AS orders

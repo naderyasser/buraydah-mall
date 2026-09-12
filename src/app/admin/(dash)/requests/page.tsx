@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { setRequestStatus, setReportStatus, reviewJoinRequest } from "@/app/admin/actions";
 
@@ -10,6 +11,7 @@ const REQ_STATUS: Record<string, string> = {
 };
 
 export default async function RequestsAdmin() {
+  await requireAdmin();
   const [requests, reports] = await Promise.all([
     q<any>(
       `SELECT r.*, w.name_ar AS wing FROM join_requests r

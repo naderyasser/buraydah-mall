@@ -1,10 +1,12 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { saveWing } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الأجنحة" };
 
 export default async function WingsAdmin() {
+  await requireAdmin();
   const wings = await q<any>(
     `SELECT w.*, (SELECT count(*) FROM stores s WHERE s.wing_id = w.id AND s.is_active)::int AS n
      FROM wings w ORDER BY w.sort_order, w.id`

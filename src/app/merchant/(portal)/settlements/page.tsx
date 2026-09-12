@@ -1,6 +1,6 @@
 import { q } from "@/db";
 import { sar } from "@/lib/money";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "المحفظة والتسويات", robots: { index: false } };
@@ -8,7 +8,7 @@ export const metadata = { title: "المحفظة والتسويات", robots: { 
 const ST: Record<string, string> = { draft: "قيد الإعداد", sent: "أُرسلت", paid: "مسدَّدة" };
 
 export default async function MerchantSettlements() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const pct = Number(store.commission_pct ?? 0);
 
   const [rows, [live]] = await Promise.all([

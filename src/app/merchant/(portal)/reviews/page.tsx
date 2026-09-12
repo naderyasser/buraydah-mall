@@ -1,13 +1,13 @@
 import { q } from "@/db";
 import Stars from "@/components/Stars";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 import { merchantReplyReview } from "../../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "تقييمات محلي", robots: { index: false } };
 
 export default async function MerchantReviews() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const rows = await q<any>(
     `SELECT r.*, p.name_ar AS product FROM reviews r
      LEFT JOIN products p ON p.id = r.product_id

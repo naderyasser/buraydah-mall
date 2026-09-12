@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "لوحة التحكّم" };
 
 export default async function Dashboard() {
+  await requireAdmin();
   const [[t], topStores, recent] = await Promise.all([
     q<any>(
       `SELECT

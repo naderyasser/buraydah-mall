@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { sar } from "@/lib/money";
 import { agoAr } from "@/lib/time";
 import { setBuyRequestStatus } from "@/app/admin/actions";
@@ -9,6 +10,7 @@ export const metadata = { title: "طلبات الشراء" };
 const ST: Record<string, string> = { open: "مفتوح", closed: "مغلق", rejected: "مرفوض" };
 
 export default async function BuyRequestsAdmin() {
+  await requireAdmin();
   const rows = await q<any>(
     `SELECT r.*, w.name_ar AS wing,
             (SELECT count(*)::int FROM buy_offers o WHERE o.request_id = r.id) AS offers

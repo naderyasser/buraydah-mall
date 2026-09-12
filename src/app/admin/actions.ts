@@ -35,7 +35,7 @@ export async function saveWing(form: FormData) {
   const id = Number(form.get("id") || 0);
   const name_ar = String(form.get("name_ar") ?? "").trim();
   if (!name_ar) return;
-  const slug = String(form.get("slug") ?? "").trim() || slugify(String(form.get("name_en") || name_ar));
+  const slug = slugify(String(form.get("slug") ?? "")) || slugify(String(form.get("name_en") || name_ar));
   const args = [
     slug, name_ar,
     String(form.get("name_en") ?? "").trim() || null,
@@ -76,7 +76,7 @@ export async function saveStore(form: FormData) {
   const dest_value = String(form.get("dest_value") ?? "").trim();
   if (!name_ar || !dest_value) return;
 
-  const slug = String(form.get("slug") ?? "").trim() || slugify(String(form.get("name_en") || name_ar));
+  const slug = slugify(String(form.get("slug") ?? "")) || slugify(String(form.get("name_en") || name_ar));
   const uploaded = await saveLogo(form.get("logo") as File | null, slug);
   const logo_path = uploaded ?? (String(form.get("logo_path") ?? "").trim() || null);
 
@@ -169,7 +169,7 @@ export async function saveProduct(form: FormData) {
   const price = Number(form.get("price"));
   if (!name_ar || !store_id || !isFinite(price)) return;
 
-  const slug = String(form.get("slug") ?? "").trim() || `p-${store_id}-${Date.now().toString(36)}`;
+  const slug = slugify(String(form.get("slug") ?? "")) || `p-${store_id}-${Date.now().toString(36)}`;
   const file = form.get("image") as File | null;
   let image_path = String(form.get("image_path") ?? "").trim() || null;
   if (file && file.size > 0) {
@@ -290,7 +290,7 @@ export async function saveCategory(form: FormData) {
   const name_ar = String(form.get("name_ar") ?? "").trim();
   const wing_id = Number(form.get("wing_id"));
   if (!name_ar || !wing_id) return;
-  const slug = String(form.get("slug") ?? "").trim() || slugify(name_ar);
+  const slug = slugify(String(form.get("slug") ?? "")) || slugify(name_ar);
   const args = [slug, wing_id, name_ar, Number(form.get("sort_order") || 100), form.get("is_active") !== null];
   if (id) {
     await q(`UPDATE categories SET slug=$1, wing_id=$2, name_ar=$3, sort_order=$4, is_active=$5 WHERE id=$6`,

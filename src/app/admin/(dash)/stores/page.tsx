@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { toggleStore } from "@/app/admin/actions";
 
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "المحلات" };
 
 export default async function StoresAdmin() {
+  await requireAdmin();
   const rows = await q<{
     id: number; name_ar: string; slug: string; wing: string; tier: string;
     is_active: boolean; dest_type: string; clicks: number;

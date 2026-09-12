@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "لوحة التاجر", robots: { index: false } };
 
 export default async function MerchantHome() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const [[t], top, alerts] = await Promise.all([
     q<any>(
       `SELECT

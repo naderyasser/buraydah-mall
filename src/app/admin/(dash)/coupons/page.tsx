@@ -1,10 +1,12 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { saveCoupon, toggleCoupon } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الكوبونات" };
 
 export default async function CouponsAdmin() {
+  await requireAdmin();
   const [rows, stores] = await Promise.all([
     q<any>(
       `SELECT c.*, s.name_ar AS store FROM coupons c

@@ -1,12 +1,12 @@
 import { q } from "@/db";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 import { merchantAnswerQuestion } from "../../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "أسئلة العملاء", robots: { index: false } };
 
 export default async function MerchantQuestions() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const rows = await q<any>(
     `SELECT qq.*, p.name_ar AS product, p.slug FROM questions qq
      JOIN products p ON p.id = qq.product_id

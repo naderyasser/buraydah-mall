@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 import { merchantSetItemStatus } from "../../actions";
 import OrderTimeline from "@/components/OrderTimeline";
 
@@ -13,7 +13,7 @@ const LABEL: Record<string, string> = {
 };
 
 export default async function MerchantOrders() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const rows = await q<any>(
     `SELECT o.id, o.code, o.customer_name, o.phone, o.district, o.fulfilment,
             o.note, o.pickup_code, o.created_at,

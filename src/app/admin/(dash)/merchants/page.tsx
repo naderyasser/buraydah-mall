@@ -1,10 +1,12 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { saveMerchant, toggleMerchant } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "حسابات التجار" };
 
 export default async function MerchantsAdmin() {
+  await requireAdmin();
   const [rows, stores] = await Promise.all([
     q<any>(
       `SELECT m.*, s.name_ar AS store FROM merchants m JOIN stores s ON s.id = m.store_id

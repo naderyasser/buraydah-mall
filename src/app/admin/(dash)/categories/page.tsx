@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { getWings } from "@/lib/queries";
 import { saveCategory, deleteCategory } from "@/app/admin/actions";
 
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "التصنيفات" };
 
 export default async function CategoriesAdmin() {
+  await requireAdmin();
   const [rows, wings] = await Promise.all([
     q<any>(
       `SELECT c.*, w.name_ar AS wing,

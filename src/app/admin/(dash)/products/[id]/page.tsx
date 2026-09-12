@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { q1 } from "@/db";
 import { getWings } from "@/lib/queries";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "تعديل منتج" };
 
 export default async function ProductEditor({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
   const { id } = await params;
   const isNew = id === "new";
   const p = isNew ? null : await q1<any>(`SELECT * FROM products WHERE id = $1`, [Number(id)]);

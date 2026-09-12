@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { sar } from "@/lib/money";
 import { generateSettlements, setSettlementStatus, setStoreCommission } from "@/app/admin/actions";
 
@@ -8,6 +9,7 @@ export const metadata = { title: "التسويات والعمولة" };
 const ST: Record<string, string> = { draft: "قيد الإعداد", sent: "أُرسلت", paid: "مسدَّدة" };
 
 export default async function SettlementsAdmin() {
+  await requireAdmin();
   const [rows, stores] = await Promise.all([
     q<any>(
       `SELECT st.*, s.name_ar AS store FROM settlements st JOIN stores s ON s.id = st.store_id

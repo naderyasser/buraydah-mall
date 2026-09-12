@@ -1,14 +1,14 @@
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { agoAr } from "@/lib/time";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 import { merchantMakeOffer } from "../../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "طلبات الشراء", robots: { index: false } };
 
 export default async function MerchantRequests() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const rows = await q<any>(
     `SELECT r.id, r.title, r.body, r.budget_max, r.district, r.created_at,
             r.customer_name, r.phone, w.name_ar AS wing,

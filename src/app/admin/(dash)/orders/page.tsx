@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { setOrderStatus, setOrderItemStatus, markRefusal } from "@/app/admin/actions";
@@ -14,6 +15,7 @@ type Part = {
 };
 
 export default async function OrdersAdmin() {
+  await requireAdmin();
   const orders = await q<any>(
     `SELECT o.* FROM orders o ORDER BY (o.status = 'new') DESC, o.created_at DESC LIMIT 120`
   );

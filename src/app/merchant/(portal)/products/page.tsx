@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 import { merchantToggleProduct, merchantSetStock } from "../../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "منتجاتي", robots: { index: false } };
 
 export default async function MerchantProducts() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
   const rows = await q<any>(
     `SELECT p.id, p.name_ar, p.slug, p.price, p.compare_price, p.unit, p.image_path,
             p.is_active, p.in_stock, p.views,

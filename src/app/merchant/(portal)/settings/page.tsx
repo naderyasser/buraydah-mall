@@ -1,12 +1,12 @@
 import HoursEditor from "@/components/HoursEditor";
-import { currentStore } from "@/lib/merchant-auth";
+import { requireStore } from "@/lib/merchant-auth";
 import { merchantSaveSettings } from "../../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "بيانات محلي", robots: { index: false } };
 
 export default async function MerchantSettings() {
-  const store = (await currentStore())!;
+  const store = await requireStore();
 
   return (
     <div className="wrap" style={{ maxWidth: 800 }}>

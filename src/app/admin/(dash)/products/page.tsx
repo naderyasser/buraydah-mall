@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { toggleProduct } from "@/app/admin/actions";
@@ -7,6 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "المنتجات" };
 
 export default async function ProductsAdmin() {
+  await requireAdmin();
   const rows = await q<any>(
     `SELECT p.id, p.name_ar, p.slug, p.price, p.unit, p.is_active, p.in_stock, p.image_path,
             s.name_ar AS store, w.name_ar AS wing,

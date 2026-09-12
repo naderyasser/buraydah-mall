@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { q } from "@/db";
 import Stars from "@/components/Stars";
 import { setReviewStatus, setQuestionStatus } from "@/app/admin/actions";
@@ -7,6 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "التقييمات والأسئلة" };
 
 export default async function ReviewsAdmin() {
+  await requireAdmin();
   const [reviews, questions] = await Promise.all([
     q<any>(
       `SELECT r.*, s.name_ar AS store, p.name_ar AS product FROM reviews r

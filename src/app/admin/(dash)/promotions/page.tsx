@@ -1,4 +1,5 @@
 import { q } from "@/db";
+import { requireAdmin } from "@/lib/auth";
 import { sar } from "@/lib/money";
 import { getWings } from "@/lib/queries";
 import { savePromotion, deletePromotion, recomputeMerit } from "@/app/admin/actions";
@@ -7,6 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "الترقية والتثبيت" };
 
 export default async function PromotionsAdmin() {
+  await requireAdmin();
   const [rows, stores, wings, merit] = await Promise.all([
     q<any>(
       `SELECT p.*, s.name_ar AS store, w.name_ar AS wing FROM promotions p

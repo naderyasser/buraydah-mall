@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import HoursEditor from "@/components/HoursEditor";
 import { saveStore } from "@/app/admin/actions";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "تعديل محل" };
 
 export default async function StoreEditor({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
   const { id } = await params;
   const isNew = id === "new";
   const store = isNew ? null : await q1<Store>(`SELECT * FROM stores WHERE id = $1`, [Number(id)]);

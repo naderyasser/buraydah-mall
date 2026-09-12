@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const COOKIE = "mall_admin";
 const MAX_AGE = 60 * 60 * 12;
@@ -46,4 +47,9 @@ export async function setSession() {
 export async function clearSession() {
   const jar = await cookies();
   jar.delete(COOKIE);
+}
+
+/** حارس كل صفحة إدارة — الـlayout لا يحمي الصفحة عند طلب RSC مباشر، فكل صفحة تتحقّق بنفسها */
+export async function requireAdmin(): Promise<void> {
+  if (!(await isLoggedIn())) redirect("/admin/login");
 }

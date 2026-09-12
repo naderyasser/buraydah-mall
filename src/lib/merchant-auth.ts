@@ -1,5 +1,6 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { q1 } from "@/db";
 
 const COOKIE = "mall_merchant";
@@ -69,4 +70,11 @@ export async function setMerchantSession(storeId: number) {
 export async function clearMerchantSession() {
   const jar = await cookies();
   jar.delete(COOKIE);
+}
+
+/** حارس كل صفحة في البوابة: يحوّل بدل أن يرمي — الصفحة والـlayout يُرسمان معاً فلا تعتمد على حارس الـlayout */
+export async function requireStore() {
+  const store = await currentStore();
+  if (!store) redirect("/merchant/login");
+  return store;
 }
