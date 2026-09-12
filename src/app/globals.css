@@ -4,12 +4,13 @@
    ثيم واحد فاتح عمداً — كمتاجر السوق السعودي.                          */
 
 :root{
-  --bg:#F4F6F8; --card:#FFFFFF; --sunk:#EEF2F5;
-  --ink:#16202B; --mut:#67788A; --faint:#93A3B4;
-  --line:#E2E8EE; --line-2:#CFD9E2;
-  --brand:#0B7A4B; --brand-d:#096139; --brand-soft:#E7F3ED;
-  --price:#D62B2B; --gold:#F0A82A; --gold-soft:#FDF3E0;
-  --sand:#C9A96A; --sand-soft:#F7F1E4; --najd:#8A5A12; --sadu-red:#A63A2B;
+  /* لوحة العميل (٢٠٢٦-٠٩-١٢): أخضر سعودي، طين وذهب نجدي، بيج ناعم — والشعار المرفوع مرجع الألوان */
+  --bg:#FAFAFA; --card:#FFFFFF; --sunk:#F5EFEB;
+  --ink:#333333; --mut:#666666; --faint:#9A9A9A;
+  --line:#EAE4DE; --line-2:#D8CFC6;
+  --brand:#006C35; --brand-d:#00552A; --brand-soft:#E6F1EA;
+  --price:#D62B2B; --gold:#E9C46A; --gold-soft:#FBF3DC;
+  --sand:#D4A373; --sand-soft:#F5EFEB; --clay:#C68B59; --najd:#8A5A12; --sadu-red:#A63A2B; --pin:#E0512F;
   --dark:#101B26; --dark-2:#1B2A38; --dark-mut:#8FA3B5;
   --sh-1:0 1px 3px rgba(22,32,43,.07);
   --sh-2:0 4px 16px -6px rgba(22,32,43,.18);
@@ -860,4 +861,59 @@ h1,.section-head h2,.brand-txt{font-family:"Noto Kufi Arabic",Tajawal,system-ui,
   .najd{background-image:url("/najd-hero-m.webp")}
   .najd-in{padding-block:22px 20px}
   .car-slide{flex-basis:88%}
+}
+
+/* ═══ مواصفات العميل: واجهة طينية بنقش نجدي، دوائر أقسام، لافتتان، شبكة منتجات ═══ */
+.brand-logo{height:46px;width:auto;display:block}
+.najd{background:linear-gradient(135deg,#D4A373,#E6BE8A 55%,#D4A373);color:var(--ink);margin-bottom:0;overflow:visible}
+.najd::before{background:url("/najd-hero.webp") center/cover no-repeat;opacity:.16;mix-blend-mode:multiply}
+.najd::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath d='M0 60V40h10V30h10V20h10v10h10v10h10v20zM60 60V40h10V30h10V20h10v10h10v10h10v20z' fill='%23B9814F' fill-opacity='.35'/%3E%3Cpath d='M30 0l10 12H20zM90 0l10 12H80z' fill='%23fff' fill-opacity='.35'/%3E%3C/svg%3E") repeat-x bottom/120px 60px,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='24' viewBox='0 0 60 24'%3E%3Cpath d='M0 24V12l7-8 8 8 7-8 8 8 7-8 8 8 7-8 8 8v12z' fill='%23fff' fill-opacity='.5'/%3E%3C/svg%3E") repeat-x top/60px 24px}
+.najd-in{position:relative;z-index:1;text-align:start;padding-block:22px 64px}
+.najd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.najd-welcome{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:clamp(20px,2.8vw,30px);color:var(--brand-d);margin:6px 0 0;max-width:24ch;line-height:1.5}
+.najd .pcardx{background:rgba(255,255,255,.72);backdrop-filter:blur(6px);border-color:rgba(255,255,255,.7)}
+.najd-center{text-align:center;margin-top:18px}
+.najd-kicker{color:var(--brand-d);text-shadow:none;font-size:clamp(22px,3.2vw,32px);margin-bottom:14px}
+.najd-search{box-shadow:0 10px 30px rgba(90,60,30,.25)}
+.pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pill{display:inline-flex;align-items:center;padding:7px 16px;border-radius:99px;background:rgba(255,255,255,.75);color:var(--brand-d);font-size:13.5px;font-weight:700;
+  border:1px solid rgba(255,255,255,.9);cursor:pointer;list-style:none;transition:transform .15s,background .15s}
+.pill:hover{background:var(--brand);color:#fff;transform:translateY(-1px)}
+.pill-dd{position:relative}.pill-dd>summary::-webkit-details-marker{display:none}
+.najd-stats{color:var(--ink);opacity:.85;margin-top:12px}
+.najd-parapet{position:absolute;inset-inline:0;bottom:-1px;height:22px;z-index:1;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'%3E%3Cpath d='M0 22V10h8V0h8v10h12V0h8v10h8v12z' fill='%23FAFAFA'/%3E%3C/svg%3E") repeat-x bottom/44px 22px}
+.circles{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:-34px;position:relative;z-index:2;padding-bottom:6px}
+.circle{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);width:84px;text-align:center}
+.circle>span{width:64px;height:64px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;box-shadow:0 6px 16px -6px rgba(0,0,0,.35);
+  border:3px solid #fff;transition:transform .15s}
+.circle.earth>span{background:var(--clay)}
+.circle:hover>span{transform:scale(1.07)}
+.circle>span svg{width:30px;height:30px}
+.banners{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.banner-x{position:relative;aspect-ratio:2.2/1;border-radius:var(--r);overflow:hidden;background:var(--sunk) center/cover no-repeat;display:flex;align-items:flex-end;color:#fff;
+  transition:transform .2s,box-shadow .2s}
+.banner-x:hover{transform:translateY(-3px);box-shadow:var(--sh-2)}
+.banner-x::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.72),rgba(0,0,0,.08) 60%)}
+.banner-x.dark::before{background:linear-gradient(90deg,rgba(0,40,20,.75),rgba(0,40,20,.2))}
+.banner-txt{position:relative;padding:18px 20px;display:flex;flex-direction:column;gap:2px}
+.banner-txt small{font-size:13px;opacity:.9}
+.banner-txt b{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:clamp(18px,2.4vw,26px)}
+.banner-txt>span{font-size:13px;opacity:.85}
+.pcard{transition:transform .15s,box-shadow .15s}
+.pcard:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
+.pcard-shop{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+.pcard-shop:hover{color:var(--brand-d)}
+.welcome{display:none}
+@media (max-width:860px){
+  .brand-logo{height:38px}
+  .najd-top{flex-direction:column}
+  .najd .pcardx{width:100%}
+  .najd-in{padding-bottom:56px}
+  .circles{gap:10px;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;padding-inline:4px}
+  .circle{width:70px;flex:none;font-size:12px}.circle>span{width:56px;height:56px}
+  .banners{grid-template-columns:1fr;gap:12px}
+  .banner-x{aspect-ratio:2.4/1}
 }

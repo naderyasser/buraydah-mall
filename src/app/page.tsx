@@ -1,14 +1,14 @@
 import Link from "next/link";
 import BrandTile from "@/components/BrandTile";
 import ProductRow from "@/components/ProductRow";
-import FeedRow from "@/components/FeedRow";
+import ProductCard from "@/components/ProductCard";
+import WingIcon from "@/components/WingIcon";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import { getBrands, getVisitorStats, getWingIndex } from "@/lib/queries";
 import { getBestSellers, getNewArrivals, getOnSale, getTrendingSearches } from "@/lib/browse";
 import { q } from "@/db";
 import { currentOccasion, upcomingOccasion } from "@/lib/saudi";
 import PrayerCard from "@/components/PrayerCard";
-import WingCarousel from "@/components/WingCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ export default async function Home() {
     getWingIndex(),
     getOnSale(10),
     getBestSellers(10),
-    getNewArrivals(14),
+    getNewArrivals(8),
     getTrendingSearches(6),
     getVisitorStats(),
     q<{ district: string; n: number }>(
@@ -50,61 +50,73 @@ export default async function Home() {
           <span className="occ-cta">العروض ←</span>
         </Link>
       )}
-      <section className="welcome">
-        <div>
-          <h1>يا هلا ومرحبا بأهل بريدة، نوّرتم مولكم</h1>
-          <p>محلات المدينة كلها في مكان واحد — تختار من أكثر من محل في سلة واحدة، وتستلم من المحل أو يوصلك.</p>
-          {soon && <Link href="/search?q=الكل&sale=1" className="soon">{soon.label} بعد <b className="tabular">{soon.days}</b> {soon.days <= 10 ? "أيام" : "يوماً"} — عروض المحلات</Link>}
-        </div>
-        <PrayerCard />
-      </section>
       </div>
 
       <section className="najd">
         <div className="wrap najd-in">
-          <p className="najd-kicker">سوق بريدة كامل، في سلة واحدة</p>
-          <form className="najd-search" action="/search" role="search">
-            <input name="q" placeholder="ابحث عن منتج أو محل…" aria-label="بحث" />
-            <button type="submit">بحث</button>
-          </form>
-          <p className="najd-stats tabular">{totals.stores} محلاً · {totals.products} منتجاً · الدفع عند الاستلام{visitors.total >= COUNTER_MIN && ` · زارنا ${visitors.total.toLocaleString("en-US")}`}</p>
-          <div className="hfilters">
-            <details className="hf-dd">
-              <summary>الحي ▾</summary>
-              <div className="hf-menu">
-                <Link href="/stores">كل الأحياء</Link>
-                {districts.map((d) => (
-                  <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
-                    حي {d.district} <small className="tabular">({d.n})</small>
-                  </Link>
-                ))}
-              </div>
-            </details>
-            <Link href="/stores?open=1" className="hf-btn">مفتوح الآن</Link>
-            <Link href="/search?q=الكل&sort=newest" className="hf-btn">الجديد</Link>
-            <Link href="/search?q=الكل&sale=1" className="hf-btn">العروض</Link>
+          <div className="najd-top">
+            <h1 className="najd-welcome">يا هلا ومرحبا بأهل القصيم، نوّرتم مولكم!</h1>
+            <PrayerCard />
           </div>
-          {trending.length > 0 && (
-            <div className="trending">
-              <span>الأكثر بحثاً:</span>
-              {trending.map((t) => (
-                <Link key={t.term} href={`/search?q=${encodeURIComponent(t.term)}`}>{t.term}</Link>
-              ))}
+          <div className="najd-center">
+            <p className="najd-kicker">سوق بريدة كامل، في سلة واحدة</p>
+            <form className="najd-search" action="/search" role="search">
+              <input name="q" placeholder="ابحث عن منتج أو محل…" aria-label="بحث" />
+              <button type="submit">بحث</button>
+            </form>
+            <div className="pills">
+              <Link href="/search?q=الكل&sale=1" className="pill">العروض</Link>
+              <Link href="/search?q=الكل&sort=newest" className="pill">الجديد</Link>
+              <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
+              <details className="hf-dd pill-dd">
+                <summary className="pill">الحي ▾</summary>
+                <div className="hf-menu">
+                  <Link href="/stores">كل الأحياء</Link>
+                  {districts.map((d) => (
+                    <Link key={d.district} href={`/search?q=الكل&district=${encodeURIComponent(d.district)}`}>
+                      حي {d.district} <small className="tabular">({d.n})</small>
+                    </Link>
+                  ))}
+                </div>
+              </details>
+              <Link href="/search?q=الكل" className="pill">الكل</Link>
             </div>
-          )}
+            <p className="najd-stats tabular">{totals.stores} محلاً · {totals.products} منتجاً · الدفع عند الاستلام{soon ? ` · ${soon.label} بعد ${soon.days} ${soon.days <= 10 ? "أيام" : "يوماً"}` : ""}</p>
+          </div>
         </div>
+        <div className="najd-parapet" aria-hidden="true" />
       </section>
 
       <div className="wrap">
-      <WingCarousel wings={wings} />
+      <nav className="circles" aria-label="أقسام المول">
+        <Link href="/search?q=%D8%A7%D9%84%D9%83%D9%84" className="circle"><span><WingIcon slug="all" /></span>الكل</Link>
+        {wings.map((w: any, i: number) => (
+          <Link key={w.slug} href={`/wing/${w.slug}`} className={`circle${i % 2 ? " earth" : ""}`}>
+            <span><WingIcon slug={w.slug} /></span>{w.name_ar.replace(/^ال/, "")}
+          </Link>
+        ))}
+        <Link href="/stores" className="circle earth"><span><WingIcon slug="stores" /></span>المحلات</Link>
+      </nav>
+
+      <section className="banners">
+        {wings.filter((w: any) => w.cover).slice(0, 2).map((w: any, i: number) => (
+          <Link href={`/wing/${w.slug}`} className={`banner-x${i === 0 ? " dark" : ""}`} key={w.slug} style={{ backgroundImage: `url(${w.cover})` }}>
+            <span className="banner-txt">
+              <small>{w.tagline ?? "من محلات بريدة"}</small>
+              <b>{w.name_ar}</b>
+              <span className="tabular">{w.brand_count} محلاً · تسوّق الآن</span>
+            </span>
+          </Link>
+        ))}
+      </section>
 
       <section className="section" style={{ paddingTop: 6 }}>
         <div className="section-head">
           <h2>آخر ما أضيف في بريدة</h2>
           <Link href="/search?q=الكل&sort=newest">كل الجديد</Link>
         </div>
-        <div className="feed">
-          {fresh.map((p: any) => <FeedRow p={p} key={p.id} />)}
+        <div className="grid">
+          {fresh.slice(0, 8).map((p: any) => <ProductCard p={p} key={p.id} />)}
         </div>
       </section>
 

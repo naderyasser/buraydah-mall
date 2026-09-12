@@ -25,7 +25,6 @@ export default function ProductCard({
         {p.image_path
           ? <img src={p.image_path} alt={p.name_ar} loading="lazy" />
           : <span />}
-        {showStore && <span className="pcard-store">{p.store_name}</span>}
         {pct != null && <span className="pcard-off tabular">−{pct}%</span>}
         {!p.in_stock && <span className="pcard-out">نفد</span>}
         {isSaudiMade(p.tags) && <span className="pcard-sa">صنع في السعودية</span>}
@@ -33,6 +32,12 @@ export default function ProductCard({
       <Favorite id={p.id} />
       <div className="pcard-body">
         <h3><Link href={`/product/${p.slug}`}>{p.name_ar}</Link></h3>
+        {showStore && (
+          <Link href={`/store/${p.store_slug}`} className="pcard-shop">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 10 5 4h14l2 6" /><path d="M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 12v9h14v-9" /></svg>
+            {p.store_name}
+          </Link>
+        )}
         {p.rating ? <Stars value={p.rating} count={p.rating_count} /> : null}
         {p.description_ar && <p className="desc">{p.description_ar}</p>}
         <Price price={p.price} compare={compare} unit={p.unit} />

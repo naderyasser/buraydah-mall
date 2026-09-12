@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import WingIcon from "./WingIcon";
 import type { Wing } from "@/lib/types";
 
@@ -7,6 +9,8 @@ import type { Wing } from "@/lib/types";
  * الأقسام تُمرَّر من التخطيط: استعلام واحد لا اثنان في كل صفحة.
  */
 export default function CategoryBar({ wings }: { wings: Wing[] }) {
+  // الرئيسية ترسم دوائر الأقسام فوق الواجهة النجدية بنفسها
+  if (usePathname() === "/") return null;
   return (
     <nav className="catbar" aria-label="أقسام المول">
       <div className="wrap">
