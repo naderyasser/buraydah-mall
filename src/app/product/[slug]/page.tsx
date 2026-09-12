@@ -13,10 +13,11 @@ import ViewCounter from "@/components/ViewCounter";
 import RememberSeen from "@/components/RememberSeen";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import TrustRow from "@/components/TrustRow";
-import { discountPct } from "@/components/Price";
+import ShareButtons from "@/components/ShareButtons";
+import { discountPct, activeCompare, saleEndsLabel } from "@/components/Price";
 import { buildDestUrl } from "@/lib/destinations";
 import { readyPromise, holdNote } from "@/lib/promise";
-import { getProduct, getRelatedProducts } from "@/lib/queries";
+import { getProduct, getRelatedProducts, getSimilarProducts } from "@/lib/queries";
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { SITE_URL } from "@/lib/site";
@@ -43,8 +44,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const p = await getProduct((await params).slug);
   if (!p) notFound();
 
-  const [related, images, variants, reviews, questions, store] = await Promise.all([
+  const [related, similar, images, variants, reviews, questions, store] = await Promise.all([
     getRelatedProducts(p.store_id, p.id, 4),
+    getSimilarProducts(p, 4),
     q<{ path: string }>(`SELECT path FROM product_images WHERE product_id = $1 ORDER BY sort_order, id`, [p.id]),
     q<any>(
       `SELECT id, name_ar, extra_price, in_stock FROM product_variants
@@ -67,7 +69,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   ]);
 
   const gallery = [p.image_path, ...images.map((i) => i.path)].filter(Boolean) as string[];
-  const pct = discountPct(p.price, p.compare_price);
+  const compare = activeCompare(p);
+  const pct = discountPct(p.price, compare);
+  const ends = pct != null ? saleEndsLabel(p.sale_ends_at) : null;
 
   // واتساب المحل من صفحة المنتج: ما لا يقدّمه جرير ولا نون، وهو أقرب ما
   // يتعامل به سوق بريدة — والسؤال قبل الشراء يقصّر طريق البيع.
@@ -132,8 +136,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           {pct != null && (
             <p className="save tabular">
-              وفّر {sar(Number(p.compare_price) - Number(p.price))} ر.س — بدل{" "}
-              <s>{sar(p.compare_price)}</s>
+              وفّر {sar(Number(compare) - Number(p.price))} ر.س — بدل{" "}
+              <s>{sar(compare!)}</s>
+              {ends && <span className="sale-ends">⏱ {ends}</span>}
             </p>
           )}
 
@@ -153,6 +158,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           )}
 
           <TrustRow />
+
+          <ShareButtons url={`${SITE_URL}/product/${p.slug}`} title={p.name_ar} />
 
           {waUrl && (
             <a className="btn btn-palm btn-block" href={waUrl} target="_blank" rel="noopener nofollow">
@@ -209,6 +216,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <Link href={`/store/${p.store_slug}`}>كل منتجات {p.store_name}</Link>
           </div>
           <div className="grid">{related.map((r: any) => <ProductCard p={r} key={r.id} showStore={false} />)}</div>
+        </section>
+      )}
+
+      {similar.length > 0 && (
+        <section className="section">
+          <div className="section-head">
+            <h2>منتجات مشابهة من محلات أخرى</h2>
+            <Link href={p.category_slug ? `/wing/${p.wing_slug}?cat=${p.category_slug}` : `/wing/${p.wing_slug}`}>قارن الأسعار</Link>
+          </div>
+          <div className="grid">{similar.map((r: any) => <ProductCard p={r} key={r.id} />)}</div>
         </section>
       )}
 

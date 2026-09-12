@@ -70,7 +70,7 @@ export function searchStores(term: string): Promise<(Store & { wing_slug: string
 /* ── المنتجات ── */
 const P_COLS = `p.id, p.slug, p.store_id, p.name_ar, p.description_ar, p.price,
   p.compare_price, p.image_path, p.unit, p.tags, p.in_stock, p.sort_order, p.is_active,
-  p.specs, p.category_id`;
+  p.specs, p.category_id, p.sale_ends_at, p.created_at`;
 const P_JOIN = `FROM products p
   JOIN stores s ON s.id = p.store_id AND s.is_active
   JOIN wings  w ON w.id = s.wing_id  AND w.is_active`;
@@ -103,7 +103,9 @@ export function getProductsByStore(storeId: number) {
 }
 
 export function getProduct(slug: string) {
-  return q1<any>(`SELECT ${P_SEL} ${P_JOIN} WHERE p.is_active AND p.slug = $1`, [slug]);
+  return q1<any>(
+    `SELECT ${P_SEL}, (SELECT c.slug FROM categories c WHERE c.id = p.category_id) AS category_slug
+     ${P_JOIN} WHERE p.is_active AND p.slug = $1`, [slug]);
 }
 
 export function getRelatedProducts(storeId: number, excludeId: number, limit = 4) {
@@ -112,6 +114,37 @@ export function getRelatedProducts(storeId: number, excludeId: number, limit = 4
      ORDER BY p.sort_order LIMIT $3`,
     [storeId, excludeId, limit]
   );
+}
+
+/**
+ * «منتجات مشابهة» من محلات أخرى (نون/أمازون): نفس التصنيف الفرعي إن وُجد وإلا
+ * نفس الجناح، والأقرب سعراً أولاً — هذا ما يجعل المول سوقاً لا كتالوج محل واحد.
+ */
+export function getSimilarProducts(p: { id: number; store_id: number; category_id: number | null; price: number | string; wing_slug: string }, limit = 4) {
+  return q<any>(
+    `SELECT ${P_SEL} ${P_JOIN} WHERE p.is_active AND p.in_stock AND p.id <> $1 AND p.store_id <> $2
+       AND ($3::int IS NULL OR p.category_id = $3) AND w.slug = $4
+     ORDER BY abs(p.price - $5::numeric), p.sort_order LIMIT $6`,
+    [p.id, p.store_id, p.category_id, p.wing_slug, Number(p.price), limit]
+  );
+}
+
+/** اقتراحات البحث الفورية: منتجات ومحلات وتصنيفات — ٥ من كل نوع تكفي قائمة منسدلة */
+export async function suggest(term: string) {
+  const like = `%${term.trim()}%`;
+  const [products, stores, categories] = await Promise.all([
+    q<any>(
+      `SELECT p.name_ar, p.slug, p.price, p.image_path, s.name_ar AS store_name
+       FROM products p JOIN stores s ON s.id = p.store_id AND s.is_active
+       WHERE p.is_active AND p.name_ar ILIKE $1
+       ORDER BY p.views DESC, p.sort_order LIMIT 5`, [like]),
+    q<any>(`SELECT name_ar, slug, district FROM stores WHERE is_active AND name_ar ILIKE $1 ORDER BY tier, sort_order LIMIT 3`, [like]),
+    q<any>(
+      `SELECT c.name_ar, c.slug, w.slug AS wing_slug, w.name_ar AS wing_name
+       FROM categories c JOIN wings w ON w.id = c.wing_id
+       WHERE c.is_active AND c.name_ar ILIKE $1 ORDER BY c.sort_order LIMIT 3`, [like]),
+  ]);
+  return { products, stores, categories };
 }
 
 /** بحث في المنتجات بالاسم والوصف والوسوم واسم المحل */

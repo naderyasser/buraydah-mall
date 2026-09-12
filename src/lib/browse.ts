@@ -72,7 +72,7 @@ const JOINS = `FROM products p
 
 const SELECT = `p.id, p.slug, p.store_id, p.name_ar, p.description_ar, p.price,
   p.compare_price, p.image_path, p.unit, p.tags, p.in_stock, p.sort_order,
-  p.is_active, p.views, p.variant_label, p.created_at,
+  p.is_active, p.views, p.variant_label, p.created_at, p.sale_ends_at,
   s.name_ar AS store_name, s.slug AS store_slug, s.district,
   w.slug AS wing_slug, w.name_ar AS wing_name,
   c.slug AS category_slug, c.name_ar AS category_name,

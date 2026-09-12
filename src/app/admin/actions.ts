@@ -208,20 +208,22 @@ export async function saveProduct(form: FormData) {
     form.get("category_id") ? Number(form.get("category_id")) : null,
     String(form.get("variant_label") ?? "").trim() || null,
     JSON.stringify(specs),
+    // حقل datetime-local بلا منطقة زمنية — نقرؤه بتوقيت الرياض لا بتوقيت الخادم (UTC)
+    form.get("sale_ends_at") ? new Date(String(form.get("sale_ends_at")) + "+03:00") : null,
   ];
 
   if (id) {
     await q(
       `UPDATE products SET slug=$1, store_id=$2, name_ar=$3, description_ar=$4, price=$5,
         compare_price=$6, image_path=$7, unit=$8, tags=$9, in_stock=$10, sort_order=$11, is_active=$12,
-        category_id=$13, variant_label=$14, specs=$15::jsonb
-       WHERE id=$16`, [...vals, id]
+        category_id=$13, variant_label=$14, specs=$15::jsonb, sale_ends_at=$16
+       WHERE id=$17`, [...vals, id]
     );
   } else {
     await q(
       `INSERT INTO products (slug, store_id, name_ar, description_ar, price, compare_price,
-        image_path, unit, tags, in_stock, sort_order, is_active, category_id, variant_label, specs)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb)`, vals
+        image_path, unit, tags, in_stock, sort_order, is_active, category_id, variant_label, specs, sale_ends_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb,$16)`, vals
     );
   }
   revalidatePath("/", "layout");

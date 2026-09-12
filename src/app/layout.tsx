@@ -7,6 +7,7 @@ import CategoryBar from "@/components/CategoryBar";
 import CartBar from "@/components/CartBar";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
+import { getTrendingSearches } from "@/lib/browse";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 const DESCRIPTION =
@@ -31,7 +32,7 @@ export const viewport = { themeColor: "#0B7A4B" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const demo = process.env.NEXT_PUBLIC_DEMO_BANNER === "1";
-  const wings = await getWings();
+  const [wings, trending] = await Promise.all([getWings(), getTrendingSearches(6).catch(() => [])]);
 
   return (
     <html lang="ar" dir="rtl">
@@ -53,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="topstrip">
             التوصيل داخل بريدة · الدفع عند الاستلام بدون رسوم · استرجاع خلال ٧ أيام
           </div>
-          <Header />
+          <Header trending={trending.map((t) => t.term)} />
           <CategoryBar wings={wings} />
           <main>{children}</main>
           <footer className="site-foot">
@@ -76,10 +77,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <h4>للتجار</h4>
                   <div><Link href="/join">انضم إلى المول</Link></div>
                   <div><Link href="/merchant">بوابة التاجر</Link></div>
-                  <div><Link href="/search">ابحث عن محل</Link></div>
+                  <div><Link href="/stores">دليل المحلات</Link></div>
                 </div>
                 <div>
                   <h4>خدمة العملاء</h4>
+                  <div><Link href="/orders">طلباتي</Link></div>
                   <div><Link href="/track">تتبّع طلبك</Link></div>
                   <div><Link href="/requests">اطلب ما لا تجده</Link></div>
                   <div><Link href="/returns">الاستبدال والاسترجاع</Link></div>

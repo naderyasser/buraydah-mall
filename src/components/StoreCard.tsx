@@ -3,37 +3,33 @@ import OpenNow from "./OpenNow";
 import { DEST_META } from "@/lib/destinations";
 import type { Store } from "@/lib/types";
 
-export default function StoreCard({ store }: { store: Store }) {
-  const meta = DEST_META[store.dest_type];
+/**
+ * بطاقة المحل في الدليل: ما يهمّ مشتري بريدة أولاً — الحي، مفتوح الآن، والاتجاهات.
+ * ليست رابطاً واحداً لأن فيها رابطين (الصفحة والاتجاهات) ولا يجوز تداخل الروابط.
+ */
+export default function StoreCard({ store }: { store: Store & { product_count?: number; wing_slug?: string } }) {
+  const sells = (store.product_count ?? 0) > 0;
+  const href = sells ? `/store/${store.slug}` : `/go/${store.slug}`;
   return (
-    <Link href={`/store/${store.slug}`} className={`store-card${store.tier === "featured" ? " featured" : ""}`}>
-      <div className="logo-box">
-        {store.logo_path ? (
-          <img src={store.logo_path} alt={store.name_ar} loading="lazy" />
-        ) : (
-          <span className="logo-fallback">{store.name_ar}</span>
-        )}
-      </div>
-      <div className="store-body">
-        <h3>{store.name_ar}</h3>
-        <span className="where">
-          {store.district ? `حي ${store.district}` : store.city}
-        </span>
+    <article className={`scard${store.tier === "featured" ? " featured" : ""}`}>
+      <Link href={href} className="scard-logo" {...(sells ? {} : { rel: "nofollow sponsored", target: "_blank" })}>
+        {store.logo_path
+          ? <img src={store.logo_path} alt={store.name_ar} loading="lazy" />
+          : <b>{store.name_ar}</b>}
+      </Link>
+      <div className="scard-body">
+        <h3><Link href={href}>{store.name_ar}</Link>{store.is_verified && <span className="badge verified">✓</span>}</h3>
+        <span className="where">{store.district ? `حي ${store.district}` : store.city || "بريدة"}</span>
         <div className="card-row">
-          <OpenNow hours={store.hours} />
-          {store.tier === "featured" && <span className="badge featured">مميّز</span>}
+          <OpenNow hours={store.hours as any} />
+          {sells
+            ? <span className="mode sells">{store.product_count} منتجاً</span>
+            : <span className="mode links">{DEST_META[store.dest_type as keyof typeof DEST_META]?.label ?? "زيارة"} ↗</span>}
         </div>
-        {store.tags?.length > 0 && (
-          <div className="tags">
-            {store.tags.slice(0, 3).map((t) => (
-              <span className="tag" key={t}>{t}</span>
-            ))}
-          </div>
+        {store.map_url && (
+          <a href={store.map_url} target="_blank" rel="noopener nofollow" className="scard-dir">📍 الاتجاهات</a>
         )}
-        <span className="where" style={{ color: "var(--text-3)", fontSize: 12.5 }}>
-          {meta.label}
-        </span>
       </div>
-    </Link>
+    </article>
   );
 }

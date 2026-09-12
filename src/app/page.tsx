@@ -103,7 +103,7 @@ export default async function Home() {
         <section className="section">
           <div className="section-head">
             <h2>الماركات</h2>
-            <span>الماركة الموسومة بسهم تنقلك لمتجرها مباشرة</span>
+            <Link href="/stores">دليل المحلات حسب الحي</Link>
           </div>
           <div className="brand-wall">
             {brands.map((b: any) => <BrandTile b={b} key={b.id} />)}

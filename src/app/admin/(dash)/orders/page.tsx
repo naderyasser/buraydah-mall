@@ -103,6 +103,7 @@ export default async function OrdersAdmin() {
               </form>
             )}
             {o.refused && <span className="badge st-cancelled">رفض الاستلام</span>}
+            {o.cancelled_by === "customer" && <span className="badge st-cancelled">ألغاه العميل</span>}
           </footer>
         </article>
       ))}

@@ -2,14 +2,16 @@ import Link from "next/link";
 import AddToCart from "./AddToCart";
 import Stars from "./Stars";
 import Favorite from "./Favorite";
-import Price, { discountPct } from "./Price";
+import Price, { discountPct, activeCompare, saleEndsLabel } from "./Price";
 import { agoAr } from "@/lib/time";
 import type { ProductWithStore } from "@/lib/types";
 
 export default function ProductCard({
   p, showStore = true,
 }: { p: ProductWithStore & Record<string, any>; showStore?: boolean }) {
-  const pct = discountPct(p.price, p.compare_price);
+  const compare = activeCompare(p);
+  const pct = discountPct(p.price, compare);
+  const ends = pct != null ? saleEndsLabel(p.sale_ends_at) : null;
   const fresh = p.created_at && Date.now() - new Date(p.created_at).getTime() < 14 * 864e5;
 
   return (
@@ -27,7 +29,8 @@ export default function ProductCard({
         <h3><Link href={`/product/${p.slug}`}>{p.name_ar}</Link></h3>
         {p.rating ? <Stars value={p.rating} count={p.rating_count} /> : null}
         {p.description_ar && <p className="desc">{p.description_ar}</p>}
-        <Price price={p.price} compare={p.compare_price} unit={p.unit} />
+        <Price price={p.price} compare={compare} unit={p.unit} />
+        {ends && <span className="sale-ends">⏱ {ends}</span>}
         {fresh && p.created_at && <span className="fresh">{agoAr(p.created_at)}</span>}
         <AddToCart
           item={{

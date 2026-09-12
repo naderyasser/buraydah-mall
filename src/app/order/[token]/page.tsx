@@ -4,6 +4,9 @@ import { q, q1 } from "@/db";
 import { sar } from "@/lib/money";
 import { buildDestUrl } from "@/lib/destinations";
 import OrderTimeline from "@/components/OrderTimeline";
+import CancelOrder from "@/components/CancelOrder";
+import PrintButton from "@/components/PrintButton";
+import RememberOrder from "@/components/RememberOrder";
 import type { OrderRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -38,9 +41,17 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
   }
 
   return (
-    <div className="wrap" style={{ maxWidth: 800 }}>
+    <div className="wrap receipt" style={{ maxWidth: 800 }}>
+      <RememberOrder token={token} code={order.code} />
+      <div className="print-only receipt-head">
+        <b>مول بريدة الإلكتروني</b> — إيصال طلب (الدفع عند الاستلام، الفاتورة من المحل)
+        <br />التاريخ: {new Date(order.created_at).toLocaleDateString("ar-SA-u-nu-latn", { year: "numeric", month: "long", day: "numeric" })}
+        {" · "}العميل: {order.customer_name} · <span dir="ltr">{order.phone}</span>
+      </div>
       <section className="section" style={{ paddingTop: 30 }}>
-        <span className="badge open">تم استلام طلبك</span>
+        {order.status === "cancelled"
+          ? <span className="badge st-cancelled">{order.cancelled_by === "customer" ? "ألغيت هذا الطلب" : "الطلب ملغى"}</span>
+          : <span className="badge open">تم استلام طلبك</span>}
         <h1 style={{ fontSize: "clamp(26px,4.4vw,36px)", marginTop: 12 }}>
           طلبك رقم <span className="tabular">{order.code}</span>
         </h1>
@@ -50,6 +61,9 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
           وكل محل يؤكّد نصيبه منه. الدفع عند الاستلام.
         </p>
 
+        {order.status === "cancelled" && order.cancelled_by === "customer" && (
+          <p className="notice ok" style={{ marginTop: 10 }}>أُلغي الطلب بطلبك، ولم يُخصم منك شيء لأن الدفع عند الاستلام. تقدر تطلب من جديد متى شئت.</p>
+        )}
         <div className="pickup-code big">
           رمز الاستلام: <b className="tabular">{order.pickup_code}</b>
           <small>اذكره للمحل عند الاستلام — هو ما يثبت أن الطلب طلبك</small>
@@ -108,9 +122,11 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
         <div className="row grand"><span>الإجمالي</span><b className="tabular">{sar(order.total)} ر.س</b></div>
       </div>
 
-      <p style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <p className="no-print" style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
         <Link href="/" className="btn btn-line">عودة إلى المول</Link>
-        <Link href="/track" className="btn btn-line">تتبّع الطلب</Link>
+        <Link href="/orders" className="btn btn-line">طلباتي</Link>
+        <PrintButton />
+        {order.status === "new" && <CancelOrder token={token} />}
       </p>
     </div>
   );
