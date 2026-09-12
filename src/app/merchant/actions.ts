@@ -198,7 +198,8 @@ export async function merchantLeaveOccasion(form: FormData) {
 export async function merchantNewCount(): Promise<number> {
   const storeId = await guard();
   const r = await q1<{ n: number }>(
-    `SELECT count(DISTINCT order_id)::int AS n FROM order_items WHERE store_id = $1 AND status = 'new'`, [storeId]);
+    `SELECT (SELECT count(DISTINCT order_id) FROM order_items WHERE store_id = $1 AND status = 'new')::int
+          + (SELECT count(*) FROM leads WHERE store_id = $1 AND status = 'new')::int AS n`, [storeId]);
   return r?.n ?? 0;
 }
 
@@ -223,4 +224,13 @@ export async function savePushSubscription(sub: { endpoint: string; p256dh: stri
 export async function removePushSubscription(endpoint: string) {
   const storeId = await guard();
   await q(`DELETE FROM push_subscriptions WHERE endpoint = $1 AND store_id = $2`, [endpoint, storeId]);
+}
+
+/** حالة الطلب الوارد — يقيس المعلن بنفسه ما تحوّل إلى بيع */
+export async function merchantSetLeadStatus(form: FormData) {
+  const storeId = await guard();
+  const status = String(form.get("status"));
+  if (!["new", "contacted", "done", "spam"].includes(status)) return;
+  await q(`UPDATE leads SET status = $1 WHERE id = $2 AND store_id = $3`, [status, Number(form.get("id")), storeId]);
+  revalidatePath("/merchant/leads"); revalidatePath("/merchant");
 }

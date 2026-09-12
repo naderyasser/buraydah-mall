@@ -51,7 +51,7 @@ export default function ProductCard({
           </span>
         )}
         {directory ? (
-          <a className="btn btn-line btn-sm" href={`/go/${p.store_slug}`} rel="nofollow sponsored" target="_blank">زيارة موقع {p.store_name} ↗</a>
+          <Link className="btn btn-gold btn-sm" href={`/product/${p.slug}`}>اطلب</Link>
         ) : (
         <AddToCart
           item={{

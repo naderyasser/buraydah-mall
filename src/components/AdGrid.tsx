@@ -61,7 +61,8 @@ export default function AdGrid({ placements, counts, zoneLabel, compact = false 
       {(quarters.length > 0 || free("quarter") > 0) && (
         <div className="ad-quarters">
           {quarters.map((p) => (
-            <a key={p.id} href={go(p)} {...ext(p)} className="ad-quarter">
+            <div key={p.id} className="ad-quarter-wrap">
+            <a href={go(p)} {...ext(p)} className="ad-quarter">
               <span className="ad-q-logo">{p.logo_path ? <img src={p.logo_path} alt={p.name_ar} /> : <b>{p.name_ar}</b>}</span>
               <span className="ad-q-body">
                 <b>{p.name_ar}</b>
@@ -72,6 +73,8 @@ export default function AdGrid({ placements, counts, zoneLabel, compact = false 
                 <span className="ad-link">زيارة الموقع ↗</span>
               </span>
             </a>
+            <Link href={`/store/${p.slug}#order`} className="ad-order">اطلب من {p.name_ar}</Link>
+            </div>
           ))}
           {!compact && Array.from({ length: Math.max(0, free("quarter")) }).map((_, i) => <Empty key={i} size="quarter" cls="ad-quarter" />)}
         </div>

@@ -96,7 +96,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 </div>
                 <div>
                   <h4>خدمة العملاء</h4>
-                  {!directory && <div><Link href="/orders">طلباتي</Link></div>}
+                  <div><Link href="/orders">طلباتي</Link></div>
                   {!directory && <div><Link href="/track">تتبّع طلبك</Link></div>}
                   {!directory && <div><Link href="/requests">اطلب ما لا تجده</Link></div>}
                   {!directory && <div><Link href="/returns">الاستبدال والاسترجاع</Link></div>}

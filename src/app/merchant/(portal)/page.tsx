@@ -14,6 +14,7 @@ export default async function MerchantHome() {
   const store = await requireStore();
   const vapid = await getSetting("vapid_public");
   const directory = (await mallMode()) === "directory";
+  const leads30 = directory ? (await q<{ n: number }>(`SELECT count(*)::int AS n FROM leads WHERE store_id = $1 AND created_at > now() - interval '30 days'`, [store.id]))[0]?.n ?? 0 : 0;
   const ads = directory ? await q<any>(
     `SELECT p.id, p.starts_on::text AS starts_on, p.ends_on::text AS ends_on, p.status, p.price, sp.zone, sp.size, sp.position,
             coalesce((SELECT sum(n) FROM ad_impressions i WHERE i.placement_id = p.id AND i.day > current_date - 30), 0)::int AS imp30,
@@ -71,6 +72,7 @@ export default async function MerchantHome() {
         </p>
         {directory ? (
           <div className="stat-row">
+            <div className="stat"><dt>طلبات واردة (٣٠ يوماً)</dt><dd className="tabular">{leads30}</dd></div>
             <div className="stat"><dt>نقرات إلى موقعك (٣٠ يوماً)</dt><dd className="tabular">{ads[0]?.store_clicks30 ?? t.clicks}</dd></div>
             <div className="stat"><dt>ظهور مساحاتك (٣٠ يوماً)</dt><dd className="tabular">{ads.reduce((n: number, a: any) => n + a.imp30, 0)}</dd></div>
             <div className="stat"><dt>حجوزات فعّالة</dt><dd className="tabular">{ads.filter((a: any) => a.status === "active").length}</dd></div>
@@ -79,7 +81,7 @@ export default async function MerchantHome() {
         ) : vapid && <PushToggle vapid={vapid} />}
         {directory && (
           <section className="section">
-            <div className="section-head"><h2>مساحاتك الإعلانية</h2><Link href="/advertise">احجز مساحة جديدة</Link></div>
+            <div className="section-head"><h2>مساحاتك الإعلانية</h2><Link href="/merchant/leads">الطلبات الواردة ←</Link></div>
             {ads.length === 0 ? (
               <div className="empty"><h3>لا مساحة محجوزة بعد</h3><p>ماركتك ظاهرة في الدليل مجاناً — والمساحات الإعلانية في الرئيسية والقطاعات تُحجز من <Link href="/advertise">أعلن معنا</Link>.</p></div>
             ) : (

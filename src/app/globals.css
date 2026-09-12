@@ -1352,3 +1352,26 @@ details:not([open])>.hf-menu{display:none}
 .ad-small{min-width:0;width:100%}
 .ad-small small{width:100%;display:block}
 .ad-smalls{min-width:0}
+
+/* ═══ الطلبات — قلب المول الإعلاني ═══ */
+.lead-panel{border-top:3px solid #C8A45D}
+.lead-form{display:flex;flex-direction:column;gap:10px}
+.lead-form .lead-title{font-size:16px;color:var(--brand-d);font-family:"Noto Kufi Arabic",Tajawal,sans-serif}
+.lead-form label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--mut);font-weight:500}
+.lead-form input,.lead-form textarea{padding:10px 12px;border:1px solid var(--line-2);background:var(--card);color:var(--ink);border-radius:var(--r-sm);font:inherit;font-size:15px}
+.lead-form .phone-field input{border-radius:0 var(--r-sm) var(--r-sm) 0}
+.lead-form .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lead-form .hint{margin:0}
+.lead-done{padding:14px 16px;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--brand-d)}
+.lead-done .hint{margin:8px 0 0;color:var(--mut)}
+.ad-quarter-wrap{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ad-quarter-wrap .ad-quarter{flex:1}
+.ad-order{display:block;text-align:center;padding:8px 10px;border-radius:var(--r-sm);background:linear-gradient(180deg,#E5C77F,#C8A45D);color:#1E2A20;font-weight:800;font-size:13px}
+.ad-order:hover{background:linear-gradient(180deg,#F0D68A,#D8BA75)}
+.leads{display:flex;flex-direction:column;gap:10px}
+.lead-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.lead-card.fresh{border-inline-start:4px solid var(--price)}
+.lead-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px}
+.lead-head b{font-size:15px}.lead-head a{color:var(--brand-d);font-weight:700}
+.lead-msg{margin:0;font-size:14px;color:var(--ink)}
+@media (max-width:600px){.lead-form .form-grid{grid-template-columns:1fr}}

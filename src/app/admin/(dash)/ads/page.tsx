@@ -12,6 +12,15 @@ export const metadata = { title: "المساحات الإعلانية" };
 const SIZE_AR: Record<string, string> = { full: "كاملة", half: "نصف", quarter: "ربع", small: "خانة" };
 const ST: Record<string, string> = { pending: "بانتظار الدفع", active: "فعّال", expired: "منتهٍ", cancelled: "ملغى" };
 
+function PAct({ id, status, cls, label }: { id: number; status: string; cls: string; label: string }) {
+  return (
+    <form action={setPlacementStatus}>
+      <input type="hidden" name="id" value={id} /><input type="hidden" name="status" value={status} />
+      <button className={cls}>{label}</button>
+    </form>
+  );
+}
+
 /** إدارة المول الإعلاني: طلبات الحجز، الحجوزات الحيّة وتقاريرها، وحجز مساحة لماركة */
 export default async function AdsAdmin() {
   await requireAdmin();
@@ -105,12 +114,11 @@ export default async function AdsAdmin() {
             <td className="tabular">{p.imp30}</td><td className="tabular">{p.clk30}</td>
             <td><span className={`badge st-${p.status === "active" ? "confirmed" : p.status === "pending" ? "new" : "cancelled"}`}>{ST[p.status]}</span></td>
             <td>
-              <form action={setPlacementStatus} style={{ display: "flex", gap: 4 }}>
-                <input type="hidden" name="id" value={p.id} />
-                {p.status === "pending" && <button name="status" value="active" className="btn btn-brand btn-sm">تفعيل</button>}
-                {p.status === "active" && <button name="status" value="cancelled" className="btn btn-line btn-sm">إيقاف</button>}
-                {(p.status === "cancelled" || p.status === "expired") && <button name="status" value="active" className="btn btn-line btn-sm">إعادة تفعيل</button>}
-              </form>
+              <div style={{ display: "flex", gap: 4 }}>
+                {p.status === "pending" && <PAct id={p.id} status="active" cls="btn btn-brand btn-sm" label="تفعيل" />}
+                {p.status === "active" && <PAct id={p.id} status="cancelled" cls="btn btn-line btn-sm" label="إيقاف" />}
+                {(p.status === "cancelled" || p.status === "expired") && <PAct id={p.id} status="active" cls="btn btn-line btn-sm" label="إعادة تفعيل" />}
+              </div>
             </td>
           </tr>))}</tbody>
       </table></div>

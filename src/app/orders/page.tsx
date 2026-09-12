@@ -8,8 +8,7 @@ export default function OrdersPage() {
       <section className="section" style={{ paddingTop: 30 }}>
         <h1>طلباتي</h1>
         <p style={{ color: "var(--mut)", maxWidth: "58ch" }}>
-          الطلبات التي أرسلتها من هذا الجهاز — بلا حساب ولا تسجيل. لو طلبت من جهاز آخر
-          فتابعه من <a href="/track">تتبّع الطلب</a> برقم الطلب وجوالك.
+          طلباتك من الماركات والمحلات المرسلة من هذا الجهاز — بلا حساب ولا تسجيل.
         </p>
       </section>
       <OrdersView />

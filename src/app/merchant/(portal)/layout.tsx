@@ -12,7 +12,7 @@ export default async function MerchantLayout({ children }: { children: React.Rea
   if (!store) redirect("/merchant/login");
   const occ = currentOccasion() ?? upcomingOccasion();
   const directory = (await mallMode()) === "directory";
-  const fresh = await q1<{ n: number }>(`SELECT count(DISTINCT order_id)::int AS n FROM order_items WHERE store_id = $1 AND status = 'new'`, [store.id]);
+  const fresh = await q1<{ n: number }>(`SELECT (SELECT count(DISTINCT order_id) FROM order_items WHERE store_id = $1 AND status = 'new')::int + (SELECT count(*) FROM leads WHERE store_id = $1 AND status = 'new')::int AS n`, [store.id]);
 
   return (
     <>
@@ -22,6 +22,7 @@ export default async function MerchantLayout({ children }: { children: React.Rea
           <Link href="/merchant">لوحتي</Link>
           {directory ? (
             <>
+              <Link href="/merchant/leads" className="nav-with-badge">الطلبات الواردة<NewOrderWatcher initial={fresh?.n ?? 0} /></Link>
               <Link href="/merchant/products">عيّنات المنتجات</Link>
               <Link href="/merchant/reviews">التقييمات</Link>
               <Link href="/merchant/questions">الأسئلة</Link>
