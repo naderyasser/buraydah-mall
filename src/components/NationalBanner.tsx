@@ -1,10 +1,13 @@
 import Link from "next/link";
 import Countdown from "./Countdown";
+import Skyline from "./Skyline";
 import { currentOccasion, upcomingOccasion, occasionEnd, occasionStart } from "@/lib/saudi";
 
 /**
- * لافتة اليوم الوطني ٩٦ بهوية «عزّنا بطبعنا»: أخضر داكن، إطار منقّط كالسدو،
- * وأربعة صناديق زجاجية للعدّ التنازلي. قبل ١٥ سبتمبر تعدّ للبداية، وبعدها للنهاية.
+ * لافتة حملة اليوم الوطني ٩٦ — كإعلان مصمَّم لا كبطاقة واجهة: ثلاث مناطق
+ * (النصّ يميناً، «٩٦» ذهبية في الوسط فوق أفق بريدة، والعدّ التنازلي يساراً)
+ * على خلفية زمرّدية متعدّدة الطبقات بإطار ذهبي رفيع. البيانات والروابط والعدّ
+ * كما كانت؛ التغيير في العرض فقط. لا صور أشخاص — أفق وصور ظلّية فقط.
  */
 export default function NationalBanner() {
   const now = new Date();
@@ -16,18 +19,36 @@ export default function NationalBanner() {
   const to = occ ? win?.ends : occasionStart(now);
   if (!to) return null;
   return (
-    <Link href="/national-day" className="nd-banner" aria-label="عروض اليوم الوطني 96">
-      <div className="nd-b-text">
-        <span className="nd-frame">عزّنا بطبعنا</span>
-        <h2>🇸🇦 عروض اليوم الوطني 96</h2>
-        <p>{occ ? "خصومات محلات بريدة سارية — تنتهي خلال:" : "جهّز سلتك! خصومات مول بريدة الكبرى تنطلق خلال:"}</p>
-      </div>
-      <Countdown to={to.toISOString()} label={occ ? "المتبقّي على نهاية العروض" : "المتبقّي على بداية العروض"} boxes />
-      <span className="nd-96" aria-hidden="true">96</span>
-      <svg className="nd-palm" viewBox="0 0 64 80" aria-hidden="true" fill="currentColor">
-        <path d="M32 80V38" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-        <path d="M32 40c-9-15-25-19-38-15 13 2 25 8 38 15Zm0 0c9-15 25-19 38-15-13 2-25 8-38 15Zm0-4c-13-8-19-22-13-34 4 12 9 22 13 34Zm0 0c13-8 19-22 13-34-4 12-9 22-13 34Zm0 6c-16-2-30 6-34 18 10-6 22-12 34-18Zm0 0c16-2 30 6 34 18-10-6-22-12-34-18Z" />
-      </svg>
-    </Link>
+    <section className="ndx-wrap" aria-labelledby="ndx-title">
+      <Link href="/national-day" className="ndx" aria-describedby="ndx-sub">
+        <span className="ndx-bg" aria-hidden="true" />
+        <span className="ndx-glow" aria-hidden="true" />
+        <span className="ndx-vignette" aria-hidden="true" />
+        <span className="ndx-orn ndx-orn-s" aria-hidden="true" />
+        <span className="ndx-orn ndx-orn-e" aria-hidden="true" />
+
+        {/* ١) النصّ الترويجي — يمين */}
+        <div className="ndx-text">
+          <span className="ndx-badge">عزّنا بطبعنا</span>
+          <h2 id="ndx-title" className="ndx-h">عروض اليوم الوطني <b className="ndx-h96 tabular">96</b></h2>
+          <p id="ndx-sub" className="ndx-sub">
+            {occ ? "خصومات محلات بريدة سارية — تنتهي خلال:" : "جهّز سلتك! خصومات مول بريدة الكبرى تنطلق خلال:"}
+          </p>
+          <span className="ndx-rule" aria-hidden="true" />
+        </div>
+
+        {/* ٢) المشهد — وسط: أفق بريدة ونخيل خلف «٩٦» ذهبية */}
+        <div className="ndx-hero" aria-hidden="true">
+          <Skyline className="ndx-sky" height={110} />
+          <span className="ndx-cal">اليوم الوطني السعودي</span>
+          <span className="ndx-96">96</span>
+        </div>
+
+        {/* ٣) العدّ التنازلي — يسار */}
+        <div className="ndx-count">
+          <Countdown to={to.toISOString()} label={occ ? "المتبقّي على نهاية العروض" : "المتبقّي على بداية العروض"} boxes />
+        </div>
+      </Link>
+    </section>
   );
 }

@@ -974,19 +974,7 @@ body.occ-national .circle.earth>span{background:#E9C46A;color:#004D25}
 .review-img{width:96px;height:96px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid var(--line)}
 .push-toggle{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
 
-/* ═══ لافتة وشعار اليوم الوطني ٩٦ — هوية «عزّنا بطبعنا» (أخضر داكن، إطار منقّط، صناديق زجاجية) ═══ */
-.nd-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:22px;padding:22px 26px;border-radius:var(--r);color:#fff;
-  background:linear-gradient(120deg,#006C35,#004d26);position:relative;overflow:hidden;box-shadow:var(--sh-2);transition:transform .15s}
-.nd-banner:hover{transform:translateY(-2px)}
-.nd-banner::before{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M14 2l4 4-4 4-4-4zM4 12l4 4-4 4-4-4zM24 12l4 4-4 4-4-4zM14 22l4 4-4 4-4-4z' fill='%23fff'/%3E%3C/svg%3E") repeat}
-.nd-banner::after{content:"";position:absolute;inset-inline:0;top:0;height:6px;background:
-  linear-gradient(90deg,#8DBF8A 0 6px,transparent 6px 12px) 0 0/12px 6px;opacity:.7}
-.nd-b-text{position:relative;display:flex;flex-direction:column;gap:6px}
-.nd-frame{align-self:flex-start;font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-weight:800;font-size:13px;letter-spacing:.04em;padding:3px 12px;
-  border:2px solid #fff;outline:2px dotted rgba(255,255,255,.55);outline-offset:3px;border-radius:2px}
-.nd-banner h2{font-size:clamp(20px,2.6vw,26px);color:#fff}
-.nd-banner p{margin:0;font-size:14px;opacity:.92}
+/* ═══ الشعار الجانبي لليوم الوطني ٩٦ ═══ */
 .cd-boxes{position:relative;display:flex;gap:10px;flex:none;min-height:70px}
 .cd-boxes span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:66px;padding:8px 10px;border-radius:10px;
   background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3)}
@@ -998,16 +986,79 @@ body.occ-national .circle.earth>span{background:#E9C46A;color:#004D25}
 .nd-tab:hover{padding-inline-end:14px}
 .nd-tab-num{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:18px;background:#fff;color:#004d26;border-radius:6px;padding:2px 4px;writing-mode:horizontal-tb;transform:rotate(90deg)}
 @media (max-width:860px){
-  .nd-banner{flex-direction:column;align-items:stretch;text-align:center;padding:18px 16px}
-  .nd-frame{align-self:center}
-  .cd-boxes{justify-content:center}.cd-boxes span{min-width:58px;padding:6px 8px}.cd-boxes b{font-size:22px}
   .nd-tab{top:auto;bottom:150px;font-size:11.5px;padding:8px 6px}
+  /* في الرئيسية اللافتة الكبيرة موجودة — الشعار الجانبي يزاحمها على الشاشات الصغيرة */
+  body:has(.ndx) .nd-tab{display:none}
 }
 
-.nd-96{position:absolute;inset-inline-start:300px;bottom:-22px;font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:110px;font-weight:800;line-height:1;
-  color:#E9C46A;opacity:.16;pointer-events:none;letter-spacing:-.04em}
-.nd-palm{position:absolute;inset-inline-end:-4px;bottom:-8px;width:70px;height:88px;color:#8DBF8A;opacity:.28;pointer-events:none}
-.nd-banner .cd-boxes{margin-inline-start:40px}
-.nd-banner .cd-boxes span{border-color:rgba(233,196,106,.55)}
-.nd-banner .cd-boxes b{color:#FFE9A8}
-@media (max-width:860px){.nd-96{font-size:80px;bottom:-14px}.nd-palm{display:none}.nd-banner .cd-boxes{margin:0}}
+
+/* ═══ لافتة حملة اليوم الوطني ٩٦ — زمرّدي وذهب، ثلاث مناطق، خلفية متعدّدة الطبقات ═══ */
+.ndx-wrap{margin-top:22px}
+.ndx{position:relative;display:grid;grid-template-columns:1.15fr 1fr 1fr;align-items:center;gap:18px;min-height:210px;padding:26px 30px;
+  border-radius:18px;overflow:hidden;color:#F6EFD9;isolation:isolate;
+  background:linear-gradient(105deg,#06301F 0%,#0B4A30 45%,#0A3D28 100%);
+  box-shadow:0 18px 44px -18px rgba(0,40,20,.55),0 0 0 1px rgba(233,196,106,.55),inset 0 0 0 1px rgba(255,255,255,.04);
+  transition:transform .25s ease,box-shadow .25s ease}
+.ndx:hover{transform:translateY(-2px);box-shadow:0 24px 50px -18px rgba(0,40,20,.6),0 0 0 1px rgba(233,196,106,.85)}
+.ndx::before{content:"";position:absolute;inset:6px;border-radius:13px;border:1px solid rgba(233,196,106,.28);pointer-events:none;z-index:1}
+/* الطبقات: نقش هندسي خفيف + نسيج ناعم */
+.ndx-bg{position:absolute;inset:0;z-index:0;opacity:.11;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23E9C46A' stroke-width='1'%3E%3Cpath d='M36 2l34 34-34 34L2 36z'/%3E%3Cpath d='M36 14l22 22-22 22-22-22z'/%3E%3Cpath d='M36 26l10 10-10 10-10-10z'/%3E%3Cpath d='M2 2h14v14H2zM56 2h14v14H56zM2 56h14v14H2zM56 56h14v14H56z'/%3E%3C/g%3E%3C/svg%3E") repeat,
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E") repeat;
+  animation:ndx-drift 40s linear infinite}
+.ndx-glow{position:absolute;z-index:0;inset:0;pointer-events:none;
+  background:radial-gradient(38% 70% at 50% 60%,rgba(233,196,106,.28),transparent 70%),radial-gradient(30% 50% at 88% 30%,rgba(255,255,255,.06),transparent 70%);
+  animation:ndx-breathe 7s ease-in-out infinite}
+.ndx-vignette{position:absolute;inset:0;z-index:0;pointer-events:none;box-shadow:inset 0 0 90px rgba(0,20,10,.55),inset 0 -40px 60px rgba(0,20,10,.35)}
+/* زخرفة سدو على الحافتين */
+.ndx-orn{position:absolute;top:10px;bottom:10px;width:14px;z-index:1;opacity:.55;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='28' viewBox='0 0 14 28'%3E%3Cpath d='M7 2l5 5-5 5-5-5z' fill='none' stroke='%23E9C46A' stroke-width='1.2'/%3E%3Cpath d='M7 16l3 3-3 3-3-3z' fill='%23E9C46A'/%3E%3C/svg%3E") repeat-y center/14px 28px}
+.ndx-orn-s{inset-inline-start:8px}.ndx-orn-e{inset-inline-end:8px}
+/* ١) النصّ */
+.ndx-text{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-inline-start:14px}
+.ndx-badge{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-weight:800;font-size:12.5px;letter-spacing:.06em;color:#F6EFD9;padding:4px 14px;border-radius:99px;
+  border:1px solid rgba(233,196,106,.9);background:linear-gradient(180deg,rgba(233,196,106,.16),rgba(233,196,106,.04));box-shadow:0 0 0 3px rgba(233,196,106,.12)}
+.ndx-h{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:clamp(22px,2.4vw,30px);font-weight:800;line-height:1.35;color:#FFFDF6;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.ndx-h96{font-size:1.25em;margin-inline-start:4px;background:linear-gradient(180deg,#FFF0B8,#E9C46A 45%,#B8892B);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(120,80,10,.5))}
+.ndx-sub{margin:0;font-size:14px;line-height:1.7;color:rgba(246,239,217,.9);max-width:34ch}
+.ndx-rule{display:block;width:120px;height:1px;margin-top:2px;background:linear-gradient(90deg,transparent,#E9C46A,transparent);position:relative}
+.ndx-rule::after{content:"";position:absolute;left:50%;top:-3px;width:7px;height:7px;transform:translateX(-50%) rotate(45deg);background:#E9C46A}
+/* ٢) المشهد */
+.ndx-hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:150px;overflow:visible}
+.ndx-sky{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);width:min(100%,360px);color:#9FD3A8;opacity:.22;pointer-events:none}
+.ndx-cal{position:relative;font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:13px;letter-spacing:.14em;color:rgba(233,196,106,.95);margin-bottom:-6px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.ndx-96{position:relative;font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-weight:800;font-size:clamp(84px,9vw,124px);line-height:1;letter-spacing:-.04em;
+  background:linear-gradient(175deg,#FFF3C4 0%,#F2D27A 30%,#C9A040 55%,#8F6A1E 80%,#E9C46A 100%);background-size:100% 200%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(90,60,10,.55)) drop-shadow(0 10px 22px rgba(0,0,0,.45));animation:ndx-shimmer 6s ease-in-out infinite}
+/* ٣) العدّ */
+.ndx-count{position:relative;z-index:2;display:flex;justify-content:flex-end}
+.ndx .cd-boxes{gap:10px;min-height:0}
+.ndx .cd-boxes span{min-width:70px;padding:10px 8px 8px;border-radius:10px;background:linear-gradient(180deg,rgba(6,48,31,.55),rgba(6,48,31,.8));
+  backdrop-filter:blur(6px);border:1px solid rgba(233,196,106,.75);box-shadow:inset 0 0 18px rgba(233,196,106,.08),0 6px 16px -8px rgba(0,0,0,.6);position:relative}
+.ndx .cd-boxes span::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;transform:translateX(-50%) rotate(45deg);background:rgba(233,196,106,.7)}
+.ndx .cd-boxes b{font-size:28px;color:#FFFDF6;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.ndx .cd-boxes small{font-size:11.5px;color:rgba(233,196,106,.95);margin-top:3px;margin-bottom:6px}
+@keyframes ndx-shimmer{0%,100%{background-position:0 0}50%{background-position:0 100%}}
+@keyframes ndx-breathe{0%,100%{opacity:.85}50%{opacity:1}}
+@keyframes ndx-drift{from{background-position:0 0,0 0}to{background-position:72px 72px,0 0}}
+@media (prefers-reduced-motion:reduce){.ndx-bg,.ndx-glow,.ndx-96{animation:none}}
+/* لوحي: النصّ صفّ كامل ثم المشهد والعدّ */
+@media (max-width:980px){
+  .ndx{grid-template-columns:1fr 1fr;padding:22px 24px;gap:14px}
+  .ndx-text{grid-column:1/-1;padding-inline-start:10px}
+  .ndx-hero{min-height:120px}.ndx-96{font-size:88px}
+  .ndx-count{justify-content:center}
+}
+/* جوال: تركيب مستقلّ — عنوان، ثم ٩٦، ثم شبكة ٢×٢ */
+@media (max-width:600px){
+  .ndx{grid-template-columns:1fr;padding:18px 16px 16px;gap:10px;min-height:0;text-align:center}
+  .ndx-text{align-items:center;padding:0}
+  .ndx-sub{max-width:none}
+  .ndx-hero{min-height:112px;margin-top:-4px}.ndx-96{font-size:84px}.ndx-sky{width:100%;bottom:-18px}
+  .ndx .cd-boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+  .ndx .cd-boxes span{min-width:0;padding:8px 4px 6px}.ndx .cd-boxes b{font-size:22px}
+  .ndx-orn{display:none}
+}
+@media (max-width:380px){.ndx .cd-boxes{grid-template-columns:repeat(2,1fr)}}

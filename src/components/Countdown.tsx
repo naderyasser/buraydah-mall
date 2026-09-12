@@ -10,7 +10,7 @@ export default function Countdown({ to, label, boxes = false }: { to: string; la
   const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 36e5), m = Math.floor((ms % 36e5) / 6e4), s = Math.floor((ms % 6e4) / 1000);
   const parts: [number, string][] = boxes ? [[d, "أيام"], [h, "ساعات"], [m, "دقائق"], [s, "ثوانٍ"]] : [[d, "يوم"], [h, "ساعة"], [m, "دقيقة"]];
   return (
-    <div className={boxes ? "cd-boxes" : "countdown"} aria-label={label} role="timer">
+    <div className={boxes ? "cd-boxes" : "countdown"} aria-label={label} role="timer" aria-live="off">
       {parts.map(([n, l]) => (
         <span key={l}><b className="tabular">{String(n).padStart(2, "0")}</b><small>{l}</small></span>
       ))}
