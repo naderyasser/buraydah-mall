@@ -1030,13 +1030,15 @@ body.occ-national .circle.earth>span{background:#E9C46A;color:#004D25}
 .ndx-palms{position:absolute;bottom:-6px;left:-8%;width:44%;color:#062D25;opacity:.9;filter:drop-shadow(0 0 6px rgba(229,199,127,.25))}
 .ndx-rider{position:absolute;bottom:0;left:6%;width:66%;max-height:96%;opacity:.92;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)) drop-shadow(0 0 10px rgba(229,199,127,.22))}
 /* خلفية الحملة المرفوعة: تغطّي اللافتة كلها، والنصّ والعدّ فوقها بتظليل يحفظ القراءة */
-.ndx-art{position:absolute;inset:0;z-index:1;background-size:cover;background-position:center;pointer-events:none;
-  -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,#000 55%,rgba(0,0,0,.35) 82%,rgba(0,0,0,.15) 100%);
-  mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,#000 55%,rgba(0,0,0,.35) 82%,rgba(0,0,0,.15) 100%)}
-.ndx:has(.ndx-art) .ndx-bg{opacity:.05}
-.ndx:has(.ndx-art) .ndx-text::before{content:"";position:absolute;inset:-20px -10px -20px -40px;z-index:-1;border-radius:20px;
-  background:radial-gradient(60% 70% at 70% 50%,rgba(6,45,37,.75),transparent 75%)}
-@media (max-width:600px){.ndx-art{mask-image:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.9) 45%,rgba(0,0,0,.35));-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.9) 45%,rgba(0,0,0,.35))}}
+.ndx-art{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 45%;pointer-events:none}
+/* خلفية العميل تحمل نقوشها وحوافها بنفسها — تُطفأ الطبقات المرسومة المكرّرة ويبقى تعتيم خفيف للقراءة */
+.ndx:has(.ndx-art) .ndx-bg,.ndx:has(.ndx-art) .ndx-dust,.ndx:has(.ndx-art) .ndx-orn,.ndx:has(.ndx-art) .ndx-orn2{display:none}
+.ndx:has(.ndx-art) .ndx-haze{background:radial-gradient(40% 70% at 50% 60%,rgba(229,199,127,.10),transparent 70%),linear-gradient(270deg,rgba(4,30,22,.55) 0%,rgba(4,30,22,.15) 45%,transparent 70%)}
+.ndx:has(.ndx-art) .ndx-vignette{box-shadow:inset 0 0 70px rgba(2,22,16,.45)}
+.ndx:has(.ndx-art) .ndx-text{padding-inline-start:48px}
+@media (max-width:980px){.ndx-art{background-position:28% 55%}}
+@media (max-width:600px){.ndx-art{background-image:url("/national-bg-m.webp")!important;background-position:24% 60%}
+  .ndx:has(.ndx-art) .ndx-haze{background:linear-gradient(180deg,rgba(4,30,22,.35),rgba(4,30,22,.65))}}
 /* النصّ — يمين */
 .ndx-text{grid-area:text;position:relative;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-inline:36px 6px}
 .ndx-badge{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.05em;color:#F3EBDD;padding:6px 18px;border-radius:8px;position:relative;
