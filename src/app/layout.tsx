@@ -9,6 +9,7 @@ import BottomNav from "@/components/BottomNav";
 import TopStrip from "@/components/TopStrip";
 import Skyline from "@/components/Skyline";
 import WhatsAppFab from "@/components/WhatsAppFab";
+import NationalTab from "@/components/NationalTab";
 import { getSetting, waNumber } from "@/lib/settings";
 import { BURAYDAH_DISTRICTS, hijriDate, currentOccasion } from "@/lib/saudi";
 import VisitBeacon from "@/components/VisitBeacon";
@@ -113,6 +114,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <CartBar />
           <BottomNav />
           <WhatsAppFab number={mallWa} />
+          <NationalTab />
           <VisitBeacon />
         </CartProvider>
       </body>

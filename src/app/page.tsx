@@ -3,6 +3,7 @@ import BrandTile from "@/components/BrandTile";
 import ProductRow from "@/components/ProductRow";
 import ProductCard from "@/components/ProductCard";
 import WingIcon from "@/components/WingIcon";
+import NationalBanner from "@/components/NationalBanner";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import { getBrands, getVisitorStats, getWingIndex } from "@/lib/queries";
 import { getBestSellers, getNewArrivals, getOnSale, getTrendingSearches } from "@/lib/browse";
@@ -44,12 +45,6 @@ export default async function Home() {
   return (
     <>
     <div className="wrap">
-      {occ && (
-        <Link href={occ.key === "national" ? "/national-day" : "/search?q=الكل&sale=1"} className={`occ-banner occ-${occ.key}`}>
-          <span><b>{occ.label}</b><small>{occ.note}</small></span>
-          <span className="occ-cta">العروض ←</span>
-        </Link>
-      )}
       </div>
 
       <section className="najd">
@@ -97,6 +92,8 @@ export default async function Home() {
         ))}
         <Link href="/stores" className="circle earth"><span><WingIcon slug="stores" /></span>المحلات</Link>
       </nav>
+
+      <NationalBanner />
 
       <section className="banners">
         {wings.filter((w: any) => w.cover).slice(0, 2).map((w: any, i: number) => (

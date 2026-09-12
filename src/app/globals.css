@@ -973,3 +973,41 @@ body.occ-national .circle.earth>span{background:#E9C46A;color:#004D25}
 .size-guide .tablewrap{margin-top:10px}
 .review-img{width:96px;height:96px;object-fit:cover;border-radius:8px;margin-top:8px;border:1px solid var(--line)}
 .push-toggle{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+/* ═══ لافتة وشعار اليوم الوطني ٩٦ — هوية «عزّنا بطبعنا» (أخضر داكن، إطار منقّط، صناديق زجاجية) ═══ */
+.nd-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:22px;padding:22px 26px;border-radius:var(--r);color:#fff;
+  background:linear-gradient(120deg,#006C35,#004d26);position:relative;overflow:hidden;box-shadow:var(--sh-2);transition:transform .15s}
+.nd-banner:hover{transform:translateY(-2px)}
+.nd-banner::before{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M14 2l4 4-4 4-4-4zM4 12l4 4-4 4-4-4zM24 12l4 4-4 4-4-4zM14 22l4 4-4 4-4-4z' fill='%23fff'/%3E%3C/svg%3E") repeat}
+.nd-banner::after{content:"";position:absolute;inset-inline:0;top:0;height:6px;background:
+  linear-gradient(90deg,#8DBF8A 0 6px,transparent 6px 12px) 0 0/12px 6px;opacity:.7}
+.nd-b-text{position:relative;display:flex;flex-direction:column;gap:6px}
+.nd-frame{align-self:flex-start;font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-weight:800;font-size:13px;letter-spacing:.04em;padding:3px 12px;
+  border:2px solid #fff;outline:2px dotted rgba(255,255,255,.55);outline-offset:3px;border-radius:2px}
+.nd-banner h2{font-size:clamp(20px,2.6vw,26px);color:#fff}
+.nd-banner p{margin:0;font-size:14px;opacity:.92}
+.cd-boxes{position:relative;display:flex;gap:10px;flex:none;min-height:70px}
+.cd-boxes span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:66px;padding:8px 10px;border-radius:10px;
+  background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3)}
+.cd-boxes b{font-size:26px;line-height:1.1;font-family:"Noto Kufi Arabic",Tajawal,sans-serif}
+.cd-boxes small{font-size:11.5px;opacity:.9;margin-top:2px}
+.nd-tab{position:fixed;inset-inline-end:0;top:42%;z-index:43;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px;
+  background:#004d26;color:#fff;border-radius:10px 0 0 10px;box-shadow:0 6px 18px -6px rgba(0,0,0,.4);border-inline-start:3px solid #8DBF8A;
+  writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:12.5px;font-weight:700;transition:padding .15s}
+.nd-tab:hover{padding-inline-end:14px}
+.nd-tab-num{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:18px;background:#fff;color:#004d26;border-radius:6px;padding:2px 4px;writing-mode:horizontal-tb;transform:rotate(90deg)}
+@media (max-width:860px){
+  .nd-banner{flex-direction:column;align-items:stretch;text-align:center;padding:18px 16px}
+  .nd-frame{align-self:center}
+  .cd-boxes{justify-content:center}.cd-boxes span{min-width:58px;padding:6px 8px}.cd-boxes b{font-size:22px}
+  .nd-tab{top:auto;bottom:150px;font-size:11.5px;padding:8px 6px}
+}
+
+.nd-96{position:absolute;inset-inline-start:300px;bottom:-22px;font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:110px;font-weight:800;line-height:1;
+  color:#E9C46A;opacity:.16;pointer-events:none;letter-spacing:-.04em}
+.nd-palm{position:absolute;inset-inline-end:-4px;bottom:-8px;width:70px;height:88px;color:#8DBF8A;opacity:.28;pointer-events:none}
+.nd-banner .cd-boxes{margin-inline-start:40px}
+.nd-banner .cd-boxes span{border-color:rgba(233,196,106,.55)}
+.nd-banner .cd-boxes b{color:#FFE9A8}
+@media (max-width:860px){.nd-96{font-size:80px;bottom:-14px}.nd-palm{display:none}.nd-banner .cd-boxes{margin:0}}
