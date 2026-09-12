@@ -1242,3 +1242,29 @@ table.admin th{background:#F5EFEB;color:#5B4A2A;border-bottom:2px solid #D8BA75}
   .circles{gap:6px;margin-top:-20px}
   .circle{width:56px;font-size:11px}.circle>span{width:38px;height:38px}.circle>span svg{width:17px;height:17px}
 }
+/* لافتة الموسم في الرئيسية: شريط أنحف لا يأخذ الشاشة — التفاصيل الكاملة في صفحة الموسم */
+.ndx{aspect-ratio:5.4/1;min-height:0;padding:16px 36px 16px 32px;border-radius:22px;gap:6px;
+  grid-template-columns:minmax(280px,1.1fr) minmax(160px,.7fr) minmax(250px,.9fr)}
+.ndx::before{inset:6px;border-radius:17px}
+.ndx-text{gap:5px;padding-inline:36px 4px}
+.ndx-badge{font-size:11.5px;padding:4px 12px}
+.ndx-h{font-size:clamp(18px,1.7vw,23px)}
+.ndx-sub{font-size:12.5px;max-width:40ch}
+.ndx-rule{width:110px}
+.ndx-shield{width:34px;height:40px;inset-inline-start:-2px}
+.ndx-cal{font-size:clamp(11px,1vw,13px);margin-bottom:-4px}
+.ndx-96{font-size:clamp(70px,7.5vw,108px)}
+.ndx .cd-boxes{gap:8px}
+.ndx .cd-boxes span{width:62px;border-radius:12px;padding:5px 4px 8px}
+.ndx .cd-boxes b{font-size:22px}
+.ndx .cd-boxes small{font-size:10.5px;margin-bottom:5px}
+.ndx .cd-boxes span::after{bottom:5px;width:4px;height:4px}
+.ndx-orn,.ndx-orn2{opacity:.4}
+.ndx-scene{width:30%;left:26%}
+@media (max-width:980px){.ndx{aspect-ratio:auto;padding:16px 20px}.ndx-96{font-size:84px}}
+@media (max-width:600px){.ndx{padding:14px 14px 12px;border-radius:18px}.ndx-96{font-size:72px}.ndx .cd-boxes span{aspect-ratio:2.2/1;padding:4px 4px 6px}.ndx .cd-boxes b{font-size:20px}}
+/* صفوف العروض والأكثر مبيعاً: بطاقات أصغر في الصفّ الأفقي كي لا يطول الجزء الأول */
+.prow{grid-auto-columns:minmax(190px,1fr)}
+.prow .pcard-img{aspect-ratio:1/1}
+@media (max-width:600px){.ndx .cd-boxes{grid-template-columns:repeat(4,1fr);max-width:none;gap:6px}.ndx .cd-boxes span{aspect-ratio:1.15/1}.ndx-hero{min-height:0}.ndx-cal{font-size:11px}}
+@media (max-width:380px){.ndx .cd-boxes{grid-template-columns:repeat(2,1fr)}}
