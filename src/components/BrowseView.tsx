@@ -35,12 +35,13 @@ export function optsFromParams(sp: Record<string, string | string[] | undefined>
 }
 
 export default async function BrowseView({
-  opts, params, action, empty,
+  opts, params, action, empty, directory = false,
 }: {
   opts: BrowseOpts;
   params: URLSearchParams;
   action: string;
   empty?: React.ReactNode;
+  directory?: boolean;
 }) {
   // فلتر المحل يأتي من الرابط بالـslug — يُترجم إلى معرّف قبل الاستعلام
   const storeSlug = params.get("store");
@@ -72,7 +73,7 @@ export default async function BrowseView({
         ) : (
           <>
             <div className="grid">
-              {result.rows.map((p) => <ProductCard p={p} key={p.id} />)}
+              {result.rows.map((p) => <ProductCard p={p} key={p.id} directory={directory} />)}
             </div>
             <Pagination page={result.page} pages={result.pages} params={params} />
           </>

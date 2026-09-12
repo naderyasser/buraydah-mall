@@ -4,6 +4,8 @@ import ProductRow from "@/components/ProductRow";
 import ProductCard from "@/components/ProductCard";
 import WingIcon from "@/components/WingIcon";
 import NationalBanner from "@/components/NationalBanner";
+import AdGrid from "@/components/AdGrid";
+import { mallMode, getLivePlacements, getSpaceCounts } from "@/lib/ads";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import { getBrands, getVisitorStats, getWingIndex } from "@/lib/queries";
 import { getBestSellers, getNewArrivals, getOnSale, getTrendingSearches } from "@/lib/browse";
@@ -49,6 +51,8 @@ export default async function Home() {
     getSettings(["gold_gram_21", "gold_gram_24"]).catch(() => ({ gold_gram_21: "", gold_gram_24: "" })),
   ]);
   const openNow = hoursRows.filter((r) => isOpenNow(r.hours) === true).length;
+  const mode = await mallMode();
+  const [placements, counts] = mode === "directory" ? await Promise.all([getLivePlacements("home"), getSpaceCounts("home")]) : [[], []];
   const verified = brands.filter((b: any) => b.is_verified).length;
 
   const occ = currentOccasion();
@@ -64,25 +68,48 @@ export default async function Home() {
             {/* يمين: الترحيب وثلاث ضمانات */}
             <div className="najd-side najd-side-s">
               <h1 className="najd-welcome">يا هلا ومرحبا بأهل القصيم، نوّرتم مولكم!</h1>
-              <p className="najd-lead">محلات بريدة كلها في سلة واحدة — تطلب من أكثر من محل، وتستلم من المحل أو يوصلك.</p>
-              <ul className="najd-trust">
-                <li><i className="nt-ico">﷼</i><span><b>الدفع عند الاستلام</b><small>لا بطاقة ولا تحويل — تدفع للمحل بيدك</small></span></li>
-                <li><i className="nt-ico">↩</i><span><b>استرجاع خلال ٧ أيام</b><small>وفق نظام التجارة الإلكترونية</small></span></li>
-                <li><i className="nt-ico">✓</i><span><b>محلات بسجل تجاري</b><small>{verified > 0 ? `${verified} محلاً موثّقاً` : "لكل محل صفحة إفصاح"}</small></span></li>
-              </ul>
+              {mode === "directory" ? (
+                <>
+                  <p className="najd-lead">كل ماركات ومتاجر بريدة في مول واحد — تختار الماركة، وتضغط، فتنتقل لموقعها الرسمي مباشرة.</p>
+                  <ul className="najd-trust">
+                    <li><i className="nt-ico">↗</i><span><b>الشراء من الماركة نفسها</b><small>المول دليل ينقلك لموقعها أو حسابها الرسمي</small></span></li>
+                    <li><i className="nt-ico">✓</i><span><b>ماركات معتمدة</b><small>كل مساحة باشتراك من الماركة أو وكيلها</small></span></li>
+                    <li><i className="nt-ico">☆</i><span><b>مساحات إعلانية</b><small><Link href="/advertise">أعلن معنا</Link> — كاملة، نصف، ربع، أو خانة</small></span></li>
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <p className="najd-lead">محلات بريدة كلها في سلة واحدة — تطلب من أكثر من محل، وتستلم من المحل أو يوصلك.</p>
+                  <ul className="najd-trust">
+                    <li><i className="nt-ico">﷼</i><span><b>الدفع عند الاستلام</b><small>لا بطاقة ولا تحويل — تدفع للمحل بيدك</small></span></li>
+                    <li><i className="nt-ico">↩</i><span><b>استرجاع خلال ٧ أيام</b><small>وفق نظام التجارة الإلكترونية</small></span></li>
+                    <li><i className="nt-ico">✓</i><span><b>محلات بسجل تجاري</b><small>{verified > 0 ? `${verified} محلاً موثّقاً` : "لكل محل صفحة إفصاح"}</small></span></li>
+                  </ul>
+                </>
+              )}
             </div>
 
             {/* وسط: البحث والفلاتر */}
             <div className="najd-center">
-              <p className="najd-kicker">سوق بريدة كامل، في سلة واحدة</p>
+              <p className="najd-kicker">{mode === "directory" ? "ماركات بريدة كلها، في مول واحد" : "سوق بريدة كامل، في سلة واحدة"}</p>
               <form className="najd-search" action="/search" role="search">
-                <input name="q" placeholder="ابحث عن منتج أو محل…" aria-label="بحث" />
+                <input name="q" placeholder={mode === "directory" ? "ابحث عن ماركة أو متجر…" : "ابحث عن منتج أو محل…"} aria-label="بحث" />
                 <button type="submit">بحث</button>
               </form>
               <div className="pills">
-                <Link href="/search?q=الكل&sale=1" className="pill">العروض</Link>
-                <Link href="/search?q=الكل&sort=newest" className="pill">الجديد</Link>
-                <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
+                {mode === "directory" ? (
+                  <>
+                    <Link href="/stores" className="pill">كل الماركات</Link>
+                    <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
+                    <Link href="/advertise" className="pill pill-gold">أعلن معنا</Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/search?q=الكل&sale=1" className="pill">العروض</Link>
+                    <Link href="/search?q=الكل&sort=newest" className="pill">الجديد</Link>
+                    <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
+                  </>
+                )}
                 <details className="hf-dd pill-dd">
                   <summary className="pill">الحي ▾</summary>
                   <div className="hf-menu">
@@ -94,9 +121,9 @@ export default async function Home() {
                     ))}
                   </div>
                 </details>
-                <Link href="/search?q=الكل" className="pill">الكل</Link>
+                {mode !== "directory" && <Link href="/search?q=الكل" className="pill">الكل</Link>}
               </div>
-              <p className="najd-stats tabular">{totals.stores} محلاً · {totals.products} منتجاً · {districts.length} أحياء{soon ? ` · ${soon.label} بعد ${soon.days} ${soon.days <= 10 ? "أيام" : "يوماً"}` : ""}</p>
+              <p className="najd-stats tabular">{mode === "directory" ? `${totals.stores} ماركة ومتجراً · ${wings.length} قطاعاً · ${districts.length} أحياء` : `${totals.stores} محلاً · ${totals.products} منتجاً · ${districts.length} أحياء`}{soon ? ` · ${soon.label} بعد ${soon.days} ${soon.days <= 10 ? "أيام" : "يوماً"}` : ""}</p>
             </div>
 
             {/* يسار: مواقيت اليوم وحال المول الآن */}
@@ -104,10 +131,12 @@ export default async function Home() {
               <PrayerCard />
               <div className="najd-today">
                 <div className="nt-row"><span className="nt-dot" /><b className="tabular">{openNow}</b> محلاً مفتوحاً الآن <Link href="/stores?open=1">اعرضها</Link></div>
-                {settings.gold_gram_21 && Number(settings.gold_gram_21) > 0 && (
+                {mode !== "directory" && settings.gold_gram_21 && Number(settings.gold_gram_21) > 0 && (
                   <div className="nt-row"><span className="nt-gold">ذ</span> جرام الذهب عيار ٢١ اليوم <b className="tabular">{sar(settings.gold_gram_21)}</b> <Riyal /> <Link href="/wing/gold">الأسعار</Link></div>
                 )}
-                <div className="nt-row"><span className="nt-pin">●</span> التوصيل داخل بريدة · <Link href="/requests">اطلب ما لا تجده</Link></div>
+                {mode === "directory"
+                  ? <div className="nt-row"><span className="nt-pin">●</span> ماركة جديدة؟ <Link href="/advertise">احجز مساحتك</Link></div>
+                  : <div className="nt-row"><span className="nt-pin">●</span> التوصيل داخل بريدة · <Link href="/requests">اطلب ما لا تجده</Link></div>}
               </div>
             </div>
           </div>
@@ -130,6 +159,43 @@ export default async function Home() {
 
       <NationalBanner />
 
+      {mode === "directory" ? (
+        <>
+          <AdGrid placements={placements} counts={counts} zoneLabel="الرئيسية" />
+
+          <section className="section">
+            <div className="section-head">
+              <h2>قطاعات المول</h2>
+              <Link href="/stores">دليل الماركات كاملاً</Link>
+            </div>
+            <div className="sector-wall">
+              {wings.map((w: any) => (
+                <Link href={`/wing/${w.slug}`} key={w.id} className="sector-tile">
+                  <span className="sector-ico"><WingIcon slug={w.slug} /></span>
+                  <b>{w.name_ar}</b>
+                  <small className="tabular">{w.brand_count} {w.brand_count === 1 ? "ماركة" : "ماركات"}</small>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="section">
+            <div className="section-head">
+              <h2>الماركات والمتاجر</h2>
+              <Link href="/stores">حسب الحي والقطاع</Link>
+            </div>
+            <div className="brand-wall">
+              {brands.slice(0, 18).map((b: any) => <BrandTile b={b} key={b.id} directory />)}
+            </div>
+            {brands.length > 18 && (
+              <p style={{ textAlign: "center", marginTop: 14 }}>
+                <Link href="/stores" className="btn btn-line">كل الماركات ({brands.length})</Link>
+              </p>
+            )}
+          </section>
+        </>
+      ) : (
+        <>
 
       <section className="section" style={{ paddingTop: 6 }}>
         <div className="section-head">
@@ -188,7 +254,10 @@ export default async function Home() {
         )}
       </section>
 
-      <RecentlyViewed />
+        </>
+      )}
+
+      {mode !== "directory" && <RecentlyViewed />}
 
 
     </div>

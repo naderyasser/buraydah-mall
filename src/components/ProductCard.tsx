@@ -13,8 +13,8 @@ export function isSaudiMade(tags?: string[] | null) {
 }
 
 export default function ProductCard({
-  p, showStore = true,
-}: { p: ProductWithStore & Record<string, any>; showStore?: boolean }) {
+  p, showStore = true, directory = false,
+}: { p: ProductWithStore & Record<string, any>; showStore?: boolean; directory?: boolean }) {
   const compare = activeCompare(p);
   const pct = discountPct(p.price, compare);
   const ends = pct != null ? saleEndsLabel(p.sale_ends_at) : null;
@@ -42,14 +42,17 @@ export default function ProductCard({
         )}
         {p.rating ? <Stars value={p.rating} count={p.rating_count} /> : null}
         {p.description_ar && <p className="desc">{p.description_ar}</p>}
-        <Price price={p.price} compare={compare} unit={p.unit} />
-        {ends && <span className="sale-ends">{ends}</span>}
+        {!directory && <Price price={p.price} compare={compare} unit={p.unit} />}
+        {!directory && ends && <span className="sale-ends">{ends}</span>}
         {(p.district || (fresh && p.created_at)) && (
           <span className="pcard-meta">
             {p.district && <span>حي {p.district}</span>}
             {fresh && p.created_at && <span>{agoAr(p.created_at)}</span>}
           </span>
         )}
+        {directory ? (
+          <a className="btn btn-line btn-sm" href={`/go/${p.store_slug}`} rel="nofollow sponsored" target="_blank">زيارة موقع {p.store_name} ↗</a>
+        ) : (
         <AddToCart
           item={{
             productId: p.id, slug: p.slug, name: p.name_ar, price: Number(p.price),
@@ -60,6 +63,7 @@ export default function ProductCard({
           hasVariants={!!p.variant_label}
           inStock={p.in_stock}
         />
+        )}
       </div>
     </article>
   );

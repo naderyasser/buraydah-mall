@@ -11,6 +11,7 @@ import Skyline from "@/components/Skyline";
 import WhatsAppFab from "@/components/WhatsAppFab";
 import NationalTab from "@/components/NationalTab";
 import { getSetting, waNumber } from "@/lib/settings";
+import { mallMode } from "@/lib/ads";
 import { BURAYDAH_DISTRICTS, hijriDate, currentOccasion } from "@/lib/saudi";
 import VisitBeacon from "@/components/VisitBeacon";
 import { getWings } from "@/lib/queries";
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const [wings, trending] = await Promise.all([getWings(), getTrendingSearches(6).catch(() => [])]);
   const occ = currentOccasion();
   const mallWa = waNumber(await getSetting("mall_whatsapp").catch(() => ""));
+  const directory = (await mallMode()) === "directory";
 
   return (
     <html lang="ar" dir="rtl">
@@ -57,11 +59,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <CartProvider>
           {demo && (
             <div className="demo-strip">
-              نسخة تجريبية — المحلات والمنتجات والأسعار والتقييمات المعروضة كلها أمثلة توضيحية وليست حقيقية
+              نسخة تجريبية — الماركات والمساحات الإعلانية والمنتجات المعروضة كلها أمثلة توضيحية وليست حقيقية
             </div>
           )}
           <TopStrip />
-          <Header trending={trending.map((t) => t.term)} />
+          <Header trending={trending.map((t) => t.term)} directory={directory} />
           <CategoryBar wings={wings} />
           <main>{children}</main>
           <datalist id="buraydah-districts">
@@ -74,8 +76,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <div>
                   <h4>مول بريدة</h4>
                   <p style={{ margin: 0 }}>
-                    محلات مدينة بريدة في واجهة واحدة. تختار من أكثر من محل، وتصلك
-                    الطلبات مرتّبة على أصحابها.
+                    {directory
+                      ? "ماركات ومتاجر مدينة بريدة في مول إلكتروني واحد — تختار الماركة وتنتقل لموقعها الرسمي مباشرة."
+                      : "محلات مدينة بريدة في واجهة واحدة. تختار من أكثر من محل، وتصلك الطلبات مرتّبة على أصحابها."}
                   </p>
                 </div>
                 <div>
@@ -86,33 +89,32 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 </div>
                 <div>
                   <h4>للتجار</h4>
-                  <div><Link href="/join">انضم إلى المول</Link></div>
-                  <div><Link href="/merchant">بوابة التاجر</Link></div>
+                  <div><Link href={directory ? "/advertise" : "/join"}>{directory ? "أعلن معنا" : "انضم إلى المول"}</Link></div>
+                  <div><Link href="/merchant">{directory ? "بوابة المعلن" : "بوابة التاجر"}</Link></div>
                   <div><Link href="/stores">دليل المحلات</Link></div>
                   <div><Link href="/national-day">عروض اليوم الوطني</Link></div>
                 </div>
                 <div>
                   <h4>خدمة العملاء</h4>
-                  <div><Link href="/orders">طلباتي</Link></div>
-                  <div><Link href="/track">تتبّع طلبك</Link></div>
-                  <div><Link href="/requests">اطلب ما لا تجده</Link></div>
-                  <div><Link href="/returns">الاستبدال والاسترجاع</Link></div>
+                  {!directory && <div><Link href="/orders">طلباتي</Link></div>}
+                  {!directory && <div><Link href="/track">تتبّع طلبك</Link></div>}
+                  {!directory && <div><Link href="/requests">اطلب ما لا تجده</Link></div>}
+                  {!directory && <div><Link href="/returns">الاستبدال والاسترجاع</Link></div>}
+                  {directory && <div><Link href="/favorites">المفضلة</Link></div>}
                   <div><Link href="/terms">الشروط والأحكام</Link></div>
                   <div><Link href="/privacy">سياسة الخصوصية</Link></div>
                 </div>
               </div>
               <p className="legal">
-                مول بريدة منصّة وسيطة مستقلة تعرض منتجات محلات المدينة وتوزّع الطلب
-                على أصحابه؛ البيع والتسليم والفاتورة مسؤولية المحل صاحب المنتج.
-                الأسعار بالريال السعودي وشاملة ضريبة القيمة المضافة، ولا توجد رسوم
-                مخفية. كل الأسماء والشعارات ملك أصحابها. لإزالة محل أو تصحيح بياناته
-                راسلنا من صفحة الانضمام.
+                {directory
+                  ? "مول بريدة منصّة إعلانية مستقلة تعرض ماركات ومتاجر المدينة في مساحات مدفوعة من أصحابها وتنقل الزائر إلى مواقعهم الرسمية؛ البيع والتسليم والفاتورة مسؤولية الماركة على موقعها. كل الأسماء والشعارات ملك أصحابها ولا تُعرض إلا باشتراك منهم. لإزالة ماركة أو تصحيح بياناتها راسلنا من صفحة «أعلن معنا»."
+                  : "مول بريدة منصّة وسيطة مستقلة تعرض منتجات محلات المدينة وتوزّع الطلب على أصحابه؛ البيع والتسليم والفاتورة مسؤولية المحل صاحب المنتج. الأسعار بالريال السعودي وشاملة ضريبة القيمة المضافة، ولا توجد رسوم مخفية. كل الأسماء والشعارات ملك أصحابها. لإزالة محل أو تصحيح بياناته راسلنا من صفحة الانضمام."}
               </p>
               <p className="made">بريدة، القصيم — المملكة العربية السعودية · {hijriDate()}<br /><small>صورة الواجهة: قرية عيون الجواء التراثية، القصيم — Richard Mortel، <a href="https://creativecommons.org/licenses/by/2.0" rel="license noopener" target="_blank">CC BY 2.0</a></small></p>
             </div>
           </footer>
-          <CartBar />
-          <BottomNav />
+          {!directory && <CartBar />}
+          <BottomNav directory={directory} />
           <WhatsAppFab number={mallWa} />
           <NationalTab />
           <VisitBeacon />

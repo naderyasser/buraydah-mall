@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { importProductsCsv } from "@/lib/import-products";
 import { setSetting } from "@/lib/settings";
+import { adPrices } from "@/lib/ads";
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { q, q1 } from "@/db";
@@ -605,9 +606,59 @@ export async function adminImportCsv(_prev: unknown, form: FormData) {
 /** إعدادات المول: واتساب وسعر الجرام */
 export async function saveSettings(form: FormData) {
   await guard();
-  for (const k of ["mall_whatsapp", "gold_gram_24", "gold_gram_21", "gold_gram_18"]) {
-    await setSetting(k, String(form.get(k) ?? "").trim());
+  for (const k of ["mall_whatsapp", "gold_gram_24", "gold_gram_21", "gold_gram_18", "ad_price_full", "ad_price_half", "ad_price_quarter", "ad_price_small", "ad_bank_note"]) {
+    if (form.has(k)) await setSetting(k, String(form.get(k) ?? "").trim());
   }
+  const mode = String(form.get("mall_mode") ?? "");
+  if (mode === "directory" || mode === "shop") await setSetting("mall_mode", mode);
   revalidatePath("/", "layout");
   redirect("/admin/settings");
+}
+
+/* ── المول الإعلاني ── */
+export async function createPlacement(form: FormData) {
+  await guard();
+  const store_id = Number(form.get("store_id")); const space_id = Number(form.get("space_id"));
+  const months = Math.min(12, Math.max(1, Number(form.get("months")) || 1));
+  const starts = String(form.get("starts_on") || new Date().toISOString().slice(0, 10));
+  if (!store_id || !space_id) return;
+  const space = await q1<{ size: string }>(`SELECT size FROM ad_spaces WHERE id = $1`, [space_id]);
+  if (!space) return;
+  const prices = await adPrices();
+  const price = form.get("price") ? Number(form.get("price")) : (prices[space.size as keyof typeof prices] ?? 0) * months;
+  let image_path: string | null = null;
+  const file = form.get("image") as File | null;
+  if (file && file.size > 0 && file.size <= 4_000_000) {
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (["png", "jpg", "jpeg", "webp"].includes(ext)) {
+      const dir = path.join(process.cwd(), "public", "ads"); await mkdir(dir, { recursive: true });
+      const nm = `ad-${store_id}-${Date.now()}.${ext}`; await writeFile(path.join(dir, nm), Buffer.from(await file.arrayBuffer())); image_path = `/ads/${nm}`;
+    }
+  }
+  // مساحة واحدة لحجز فعّال واحد في الوقت نفسه — المدّة تُحسب بالأشهر من تاريخ البداية
+  const overlap = await q1(`SELECT 1 FROM ad_placements WHERE space_id = $1 AND status = 'active'
+                             AND daterange(starts_on, ends_on, '[]') && daterange($2::date, ($2::date + ($3 || ' months')::interval - interval '1 day')::date, '[]')`, [space_id, starts, months]);
+  const status = overlap ? "pending" : (String(form.get("status")) === "pending" ? "pending" : "active");
+  await q(
+    `INSERT INTO ad_placements (space_id, store_id, starts_on, ends_on, price, status, headline, image_path, note)
+     VALUES ($1,$2,$3::date,($3::date + ($4 || ' months')::interval - interval '1 day')::date,$5,$6,$7,$8,$9)`,
+    [space_id, store_id, starts, months, price, status, String(form.get("headline") ?? "").trim() || null, image_path, String(form.get("note") ?? "").trim() || null]
+  );
+  revalidatePath("/", "layout"); revalidatePath("/admin/ads"); redirect("/admin/ads");
+}
+
+export async function setPlacementStatus(form: FormData) {
+  await guard();
+  const status = String(form.get("status"));
+  if (!["pending", "active", "cancelled", "expired"].includes(status)) return;
+  await q(`UPDATE ad_placements SET status = $1 WHERE id = $2`, [status, Number(form.get("id"))]);
+  revalidatePath("/", "layout"); revalidatePath("/admin/ads");
+}
+
+export async function setAdRequestStatus(form: FormData) {
+  await guard();
+  const status = String(form.get("status"));
+  if (!["new", "contacted", "booked", "rejected"].includes(status)) return;
+  await q(`UPDATE ad_requests SET status = $1 WHERE id = $2`, [status, Number(form.get("id"))]);
+  revalidatePath("/admin/ads");
 }

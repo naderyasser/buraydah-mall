@@ -21,13 +21,14 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ slug: strin
   const ua = req.headers.get("user-agent") ?? "";
   const device = /Mobile|Android|iPhone|iPad/i.test(ua) ? "mobile" : "desktop";
   const referrer = req.headers.get("referer")?.slice(0, 300) ?? null;
+  const ad = Number(req.nextUrl.searchParams.get("ad")) || null; // النقرة من مساحة إعلانية تُنسب لحجزها
 
   // لا نُسقط التحويل لو فشل التسجيل — الزائر أهم من الإحصائية
   try {
     await q(
-      `INSERT INTO clicks (store_id, wing_id, dest_type, device, referrer)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [store.id, store.wing_id, store.dest_type, device, referrer]
+      `INSERT INTO clicks (store_id, wing_id, dest_type, device, referrer, placement_id)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [store.id, store.wing_id, store.dest_type, device, referrer, ad]
     );
   } catch (err) {
     console.error("[go] click log failed", err);

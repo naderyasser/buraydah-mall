@@ -1,6 +1,8 @@
 import Link from "next/link";
 import BrowseView, { optsFromParams } from "@/components/BrowseView";
 import { searchStores } from "@/lib/queries";
+import { mallMode } from "@/lib/ads";
+import BrandTile from "@/components/BrandTile";
 import { getTrendingSearches } from "@/lib/browse";
 import { logSearch } from "@/app/actions";
 import FollowTerm from "@/components/FollowTerm";
@@ -24,6 +26,7 @@ export default async function SearchPage({
   const opts = optsFromParams(sp, {});
   if (wide) opts.term = undefined;
 
+  const directory = (await mallMode()) === "directory";
   const [stores, trending] = await Promise.all([
     term.length >= 2 ? searchStores(term) : Promise.resolve([]),
     getTrendingSearches(8),
@@ -51,22 +54,28 @@ export default async function SearchPage({
 
       {stores.length > 0 && (
         <section className="section" style={{ paddingBlock: 10 }}>
-          <div className="section-head"><h2>محلات</h2><span className="tabular">{stores.length}</span></div>
-          <div className="wings-strip">
-            {stores.map((s: any) => (
-              <Link key={s.id} href={`/store/${s.slug}`} className="wing-pill">
-                <b>{s.name_ar}</b>
-                {s.district && <i>حي {s.district}</i>}
-              </Link>
-            ))}
-          </div>
+          <div className="section-head"><h2>{directory ? "ماركات ومتاجر" : "محلات"}</h2><span className="tabular">{stores.length}</span></div>
+          {directory ? (
+            <div className="brand-wall">{stores.map((s: any) => <BrandTile b={{ ...s, product_count: s.product_count ?? 1 }} key={s.id} directory />)}</div>
+          ) : (
+            <div className="wings-strip">
+              {stores.map((s: any) => (
+                <Link key={s.id} href={`/store/${s.slug}`} className="wing-pill">
+                  <b>{s.name_ar}</b>
+                  {s.district && <i>حي {s.district}</i>}
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       )}
 
+      {directory && <div className="section-head" style={{ marginTop: 18 }}><h2>عيّنات من المنتجات</h2><span>الشراء على موقع كل ماركة</span></div>}
       <BrowseView
         opts={opts}
         params={qs}
         action="/search"
+        directory={directory}
         empty={
           <div className="empty">
             <h3>لا توجد نتائج{raw && ` لـ «${raw}»`}</h3>

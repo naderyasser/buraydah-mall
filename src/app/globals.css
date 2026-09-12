@@ -1268,3 +1268,87 @@ table.admin th{background:#F5EFEB;color:#5B4A2A;border-bottom:2px solid #D8BA75}
 .prow .pcard-img{aspect-ratio:1/1}
 @media (max-width:600px){.ndx .cd-boxes{grid-template-columns:repeat(4,1fr);max-width:none;gap:6px}.ndx .cd-boxes span{aspect-ratio:1.15/1}.ndx-hero{min-height:0}.ndx-cal{font-size:11px}}
 @media (max-width:380px){.ndx .cd-boxes{grid-template-columns:repeat(2,1fr)}}
+
+/* ═══ المول الإعلاني: شبكة المساحات، القطاعات، الأسعار ═══ */
+.adgrid{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.ad-tag{position:absolute;top:10px;inset-inline-start:12px;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:99px;
+  background:rgba(0,0,0,.45);color:#F3EBDD;backdrop-filter:blur(4px)}
+.ad-full{position:relative;display:flex;align-items:center;min-height:240px;border-radius:var(--r);overflow:hidden;color:#fff;
+  background:linear-gradient(100deg,#062D25,#0A4435) center/cover no-repeat;box-shadow:var(--sh-2);transition:transform .2s}
+.ad-full:hover{transform:translateY(-2px)}
+.ad-full::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,45,37,.92) 0%,rgba(6,45,37,.55) 55%,rgba(6,45,37,.15) 100%)}
+.ad-full-body{position:relative;padding:28px 34px;display:flex;flex-direction:column;gap:8px;max-width:520px}
+.ad-logo-lg{height:56px;width:auto;max-width:200px;object-fit:contain;background:#fff;border-radius:10px;padding:6px 10px;align-self:flex-start}
+.ad-full-body b{font-family:"Noto Kufi Arabic",Tajawal,sans-serif;font-size:clamp(20px,2.4vw,28px);line-height:1.4}
+.ad-full-body p{margin:0;font-size:14px;opacity:.9;max-width:44ch}
+.ad-cta{align-self:flex-start;margin-top:4px;padding:9px 18px;border-radius:99px;background:linear-gradient(180deg,#E5C77F,#C8A45D);color:#1E2A20;font-weight:800;font-size:13.5px}
+.ad-halves{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ad-half{position:relative;display:flex;align-items:flex-end;min-height:170px;border-radius:var(--r);overflow:hidden;color:#fff;
+  background:linear-gradient(120deg,#0A4435,#062D25) center/cover no-repeat;box-shadow:var(--sh-1);transition:transform .2s}
+.ad-half:hover{transform:translateY(-2px)}
+.ad-half::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,45,37,.9),rgba(6,45,37,.1) 70%)}
+.ad-half-body{position:relative;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.ad-logo{height:40px;width:auto;max-width:140px;object-fit:contain;background:#fff;border-radius:8px;padding:4px 8px;align-self:flex-start}
+.ad-half-body b{font-size:18px}.ad-half-body small{font-size:12.5px;opacity:.9}
+.ad-quarters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ad-quarter{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);
+  border-top:3px solid #C8A45D;box-shadow:var(--sh-1);color:var(--ink);transition:transform .15s,box-shadow .15s;min-height:190px}
+.ad-quarter:hover{transform:translateY(-2px);box-shadow:var(--sh-2),0 0 0 1px #D8BA75}
+.ad-q-logo{height:54px;display:grid;place-items:center;background:var(--sunk);border-radius:10px;overflow:hidden}
+.ad-q-logo img{max-height:44px;max-width:80%;object-fit:contain}.ad-q-logo b{font-size:14px;color:var(--brand-d)}
+.ad-q-body{display:flex;flex-direction:column;gap:3px;flex:1}
+.ad-q-body b{font-size:14.5px}.ad-q-body small{font-size:12px;color:var(--mut);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ad-samples{display:flex;gap:6px;margin-top:4px}
+.ad-samples img{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.ad-link{margin-top:auto;font-size:12.5px;font-weight:700;color:var(--brand-d)}
+.ad-smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.ad-small{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink);text-align:center}
+.ad-s-logo{width:76px;height:76px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;overflow:hidden;
+  box-shadow:var(--sh-1);transition:transform .15s,border-color .15s;font-size:11px;padding:6px}
+.ad-small:hover .ad-s-logo{transform:scale(1.05);border-color:#D8BA75}
+.ad-s-logo img{width:100%;height:100%;object-fit:contain}
+.ad-small small{font-size:11.5px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ad-small-empty .ad-s-logo{border-style:dashed;color:var(--faint);font-size:24px;background:var(--sunk)}
+.ad-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed #D8BA75;background:var(--sand-soft);color:var(--najd);text-align:center}
+.ad-empty-t{font-weight:800;font-size:15px}.ad-empty small{font-size:12px;color:var(--mut)}
+.ad-empty.ad-full{min-height:160px;color:var(--najd)}.ad-empty.ad-full::before{display:none}
+.ad-empty.ad-half{min-height:120px}.ad-empty.ad-half::before{display:none}
+.ad-empty.ad-quarter{min-height:150px;border-top:2px dashed #D8BA75;box-shadow:none}
+.ad-note{margin:2px 0 0;font-size:12px;color:var(--faint)}
+.ad-note a{color:var(--brand-d);font-weight:700}
+.adgrid.compact .ad-full{min-height:180px}.adgrid.compact .ad-half{min-height:140px}
+.sector-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sector-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);
+  color:var(--ink);text-align:center;transition:transform .15s,box-shadow .15s}
+.sector-tile:hover{transform:translateY(-2px);box-shadow:var(--sh-2),0 0 0 1px #D8BA75}
+.sector-ico{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(180deg,#0A4435,#062D25);color:#F3EBDD}
+.sector-ico svg{width:24px;height:24px}
+.sector-tile b{font-size:14px}.sector-tile small{font-size:12px;color:var(--mut)}
+.pill-gold{background:linear-gradient(180deg,#E5C77F,#C8A45D);color:#1E2A20;border-color:#C8A45D}
+.ad-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ad-plan{display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);border-top:3px solid #C8A45D}
+.ad-plan.on{outline:2px solid var(--brand);background:var(--brand-soft)}
+.ad-plan b{font-size:17px;color:var(--brand-d)}
+.ad-plan-price{font-size:24px;font-weight:800;color:var(--ink)}.ad-plan-price small{font-size:12px;color:var(--mut);font-weight:400;margin-inline-start:4px}
+.ad-plan p{margin:0;font-size:13px;color:var(--mut);line-height:1.6}
+.ad-plan-free{font-size:12px;color:var(--brand-d);font-weight:700}
+@media (max-width:860px){
+  .ad-halves{grid-template-columns:1fr}.ad-quarters{grid-template-columns:1fr 1fr}
+  .ad-full{min-height:200px}.ad-full-body{padding:18px}
+  .ad-smalls{grid-template-columns:repeat(4,1fr);gap:8px}.ad-s-logo{width:64px;height:64px}
+}
+
+.adv-btn{background:linear-gradient(180deg,#E5C77F,#C8A45D);color:#1E2A20;border-color:#C8A45D;font-weight:800}
+.adv-btn:hover{background:linear-gradient(180deg,#F0D68A,#D8BA75);color:#1E2A20}
+.samples{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.sample{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;color:var(--ink)}
+.sample img,.sample>span{aspect-ratio:1;width:100%;object-fit:cover;background:var(--sunk);display:block}
+.sample b{font-size:13px;padding:0 10px 10px;font-weight:500}
+.sample:hover{box-shadow:var(--sh-2),0 0 0 1px #D8BA75}
+/* قائمة الحي داخل details مغلق كانت تحجز عرضاً وتُحدث تمريراً أفقياً على الجوال */
+details:not([open])>.hf-menu{display:none}
+@media (max-width:600px){.pill-dd .hf-menu{inset-inline-start:auto;inset-inline-end:0;max-width:calc(100vw - 40px)}}
+/* الخانات الصغيرة: الاسم الطويل كان يوسّع خلية الشبكة فيُحدث تمريراً أفقياً على الجوال */
+.ad-small{min-width:0;width:100%}
+.ad-small small{width:100%;display:block}
+.ad-smalls{min-width:0}

@@ -6,8 +6,9 @@ import { DEST_META } from "@/lib/destinations";
  * ماركة بلا منتجات = دليل، والضغط عليها يحوّل لموقعها مباشرة (/go/).
  * ماركة لها منتجات = تبيع داخل المول، فالضغط يفتح صفحتها.
  */
-export default function BrandTile({ b }: { b: any }) {
+export default function BrandTile({ b, directory = false }: { b: any; directory?: boolean }) {
   const sells = b.product_count > 0;
+  // في نمط الدليل: الماركة ذات العيّنات تفتح صفحتها (وفيها زر الموقع)، وبلا عيّنات تحوّل مباشرة
   const href = sells ? `/store/${b.slug}` : `/go/${b.slug}`;
   const external = !sells;
 
@@ -22,7 +23,7 @@ export default function BrandTile({ b }: { b: any }) {
         ? <img src={b.logo_path} alt={b.name_ar} loading="lazy" />
         : <b>{b.name_ar}</b>}
       {sells ? (
-        <span className="mode sells">{b.product_count} منتجاً</span>
+        <span className="mode sells">{directory ? "الصفحة والموقع ↗" : `${b.product_count} منتجاً`}</span>
       ) : (
         <span className="mode links">{DEST_META[b.dest_type as keyof typeof DEST_META]?.label ?? "زيارة"} ↗</span>
       )}

@@ -10,6 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="admin-bar">
         <div className="wrap">
           <Link href="/admin">اللوحة</Link>
+          <Link href="/admin/ads" className="occ-link">المساحات الإعلانية</Link>
           <Link href="/admin/orders">الطلبات</Link>
           <Link href="/admin/products">المنتجات</Link>
           <Link href="/admin/stores">المحلات</Link>

@@ -6,6 +6,7 @@ import OpenNow from "@/components/OpenNow";
 import HoursTable from "@/components/HoursTable";
 import ProductCard from "@/components/ProductCard";
 import ReviewsBlock from "@/components/ReviewsBlock";
+import { mallMode } from "@/lib/ads";
 import FollowStore from "@/components/FollowStore";
 import Stars from "@/components/Stars";
 import { readyPromise, holdNote } from "@/lib/promise";
@@ -44,6 +45,8 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     ),
   ]);
   const meta = DEST_META[store.dest_type];
+  const mode = await mallMode();
+  const directory = mode === "directory";
   const mapUrl = store.map_url || (store.address_line
     ? `https://maps.google.com/?q=${encodeURIComponent(`${store.name_ar} ${store.address_line} بريدة`)}`
     : null);
@@ -91,17 +94,34 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
             {rating?.avg && <Stars value={rating.avg} count={rating.n} />}
             {store.district && <span>حي {store.district}</span>}
             {store.phone && <span className="tabular" dir="ltr">{store.phone}</span>}
-            <span className="tabular">{products.length} منتجاً</span>
+            {!directory && <span className="tabular">{products.length} منتجاً</span>}
           </div>
           <div className="buy-row" style={{ marginTop: 14 }}>
-            <a className="btn btn-dark btn-sm" href={`/go/${store.slug}`} rel="nofollow sponsored">{meta.button}</a>
+            <a className={directory ? "btn btn-gold" : "btn btn-dark btn-sm"} href={`/go/${store.slug}`} rel="nofollow sponsored" target={directory ? "_blank" : undefined}>
+              {directory ? `${meta.button} ↗` : meta.button}
+            </a>
             {mapUrl && <a className="btn btn-line btn-sm" href={mapUrl} target="_blank" rel="noopener nofollow">خذني إليه</a>}
             <FollowStore storeId={store.id} storeName={store.name_ar} />
           </div>
         </div>
       </section>
 
-      {products.length > 0 ? (
+      {directory && products.length > 0 ? (
+        <section className="section">
+          <div className="section-head">
+            <h2>عيّنة من منتجات {store.name_ar}</h2>
+            <a href={`/go/${store.slug}`} rel="nofollow sponsored" target="_blank">التشكيلة الكاملة على موقع الماركة ↗</a>
+          </div>
+          <div className="samples">
+            {products.slice(0, 8).map((p) => (
+              <a key={p.id} href={`/go/${store.slug}`} rel="nofollow sponsored" target="_blank" className="sample">
+                {p.image_path ? <img src={p.image_path} alt={p.name_ar} loading="lazy" /> : <span />}
+                <b>{p.name_ar}</b>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : products.length > 0 ? (
         <section className="section">
           <div className="section-head">
             <h2>منتجات المحل</h2>

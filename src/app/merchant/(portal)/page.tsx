@@ -5,6 +5,7 @@ import { sar } from "@/lib/money";
 import { requireStore } from "@/lib/merchant-auth";
 import PushToggle from "@/components/PushToggle";
 import { getSetting } from "@/lib/settings";
+import { mallMode } from "@/lib/ads";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "لوحة التاجر", robots: { index: false } };
@@ -12,6 +13,13 @@ export const metadata = { title: "لوحة التاجر", robots: { index: false
 export default async function MerchantHome() {
   const store = await requireStore();
   const vapid = await getSetting("vapid_public");
+  const directory = (await mallMode()) === "directory";
+  const ads = directory ? await q<any>(
+    `SELECT p.id, p.starts_on::text AS starts_on, p.ends_on::text AS ends_on, p.status, p.price, sp.zone, sp.size, sp.position,
+            coalesce((SELECT sum(n) FROM ad_impressions i WHERE i.placement_id = p.id AND i.day > current_date - 30), 0)::int AS imp30,
+            (SELECT count(*) FROM clicks c WHERE c.placement_id = p.id AND c.created_at > now() - interval '30 days')::int AS clk30,
+            (SELECT count(*) FROM clicks c WHERE c.store_id = $1 AND c.created_at > now() - interval '30 days')::int AS store_clicks30
+     FROM ad_placements p JOIN ad_spaces sp ON sp.id = p.space_id WHERE p.store_id = $1 ORDER BY p.ends_on DESC`, [store.id]) : [];
   const [[t], top, alerts] = await Promise.all([
     q<any>(
       `SELECT
@@ -61,7 +69,33 @@ export default async function MerchantHome() {
           الأرقام لآخر ٣٠ يوماً ما لم يُذكر غير ذلك.
           {t.orders_new > 0 && <> عندك <b>{t.orders_new}</b> طلباً ينتظر تأكيدك.</>}
         </p>
-        {vapid && <PushToggle vapid={vapid} />}
+        {directory ? (
+          <div className="stat-row">
+            <div className="stat"><dt>نقرات إلى موقعك (٣٠ يوماً)</dt><dd className="tabular">{ads[0]?.store_clicks30 ?? t.clicks}</dd></div>
+            <div className="stat"><dt>ظهور مساحاتك (٣٠ يوماً)</dt><dd className="tabular">{ads.reduce((n: number, a: any) => n + a.imp30, 0)}</dd></div>
+            <div className="stat"><dt>حجوزات فعّالة</dt><dd className="tabular">{ads.filter((a: any) => a.status === "active").length}</dd></div>
+            <div className="stat"><dt>مشاهدات العيّنات</dt><dd className="tabular">{t.views}</dd></div>
+          </div>
+        ) : vapid && <PushToggle vapid={vapid} />}
+        {directory && (
+          <section className="section">
+            <div className="section-head"><h2>مساحاتك الإعلانية</h2><Link href="/advertise">احجز مساحة جديدة</Link></div>
+            {ads.length === 0 ? (
+              <div className="empty"><h3>لا مساحة محجوزة بعد</h3><p>ماركتك ظاهرة في الدليل مجاناً — والمساحات الإعلانية في الرئيسية والقطاعات تُحجز من <Link href="/advertise">أعلن معنا</Link>.</p></div>
+            ) : (
+              <div className="tablewrap"><table className="admin">
+                <thead><tr><th>المساحة</th><th>من</th><th>إلى</th><th>ظهور ٣٠ يوماً</th><th>نقرات ٣٠ يوماً</th><th>الحالة</th></tr></thead>
+                <tbody>{ads.map((a: any) => (
+                  <tr key={a.id}>
+                    <td>{a.zone === "home" ? "الرئيسية" : a.zone.replace("wing:", "قطاع ")} — {({ full: "كاملة", half: "نصف", quarter: "ربع", small: "خانة" } as any)[a.size]} #{a.position}</td>
+                    <td className="tabular">{a.starts_on}</td><td className="tabular">{a.ends_on}</td>
+                    <td className="tabular">{a.imp30}</td><td className="tabular">{a.clk30}</td>
+                    <td><span className={`badge st-${a.status === "active" ? "confirmed" : a.status === "pending" ? "new" : "cancelled"}`}>{({ active: "فعّال", pending: "بانتظار الدفع", expired: "منتهٍ", cancelled: "موقوف" } as any)[a.status]}</span></td>
+                  </tr>))}</tbody>
+              </table></div>
+            )}
+          </section>
+        )}
       </section>
 
       <dl className="stat-row">

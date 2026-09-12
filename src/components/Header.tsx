@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import SearchBox from "./SearchBox";
 
 /** ترويسة على طريقة حراج: شعار، بحث، وزرّ واحد — كل ما عداه في الشريط السفلي على الجوال */
-export default function Header({ trending = [] }: { trending?: string[] }) {
+export default function Header({ trending = [], directory = false }: { trending?: string[]; directory?: boolean }) {
   const { count } = useCart();
   return (
     <header className="topbar">
@@ -14,13 +14,23 @@ export default function Header({ trending = [] }: { trending?: string[] }) {
         </Link>
         <SearchBox trending={trending} />
         <div className="top-actions">
-          <Link href="/orders" className="icon-btn ghost">طلباتي</Link>
-          <Link href="/stores" className="icon-btn ghost">الأقسام والمحلات</Link>
-          <Link href="/favorites" className="icon-btn ghost">المفضلة</Link>
-          <Link href="/cart" className="icon-btn cart-btn">
-            السلة
-            {count > 0 && <span className="count tabular">{count}</span>}
-          </Link>
+          {directory ? (
+            <>
+              <Link href="/stores" className="icon-btn ghost">دليل الماركات</Link>
+              <Link href="/favorites" className="icon-btn ghost">المفضلة</Link>
+              <Link href="/advertise" className="icon-btn adv-btn">أعلن معنا</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/orders" className="icon-btn ghost">طلباتي</Link>
+              <Link href="/stores" className="icon-btn ghost">الأقسام والمحلات</Link>
+              <Link href="/favorites" className="icon-btn ghost">المفضلة</Link>
+              <Link href="/cart" className="icon-btn cart-btn">
+                السلة
+                {count > 0 && <span className="count tabular">{count}</span>}
+              </Link>
+            </>
+          )}
         </div>
       </div>
       <div className="sadu" aria-hidden="true" />

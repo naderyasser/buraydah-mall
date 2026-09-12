@@ -24,6 +24,7 @@ import { getProduct, getRelatedProducts, getSimilarProducts } from "@/lib/querie
 import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { SITE_URL } from "@/lib/site";
+import { mallMode } from "@/lib/ads";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     ).then((r) => r[0]),
   ]);
 
+  const directory = (await mallMode()) === "directory";
   const gallery = [p.image_path, ...images.map((i) => i.path)].filter(Boolean) as string[];
   const compare = activeCompare(p);
   const pct = discountPct(p.price, compare);
@@ -99,7 +101,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           },
         }
       : {}),
-    offers: {
+    offers: directory ? undefined : {
       "@type": "Offer",
       price: Number(p.price),
       priceCurrency: "SAR",
@@ -138,7 +140,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {p.views > 0 && <span className="hint tabular">{p.views} مشاهدة</span>}
           </p>
 
-          {pct != null && (
+          {!directory && pct != null && (
             <p className="save tabular">
               وفّر {sar(Number(compare) - Number(p.price))} <Riyal /> — بدل{" "}
               <s>{sar(compare!)}</s>
@@ -146,7 +148,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </p>
           )}
 
-          {p.in_stock ? (
+          {directory ? (
+            <div className="buybox">
+              <p className="desc" style={{ marginTop: 6 }}>هذه عيّنة من تشكيلة {p.store_name}. السعر والشراء على موقع الماركة أو حسابها الرسمي.</p>
+              <div className="buy-row">
+                <a className="btn btn-gold" href={`/go/${p.store_slug}`} rel="nofollow sponsored" target="_blank">اشترِ من {p.store_name} ↗</a>
+                <Link className="btn btn-line" href={`/store/${p.store_slug}`}>صفحة الماركة</Link>
+              </div>
+            </div>
+          ) : p.in_stock ? (
             <BuyBox
               base={{
                 productId: p.id, slug: p.slug, name: p.name_ar, price: Number(p.price),
@@ -161,11 +171,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <StockAlert productId={p.id} />
           )}
 
-          <TrustRow />
+          {!directory && <TrustRow />}
 
           <ShareButtons url={`${SITE_URL}/product/${p.slug}`} title={p.name_ar} />
 
-          {waUrl && (
+          {waUrl && !directory && (
             <a className="btn btn-palm btn-block" href={waUrl} target="_blank" rel="noopener nofollow">
               اسأل المحل عبر واتساب قبل الطلب
             </a>
@@ -191,7 +201,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           )}
 
-          <ul className="assurances">
+          {!directory && <ul className="assurances">
             {p.warranty && <li><b>{p.warranty}</b></li>}
             <li>{readyPromise(store?.hours, store?.ready_minutes ?? 60)} {holdNote(store?.hold_days ?? 3)}</li>
             <li>الدفع عند الاستلام — لا دفع إلكتروني داخل المول.</li>
@@ -202,7 +212,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </li>
             <li>استرجاع خلال ٧ أيام من الاستلام وفق نظام التجارة الإلكترونية.</li>
             <li>السعر شامل ضريبة القيمة المضافة.</li>
-          </ul>
+          </ul>}
         </div>
       </div>
 
@@ -222,7 +232,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h2>من نفس المحل</h2>
             <Link href={`/store/${p.store_slug}`}>كل منتجات {p.store_name}</Link>
           </div>
-          <div className="grid">{related.map((r: any) => <ProductCard p={r} key={r.id} showStore={false} />)}</div>
+          <div className="grid">{related.map((r: any) => <ProductCard p={r} key={r.id} showStore={false} directory={directory} />)}</div>
         </section>
       )}
 
@@ -232,7 +242,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h2>منتجات مشابهة من محلات أخرى</h2>
             <Link href={p.category_slug ? `/wing/${p.wing_slug}?cat=${p.category_slug}` : `/wing/${p.wing_slug}`}>قارن الأسعار</Link>
           </div>
-          <div className="grid">{similar.map((r: any) => <ProductCard p={r} key={r.id} />)}</div>
+          <div className="grid">{similar.map((r: any) => <ProductCard p={r} key={r.id} directory={directory} />)}</div>
         </section>
       )}
 
