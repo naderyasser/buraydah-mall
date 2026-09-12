@@ -72,7 +72,6 @@ export default async function MerchantHome() {
         </p>
         {directory ? (
           <div className="stat-row">
-            <div className="stat"><dt>طلبات واردة (٣٠ يوماً)</dt><dd className="tabular">{leads30}</dd></div>
             <div className="stat"><dt>نقرات إلى موقعك (٣٠ يوماً)</dt><dd className="tabular">{ads[0]?.store_clicks30 ?? t.clicks}</dd></div>
             <div className="stat"><dt>ظهور مساحاتك (٣٠ يوماً)</dt><dd className="tabular">{ads.reduce((n: number, a: any) => n + a.imp30, 0)}</dd></div>
             <div className="stat"><dt>حجوزات فعّالة</dt><dd className="tabular">{ads.filter((a: any) => a.status === "active").length}</dd></div>
@@ -81,7 +80,7 @@ export default async function MerchantHome() {
         ) : vapid && <PushToggle vapid={vapid} />}
         {directory && (
           <section className="section">
-            <div className="section-head"><h2>مساحاتك الإعلانية</h2><Link href="/merchant/leads">الطلبات الواردة ←</Link></div>
+            <div className="section-head"><h2>مساحاتك الإعلانية</h2><Link href="/advertise">احجز مساحة جديدة</Link></div>
             {ads.length === 0 ? (
               <div className="empty"><h3>لا مساحة محجوزة بعد</h3><p>ماركتك ظاهرة في الدليل مجاناً — والمساحات الإعلانية في الرئيسية والقطاعات تُحجز من <Link href="/advertise">أعلن معنا</Link>.</p></div>
             ) : (

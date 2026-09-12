@@ -192,9 +192,11 @@ export function getWingIndex() {
 /** كل ماركة مع عدد منتجاتها — صفر يعني «دليل فقط» فالضغط يحوّل مباشرة */
 export function getBrands(wingSlug?: string) {
   return q<any>(
-    `SELECT s.id, s.slug, s.name_ar, s.logo_path, s.district, s.tier, s.dest_type,
+    `SELECT s.id, s.slug, s.name_ar, s.logo_path, s.district, s.tier, s.dest_type, s.summary_ar,
             w.slug AS wing_slug, w.name_ar AS wing_name,
-            (SELECT count(*)::int FROM products p WHERE p.store_id = s.id AND p.is_active) AS product_count
+            (SELECT count(*)::int FROM products p WHERE p.store_id = s.id AND p.is_active) AS product_count,
+            coalesce((SELECT array_agg(pr.image_path ORDER BY pr.sort_order) FROM (
+               SELECT image_path, sort_order FROM products WHERE store_id = s.id AND is_active AND image_path IS NOT NULL ORDER BY sort_order LIMIT 2) pr), '{}') AS sample_images
      FROM stores s JOIN wings w ON w.id = s.wing_id AND w.is_active
      WHERE s.is_active ${wingSlug ? "AND w.slug = $1" : ""}
      ORDER BY CASE s.tier WHEN 'featured' THEN 0 WHEN 'paid' THEN 1 ELSE 2 END,

@@ -22,11 +22,8 @@ export default async function MerchantLayout({ children }: { children: React.Rea
           <Link href="/merchant">لوحتي</Link>
           {directory ? (
             <>
-              <Link href="/merchant/leads" className="nav-with-badge">الطلبات الواردة<NewOrderWatcher initial={fresh?.n ?? 0} /></Link>
-              <Link href="/merchant/products">عيّنات المنتجات</Link>
-              <Link href="/merchant/reviews">التقييمات</Link>
-              <Link href="/merchant/questions">الأسئلة</Link>
-              <Link href="/merchant/settings">بيانات الماركة</Link>
+              <Link href="/merchant/products">عيّنات الصور</Link>
+              <Link href="/merchant/settings">بيانات الماركة والرابط</Link>
               <Link href="/advertise" className="occ-link">احجز مساحة</Link>
             </>
           ) : (

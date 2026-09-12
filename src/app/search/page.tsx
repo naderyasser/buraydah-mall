@@ -70,12 +70,10 @@ export default async function SearchPage({
         </section>
       )}
 
-      {directory && <div className="section-head" style={{ marginTop: 18 }}><h2>عيّنات من المنتجات</h2><span>الشراء على موقع كل ماركة</span></div>}
-      <BrowseView
+      {!directory && <BrowseView
         opts={opts}
         params={qs}
         action="/search"
-        directory={directory}
         empty={
           <div className="empty">
             <h3>لا توجد نتائج{raw && ` لـ «${raw}»`}</h3>
@@ -90,7 +88,10 @@ export default async function SearchPage({
             )}
           </div>
         }
-      />
+      />}
+      {directory && stores.length === 0 && term.length >= 2 && (
+        <div className="empty"><h3>لا ماركة بهذا الاسم{raw && ` «${raw}»`}</h3><p>جرّب كلمة أعمّ أو تصفّح <Link href="/stores">دليل الماركات</Link>.</p></div>
+      )}
       {term.length >= 2 && <LogTerm term={term} />}
     </div>
   );

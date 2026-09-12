@@ -16,9 +16,7 @@ export default function Header({ trending = [], directory = false }: { trending?
         <div className="top-actions">
           {directory ? (
             <>
-              <Link href="/orders" className="icon-btn ghost">طلباتي</Link>
               <Link href="/stores" className="icon-btn ghost">دليل الماركات</Link>
-              <Link href="/favorites" className="icon-btn ghost">المفضلة</Link>
               <Link href="/advertise" className="icon-btn adv-btn">أعلن معنا</Link>
             </>
           ) : (

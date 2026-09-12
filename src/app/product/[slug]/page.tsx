@@ -25,7 +25,6 @@ import { q } from "@/db";
 import { sar } from "@/lib/money";
 import { SITE_URL } from "@/lib/site";
 import { mallMode } from "@/lib/ads";
-import LeadForm from "@/components/LeadForm";
 
 export const dynamic = "force-dynamic";
 
@@ -150,11 +149,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           )}
 
           {directory ? (
-            <div className="buybox lead-panel">
-              <LeadForm storeId={p.store_id} storeName={p.store_name} productId={p.id} productName={p.name_ar} cta="اطلب هذا المنتج" />
-              <div className="buy-row" style={{ marginTop: 8 }}>
-                <a className="btn btn-line btn-sm" href={`/go/${p.store_slug}`} rel="nofollow sponsored" target="_blank">أو اشترِ من موقع {p.store_name} ↗</a>
-                <Link className="btn btn-line btn-sm" href={`/store/${p.store_slug}`}>صفحة الماركة</Link>
+            <div className="buybox">
+              <p className="desc" style={{ marginTop: 6 }}>عيّنة من تشكيلة {p.store_name} — السعر والشراء على موقع الماركة أو حسابها الرسمي.</p>
+              <div className="buy-row">
+                <a className="btn btn-gold" href={`/go/${p.store_slug}`} rel="nofollow sponsored" target="_blank">اشترِ من {p.store_name} ↗</a>
               </div>
             </div>
           ) : p.in_stock ? (

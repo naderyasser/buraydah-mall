@@ -72,9 +72,9 @@ export default async function Home() {
                 <>
                   <p className="najd-lead">كل ماركات ومتاجر بريدة في مول واحد — تختار الماركة، وتضغط، فتنتقل لموقعها الرسمي مباشرة.</p>
                   <ul className="najd-trust">
-                    <li><i className="nt-ico">✎</i><span><b>اطلب من أي ماركة بضغطة</b><small>اسمك وجوالك وما تريده — يصل الماركة فوراً وتتواصل معك</small></span></li>
-                    <li><i className="nt-ico">↗</i><span><b>وتكمل الشراء معها مباشرة</b><small>على موقعها أو واتسابها — المول يوصلك ولا يقف بينكما</small></span></li>
-                    <li><i className="nt-ico">✓</i><span><b>ماركات معتمدة</b><small>كل مساحة باشتراك من الماركة أو وكيلها · <Link href="/advertise">أعلن معنا</Link></small></span></li>
+                    <li><i className="nt-ico">↗</i><span><b>اضغط على الماركة تصل لموقعها</b><small>الشراء من الماركة نفسها — المول يوصلك ولا يقف بينكما</small></span></li>
+                    <li><i className="nt-ico">✓</i><span><b>ماركات معتمدة</b><small>كل مساحة باشتراك من الماركة أو وكيلها</small></span></li>
+                    <li><i className="nt-ico">☆</i><span><b>مساحات إعلانية للماركات</b><small><Link href="/advertise">أعلن معنا</Link> — صفحة كاملة، نصف، ربع، أو خانة</small></span></li>
                   </ul>
                 </>
               ) : (
@@ -99,10 +99,9 @@ export default async function Home() {
               <div className="pills">
                 {mode === "directory" ? (
                   <>
-                    <Link href="/requests" className="pill pill-gold">اطلب الآن</Link>
                     <Link href="/stores" className="pill">كل الماركات</Link>
                     <Link href="/stores?open=1" className="pill">مفتوح الآن</Link>
-                    <Link href="/advertise" className="pill">أعلن معنا</Link>
+                    <Link href="/advertise" className="pill pill-gold">أعلن معنا</Link>
                   </>
                 ) : (
                   <>
@@ -136,7 +135,7 @@ export default async function Home() {
                   <div className="nt-row"><span className="nt-gold">ذ</span> جرام الذهب عيار ٢١ اليوم <b className="tabular">{sar(settings.gold_gram_21)}</b> <Riyal /> <Link href="/wing/gold">الأسعار</Link></div>
                 )}
                 {mode === "directory"
-                  ? <div className="nt-row"><span className="nt-pin">●</span> ما لقيت ما تبحث عنه؟ <Link href="/requests">اطلبه والماركات تعرض عليك</Link></div>
+                  ? <div className="nt-row"><span className="nt-pin">●</span> ماركة جديدة؟ <Link href="/advertise">احجز مساحتك</Link></div>
                   : <div className="nt-row"><span className="nt-pin">●</span> التوصيل داخل بريدة · <Link href="/requests">اطلب ما لا تجده</Link></div>}
               </div>
             </div>

@@ -7,7 +7,6 @@ import HoursTable from "@/components/HoursTable";
 import ProductCard from "@/components/ProductCard";
 import ReviewsBlock from "@/components/ReviewsBlock";
 import { mallMode } from "@/lib/ads";
-import LeadForm from "@/components/LeadForm";
 import FollowStore from "@/components/FollowStore";
 import Stars from "@/components/Stars";
 import { readyPromise, holdNote } from "@/lib/promise";
@@ -98,8 +97,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
             {!directory && <span className="tabular">{products.length} منتجاً</span>}
           </div>
           <div className="buy-row" style={{ marginTop: 14 }}>
-            {directory && <a className="btn btn-gold" href="#order">اطلب من {store.name_ar}</a>}
-            <a className={directory ? "btn btn-line btn-sm" : "btn btn-dark btn-sm"} href={`/go/${store.slug}`} rel="nofollow sponsored" target={directory ? "_blank" : undefined}>
+            <a className={directory ? "btn btn-gold" : "btn btn-dark btn-sm"} href={`/go/${store.slug}`} rel="nofollow sponsored" target={directory ? "_blank" : undefined}>
               {directory ? `${meta.button} ↗` : meta.button}
             </a>
             {mapUrl && <a className="btn btn-line btn-sm" href={mapUrl} target="_blank" rel="noopener nofollow">خذني إليه</a>}
@@ -107,14 +105,6 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           </div>
         </div>
       </section>
-
-      {directory && (
-        <section className="section" id="order" style={{ paddingTop: 22 }}>
-          <div className="panel lead-panel">
-            <LeadForm storeId={store.id} storeName={store.name_ar} cta="أرسل طلبي" />
-          </div>
-        </section>
-      )}
 
       {directory && products.length > 0 ? (
         <section className="section">

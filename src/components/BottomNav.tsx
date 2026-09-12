@@ -27,8 +27,8 @@ export default function BottomNav({ directory = false }: { directory?: boolean }
     <nav className="bnav" aria-label="تنقّل سريع">
       <Link href="/" className={`bnav-i${on("/")}`}><Icon k="home" /><span>الرئيسية</span></Link>
       <Link href="/stores" className={`bnav-i${on("/stores")}`}><Icon k="stores" /><span>الماركات</span></Link>
-      <Link href="/requests" className="bnav-cta"><b>+</b><span>اطلب الآن</span></Link>
-      <Link href="/orders" className={`bnav-i${on("/orders")}`}><Icon k="orders" /><span>طلباتي</span></Link>
+      <Link href="/advertise" className="bnav-cta"><b>+</b><span>أعلن معنا</span></Link>
+      <Link href="/merchant" className={`bnav-i${on("/merchant")}`}><Icon k="orders" /><span>المعلنون</span></Link>
       <Link href="/search" className={`bnav-i${on("/search")}`}><Icon k="search" /><span>بحث</span></Link>
     </nav>
   );
